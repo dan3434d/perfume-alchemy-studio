@@ -120,7 +120,7 @@ function Orders() {
     },
   });
 
-  const setStatus = async (id: string, status: string) => {
+  const setStatus = async (id: string, status: "pending" | "paid" | "processing" | "shipped" | "delivered" | "cancelled" | "refunded") => {
     const { error } = await supabase.from("orders").update({ status }).eq("id", id);
     if (error) toast.error(error.message); else { toast.success("Status updated"); q.refetch(); }
   };
