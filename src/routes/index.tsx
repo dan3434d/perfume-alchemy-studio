@@ -3,8 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
-import { productImage } from "@/lib/product-image";
 import { Truck, Lock, Sparkles, MessageCircle, ArrowRight, Star, MapPin, Droplets, Award } from "lucide-react";
+import heroImg from "@/assets/hero-perfume.jpg";
+import blendingImg from "@/assets/craft-blending.jpg";
+import ingredientsImg from "@/assets/craft-ingredients.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -80,11 +82,12 @@ function Home() {
           <div className="relative">
             <div className="absolute -inset-10 -z-10 rounded-full blur-3xl opacity-50" style={{ background: "var(--gradient-gold)" }} />
             <img
-              src={productImage(null)}
-              alt="Abdulrahman signature perfume bottle"
-              className="mx-auto w-full max-w-md rounded-2xl shadow-[var(--shadow-elegant)]"
+              src={heroImg}
+              alt="Abdulrahman signature perfume bottle on dark marble with oud wood and rose petals"
+              className="mx-auto w-full max-w-md rounded-2xl shadow-[var(--shadow-elegant)] aspect-square object-cover"
               width={1024}
               height={1024}
+              fetchPriority="high"
             />
           </div>
         </div>
