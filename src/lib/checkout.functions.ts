@@ -164,15 +164,47 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
     }
 
 
+    const countryCode = ((): string => {
+      const c = (data.shipping_country || "").trim().toUpperCase();
+      if (c === "AUSTRALIA" || c === "AU" || c === "AUS") return "AU";
+      if (c === "NEW ZEALAND" || c === "NZ") return "NZ";
+      if (c.length === 2) return c;
+      return "AU";
+    })();
+
+    const address = {
+      line1: data.shipping_line1,
+      line2: data.shipping_line2 || undefined,
+      city: data.shipping_city,
+      state: data.shipping_state,
+      postal_code: data.shipping_postcode,
+      country: countryCode,
+    };
+
+    // Pre-create a Stripe Customer with name + shipping pre-filled so the
+    // checkout page shows their details instead of empty fields.
+    const customer = await stripe.customers.create({
+      email: data.email,
+      name: data.full_name,
+      phone: data.phone || undefined,
+      address,
+      shipping: { name: data.full_name, phone: data.phone || undefined, address },
+      metadata: { order_id: order.id },
+    });
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       payment_method_types: ["card"],
-      customer_email: data.email,
+      customer: customer.id,
+      customer_update: { name: "auto", address: "auto", shipping: "auto" },
       line_items,
       metadata: { order_id: order.id, discount_percent: String(discountPercent) },
+      payment_intent_data: {
+        shipping: { name: data.full_name, phone: data.phone || undefined, address },
+      },
       success_url: `${data.origin}/checkout/success/${order.id}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${data.origin}/checkout?cancelled=1`,
-      shipping_address_collection: { allowed_countries: ["AU"] },
+      billing_address_collection: "auto",
     });
 
     return { url: session.url };
