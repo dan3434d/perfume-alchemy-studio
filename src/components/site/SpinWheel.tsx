@@ -26,8 +26,9 @@ export function SpinWheel() {
   useEffect(() => {
     if (triggered.current) return;
     triggered.current = true;
-    if (!spinShown() && !discount) {
-      const t = setTimeout(() => setOpen(true), 2500);
+    const popupShown = typeof window !== "undefined" && localStorage.getItem("abdul.buy2.popup.shown") === "1";
+    if (!spinShown() && !discount && !popupShown) {
+      const t = setTimeout(() => setOpen(true), 10000);
       return () => clearTimeout(t);
     }
   }, [discount]);
