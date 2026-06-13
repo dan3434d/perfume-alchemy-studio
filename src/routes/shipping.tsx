@@ -1,6 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/shipping")({
-  head: () => ({ meta: [{ title: "Shipping — Abdulrahman Perfumes" }] }),
+  head: () => ({
+    meta: [
+      { title: "Shipping Policy — Abdulrahman Perfumes" },
+      { name: "description", content: "Tracked Australia-wide delivery in 2–5 business days. Free metro shipping over $50 AUD, same-day dispatch on orders before 2pm AEST." },
+      { property: "og:title", content: "Shipping Policy — Abdulrahman Perfumes" },
+      { property: "og:description", content: "Fast tracked shipping across Australia from our Sydney warehouse." },
+      { property: "og:url", content: "https://www.abdulrahmanperfumes.com.au/shipping" },
+    ],
+    links: [{ rel: "canonical", href: "https://www.abdulrahmanperfumes.com.au/shipping" }],
+  }),
   component: () => (
     <div className="container-px max-w-2xl mx-auto py-16">
       <h1 className="font-display text-3xl">Shipping Policy</h1>

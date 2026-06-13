@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,18 +10,79 @@ import { Heart, ShoppingBag, Truck, RotateCcw, Lock, Minus, Plus, Star, Check, S
 import { toast } from "sonner";
 import { trackView } from "@/hooks/useBrowsingHistory";
 
+const SITE = "https://www.abdulrahmanperfumes.com.au";
+
 export const Route = createFileRoute("/shop/$slug")({
-  head: ({ params }) => ({
-    meta: [
-      { title: `${params.slug.replace(/-/g, " ").replace(/\d+$/, "").trim()} — Abdulrahman Perfumes` },
-      { name: "description", content: "Premium inspired perfume from Abdulrahman Perfumes — designer scent for a fraction of the price." },
-    ],
-  }),
+  loader: async ({ params }) => {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*, categories(name,slug)")
+      .eq("slug", params.slug)
+      .eq("is_active", true)
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) throw notFound();
+    return data as any;
+  },
+  head: ({ params, loaderData }) => {
+    const p: any = loaderData;
+    const url = `${SITE}/shop/${params.slug}`;
+    if (!p) {
+      return {
+        meta: [{ title: "Product — Abdulrahman Perfumes" }],
+        links: [{ rel: "canonical", href: url }],
+      };
+    }
+    const brand = p.inspired_by_brand ? `${p.inspired_by_brand} ${p.inspired_by_product ?? ""}`.trim() : null;
+    const title = `${p.name}${brand ? ` — inspired by ${brand}` : ""} | Abdulrahman Perfumes`;
+    const desc = (p.description || p.long_description || `${p.name} — a UAE-blended 50ml eau de parfum${brand ? ` inspired by ${brand}` : ""}. Shipped from Sydney across Australia.`).slice(0, 300);
+    const img = p.image_url?.startsWith("http") ? p.image_url : (p.image_url ? `${SITE}${p.image_url.startsWith("/") ? "" : "/"}${p.image_url}` : null);
+    return {
+      meta: [
+        { title },
+        { name: "description", content: desc },
+        { property: "og:title", content: title },
+        { property: "og:description", content: desc },
+        { property: "og:url", content: url },
+        { property: "og:type", content: "product" },
+        ...(img ? [{ property: "og:image", content: img }, { name: "twitter:image", content: img }] : []),
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: p.name,
+            description: desc,
+            image: img ? [img] : undefined,
+            brand: { "@type": "Brand", name: "Abdulrahman Perfumes" },
+            ...(brand ? { isRelatedTo: { "@type": "Product", name: brand } } : {}),
+            sku: p.id,
+            category: p.categories?.name,
+            offers: {
+              "@type": "Offer",
+              url,
+              priceCurrency: "AUD",
+              price: String(p.price),
+              availability: p.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+              itemCondition: "https://schema.org/NewCondition",
+            },
+            aggregateRating: p.review_count
+              ? { "@type": "AggregateRating", ratingValue: String(p.rating ?? 4.8), reviewCount: String(p.review_count) }
+              : undefined,
+          }),
+        },
+      ],
+    };
+  },
   component: ProductPage,
 });
 
 function ProductPage() {
   const { slug } = Route.useParams();
+  const initial = Route.useLoaderData();
   const navigate = useNavigate();
   const { add } = useCart();
   const { has, toggle } = useWishlist();
@@ -29,6 +90,7 @@ function ProductPage() {
 
   const product = useQuery({
     queryKey: ["product", slug],
+    initialData: initial,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
@@ -56,7 +118,7 @@ function ProductPage() {
     },
   });
 
-  if (product.isLoading) {
+  if (product.isLoading && !product.data) {
     return (
       <div className="container-px max-w-7xl mx-auto py-20">
         <div className="grid lg:grid-cols-2 gap-10">
@@ -79,6 +141,7 @@ function ProductPage() {
       </div>
     );
   }
+
 
   const p = product.data;
   useEffect(() => {
@@ -174,7 +237,7 @@ function ProductPage() {
 
           {/* Fragrance notes */}
           <div className="rounded-2xl border border-border p-5 bg-[var(--cream)]/30">
-            <h3 className="font-semibold text-sm uppercase tracking-wider mb-3">Fragrance notes</h3>
+            <h2 className="font-semibold text-sm uppercase tracking-wider mb-3">Fragrance notes</h2>
             <div className="grid grid-cols-3 gap-4 text-sm">
               <NoteCol label="Top" notes={p.notes_top} />
               <NoteCol label="Heart" notes={p.notes_heart} />
@@ -184,7 +247,7 @@ function ProductPage() {
 
           {/* Size */}
           <div>
-            <h3 className="text-sm font-semibold mb-2">Size</h3>
+            <h2 className="text-sm font-semibold mb-2">Size</h2>
             <div className="inline-flex rounded-full border border-foreground bg-foreground px-4 py-2 text-sm text-background">
               50ml
             </div>
@@ -192,10 +255,10 @@ function ProductPage() {
 
           {/* Qty + Buttons */}
           <div className="flex flex-wrap items-center gap-3">
-            <div className="inline-flex items-center rounded-full border border-border overflow-hidden">
-              <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="p-3 hover:bg-secondary"><Minus className="w-4 h-4" /></button>
-              <span className="w-10 text-center text-sm font-medium">{qty}</span>
-              <button onClick={() => setQty((q) => q + 1)} className="p-3 hover:bg-secondary"><Plus className="w-4 h-4" /></button>
+            <div className="inline-flex items-center rounded-full border border-border overflow-hidden" role="group" aria-label="Quantity">
+              <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Decrease quantity" className="p-3 hover:bg-secondary"><Minus className="w-4 h-4" /></button>
+              <span className="w-10 text-center text-sm font-medium" aria-live="polite">{qty}</span>
+              <button type="button" onClick={() => setQty((q) => q + 1)} aria-label="Increase quantity" className="p-3 hover:bg-secondary"><Plus className="w-4 h-4" /></button>
             </div>
             <button onClick={doAdd} className="flex-1 min-w-[160px] inline-flex items-center justify-center gap-2 rounded-full border-2 border-foreground bg-background text-foreground font-semibold py-3 hover:bg-foreground hover:text-background transition">
               <ShoppingBag className="w-4 h-4" /> Add to cart

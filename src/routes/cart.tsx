@@ -57,10 +57,10 @@ function CartPage() {
                     <div className="text-sm text-muted-foreground mt-1">{formatAUD(l.price)}</div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="inline-flex items-center rounded-full border border-border">
-                      <button onClick={() => updateQty(l.product_id, l.quantity - 1)} className="p-2 hover:bg-secondary"><Minus className="w-3.5 h-3.5" /></button>
-                      <span className="w-8 text-center text-sm">{l.quantity}</span>
-                      <button onClick={() => updateQty(l.product_id, l.quantity + 1)} className="p-2 hover:bg-secondary"><Plus className="w-3.5 h-3.5" /></button>
+                    <div className="inline-flex items-center rounded-full border border-border" role="group" aria-label={`Quantity for ${l.name}`}>
+                      <button type="button" onClick={() => updateQty(l.product_id, l.quantity - 1)} aria-label={`Decrease quantity of ${l.name}`} className="p-2 hover:bg-secondary"><Minus className="w-3.5 h-3.5" /></button>
+                      <span className="w-8 text-center text-sm" aria-live="polite">{l.quantity}</span>
+                      <button type="button" onClick={() => updateQty(l.product_id, l.quantity + 1)} aria-label={`Increase quantity of ${l.name}`} className="p-2 hover:bg-secondary"><Plus className="w-3.5 h-3.5" /></button>
                     </div>
                     <div className="w-20 text-right font-semibold">{formatAUD(l.price * l.quantity)}</div>
                     <button onClick={() => remove(l.product_id)} aria-label="Remove" className="p-2 text-muted-foreground hover:text-destructive">

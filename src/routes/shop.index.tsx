@@ -16,9 +16,14 @@ export const Route = createFileRoute("/shop/")({
   }),
   head: () => ({
     meta: [
-      { title: "Shop — Abdulrahman Perfumes" },
-      { name: "description", content: "Browse our complete inspired perfume collection — find your favourite designer scent at a fraction of the price." },
+      { title: "Shop all perfumes — Abdulrahman Perfumes" },
+      { name: "description", content: "Browse the complete Abdulrahman collection — designer-inspired oud, amber, fresh and floral fragrances. Every 50ml eau de parfum is $41.50. Buy 2, save 15%." },
+      { property: "og:title", content: "Shop all perfumes — Abdulrahman Perfumes" },
+      { property: "og:description", content: "Designer-inspired UAE-blended fragrances. Filter by brand, category and price. Free metro shipping over $50." },
+      { property: "og:url", content: "https://www.abdulrahmanperfumes.com.au/shop" },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://www.abdulrahmanperfumes.com.au/shop" }],
   }),
   component: Shop,
 });
@@ -156,9 +161,12 @@ function Shop() {
           <Link to="/shop" className="inline-block mt-4 text-[var(--amber-deep)] hover:underline">Clear filters</Link>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-          {filtered.map((p) => <ProductCard key={p.id} p={p} />)}
-        </div>
+        <section aria-labelledby="products-heading">
+          <h2 id="products-heading" className="sr-only">Products</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+            {filtered.map((p) => <ProductCard key={p.id} p={p} />)}
+          </div>
+        </section>
       )}
     </div>
   );

@@ -336,8 +336,9 @@ function Home() {
         <h2 className="font-display text-3xl sm:text-4xl">Join the inner circle</h2>
         <p className="text-muted-foreground mt-3">Early access to new fragrances and members-only offers.</p>
         <form className="mt-6 flex flex-col sm:flex-row gap-2 max-w-md mx-auto" onSubmit={(e) => { e.preventDefault(); }}>
-          <input type="email" required placeholder="your@email.com" className="flex-1 rounded-full px-5 py-3 bg-secondary border border-border focus:outline-none focus:ring-2 focus:ring-ring text-sm" />
-          <button className="btn-gold rounded-full px-6 py-3 text-sm font-semibold">Subscribe</button>
+          <label htmlFor="newsletter-email" className="sr-only">Email address</label>
+          <input id="newsletter-email" name="email" type="email" required placeholder="your@email.com" aria-label="Email address for newsletter" autoComplete="email" className="flex-1 rounded-full px-5 py-3 bg-secondary border border-border focus:outline-none focus:ring-2 focus:ring-ring text-sm" />
+          <button type="submit" aria-label="Subscribe to newsletter" className="btn-gold rounded-full px-6 py-3 text-sm font-semibold">Subscribe</button>
         </form>
       </section>
     </>
