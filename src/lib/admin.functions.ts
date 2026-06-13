@@ -153,5 +153,86 @@ export const createManualOrder = createServerFn({ method: "POST" })
       .insert(orderLines.map((l) => ({ ...l, order_id: order.id })));
     if (iErr) throw iErr;
 
+    // Notify customer
+    const { sendTransactionalEmail } = await import("@/lib/email/send.server");
+    await sendTransactionalEmail({
+      templateName: "order-confirmation",
+      recipientEmail: data.email,
+      idempotencyKey: `order-confirm-${order.id}`,
+      templateData: {
+        orderNumber: order.order_number,
+        customerName: data.full_name,
+        total: new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(total),
+        items: orderLines.map((l) => ({
+          name: l.product_name,
+          quantity: l.quantity,
+          price: new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(l.line_total),
+        })),
+      },
+    });
+
     return { id: order.id, order_number: order.order_number };
   });
+
+const UpdateOrderSchema = z.object({
+  order_id: z.string().uuid(),
+  status: z.enum(["pending", "paid", "processing", "shipped", "delivered", "cancelled", "refunded"]),
+  tracking_number: z.string().nullable().optional(),
+  tracking_carrier: z.string().nullable().optional(),
+});
+
+export const updateOrderStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => UpdateOrderSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: order, error: getErr } = await supabaseAdmin
+      .from("orders")
+      .select("id,order_number,email,full_name,status,tracking_number,tracking_carrier,shipped_at")
+      .eq("id", data.order_id)
+      .single<any>();
+    if (getErr) throw getErr;
+
+    const patch: Record<string, any> = { status: data.status };
+    if (data.tracking_number !== undefined) patch.tracking_number = data.tracking_number || null;
+    if (data.tracking_carrier !== undefined) patch.tracking_carrier = data.tracking_carrier || null;
+    if (data.status === "shipped" && !order.shipped_at) patch.shipped_at = new Date().toISOString();
+
+    const { error: updErr } = await (supabaseAdmin.from("orders") as any).update(patch).eq("id", data.order_id);
+    if (updErr) throw updErr;
+
+
+    const { sendTransactionalEmail } = await import("@/lib/email/send.server");
+    const carrier = data.tracking_carrier ?? order.tracking_carrier ?? "";
+    const tracking = data.tracking_number ?? order.tracking_number ?? "";
+
+    if (data.status === "shipped" && tracking) {
+      await sendTransactionalEmail({
+        templateName: "order-shipped",
+        recipientEmail: order.email,
+        idempotencyKey: `order-shipped-${order.id}-${tracking}`,
+        templateData: {
+          orderNumber: order.order_number,
+          customerName: order.full_name,
+          carrier: carrier || "your carrier",
+          trackingNumber: tracking,
+        },
+      });
+    } else if (data.status !== order.status) {
+      await sendTransactionalEmail({
+        templateName: "order-status",
+        recipientEmail: order.email,
+        idempotencyKey: `order-status-${order.id}-${data.status}`,
+        templateData: {
+          orderNumber: order.order_number,
+          customerName: order.full_name,
+          status: data.status,
+        },
+      });
+    }
+
+    return { ok: true };
+  });
+

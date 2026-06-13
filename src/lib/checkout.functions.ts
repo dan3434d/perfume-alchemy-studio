@@ -170,6 +170,12 @@ export const confirmStripeCheckout = createServerFn({ method: "POST" })
     const paid = session.payment_status === "paid";
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: existing } = await supabaseAdmin
+      .from("orders")
+      .select("status,payment_status,order_number,email,full_name,total")
+      .eq("id", data.order_id)
+      .single();
+
     await supabaseAdmin
       .from("orders")
       .update({
@@ -178,5 +184,32 @@ export const confirmStripeCheckout = createServerFn({ method: "POST" })
       })
       .eq("id", data.order_id);
 
+    // Send confirmation only on first transition to paid
+    if (paid && existing && existing.payment_status !== "paid") {
+      const { data: items } = await supabaseAdmin
+        .from("order_items")
+        .select("product_name,quantity,line_total")
+        .eq("order_id", data.order_id);
+
+      const fmt = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" });
+      const { sendTransactionalEmail } = await import("@/lib/email/send.server");
+      await sendTransactionalEmail({
+        templateName: "order-confirmation",
+        recipientEmail: existing.email,
+        idempotencyKey: `order-confirm-${data.order_id}`,
+        templateData: {
+          orderNumber: existing.order_number,
+          customerName: existing.full_name,
+          total: fmt.format(Number(existing.total)),
+          items: (items || []).map((i: any) => ({
+            name: i.product_name,
+            quantity: i.quantity,
+            price: fmt.format(Number(i.line_total)),
+          })),
+        },
+      });
+    }
+
     return { paid };
   });
+

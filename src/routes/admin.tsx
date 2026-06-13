@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { formatAUD } from "@/lib/format";
 import { toast } from "sonner";
-import { listAdminUsers, setUserRole, createManualOrder } from "@/lib/admin.functions";
+import { listAdminUsers, setUserRole, createManualOrder, updateOrderStatus } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — Abdulrahman Perfumes" }] }),
@@ -127,6 +127,7 @@ function Products() {
 }
 
 function Orders() {
+  const updateFn = useServerFn(updateOrderStatus);
   const q = useQuery({
     queryKey: ["admin-orders"],
     queryFn: async () => {
@@ -135,36 +136,81 @@ function Orders() {
     },
   });
 
-  const setStatus = async (id: string, status: "pending" | "paid" | "processing" | "shipped" | "delivered" | "cancelled" | "refunded") => {
-    const { error } = await supabase.from("orders").update({ status }).eq("id", id);
-    if (error) toast.error(error.message); else { toast.success("Status updated"); q.refetch(); }
+  const save = async (
+    id: string,
+    patch: { status: any; tracking_number?: string | null; tracking_carrier?: string | null },
+  ) => {
+    try {
+      await updateFn({ data: { order_id: id, ...patch } });
+      toast.success("Order updated");
+      q.refetch();
+    } catch (e: any) {
+      toast.error(e?.message || "Update failed");
+    }
   };
 
   return (
-    <div className="card-elevated overflow-hidden">
-      <table className="w-full text-sm">
-        <thead className="bg-secondary text-left">
-          <tr><th className="p-3">Order #</th><th className="p-3">Customer</th><th className="p-3">Total</th><th className="p-3">Status</th><th className="p-3">Date</th></tr>
-        </thead>
-        <tbody>
-          {q.data?.map((o: any) => (
-            <tr key={o.id} className="border-t border-border">
-              <td className="p-3 font-mono text-xs">{o.order_number}</td>
-              <td className="p-3">{o.full_name}<div className="text-xs text-muted-foreground">{o.email}</div></td>
-              <td className="p-3">{formatAUD(o.total)}</td>
-              <td className="p-3">
-                <select defaultValue={o.status} onChange={(e) => setStatus(o.id, e.target.value as any)} className="rounded-md border border-border bg-background px-2 py-1 text-xs">
-                  {["pending", "paid", "processing", "shipped", "delivered", "cancelled", "refunded"].map((s) => <option key={s}>{s}</option>)}
-                </select>
-              </td>
-              <td className="p-3 text-xs text-muted-foreground">{new Date(o.created_at).toLocaleDateString("en-AU")}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="space-y-3">
+      {q.data?.map((o: any) => <AdminOrderRow key={o.id} order={o} onSave={save} />)}
     </div>
   );
 }
+
+function AdminOrderRow({ order, onSave }: { order: any; onSave: (id: string, p: any) => void }) {
+  const [status, setStatus] = useState<string>(order.status);
+  const [tracking, setTracking] = useState<string>(order.tracking_number || "");
+  const [carrier, setCarrier] = useState<string>(order.tracking_carrier || "Australia Post");
+
+  const dirty =
+    status !== order.status ||
+    tracking !== (order.tracking_number || "") ||
+    carrier !== (order.tracking_carrier || "Australia Post");
+
+  return (
+    <div className="card-elevated p-4 sm:p-5">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <div className="font-mono text-xs text-muted-foreground">{order.order_number}</div>
+          <div className="font-medium text-sm mt-1">{order.full_name}</div>
+          <div className="text-xs text-muted-foreground">{order.email}</div>
+        </div>
+        <div className="text-right">
+          <div className="font-display text-lg">{formatAUD(order.total)}</div>
+          <div className="text-xs text-muted-foreground">{new Date(order.created_at).toLocaleDateString("en-AU")}</div>
+        </div>
+      </div>
+      <div className="mt-3 grid sm:grid-cols-[180px_1fr_180px_auto] gap-2 items-end">
+        <label className="text-xs text-muted-foreground">Status
+          <select value={status} onChange={(e) => setStatus(e.target.value)} className="mt-1 w-full rounded-md border border-border bg-background px-2 py-1.5 text-sm">
+            {["pending", "paid", "processing", "shipped", "delivered", "cancelled", "refunded"].map((s) => <option key={s}>{s}</option>)}
+          </select>
+        </label>
+        {status === "shipped" ? (
+          <>
+            <label className="text-xs text-muted-foreground">Tracking number
+              <input value={tracking} onChange={(e) => setTracking(e.target.value)} placeholder="e.g. AP12345678AU" className="mt-1 w-full rounded-md border border-border bg-background px-2 py-1.5 text-sm" />
+            </label>
+            <label className="text-xs text-muted-foreground">Carrier
+              <input value={carrier} onChange={(e) => setCarrier(e.target.value)} className="mt-1 w-full rounded-md border border-border bg-background px-2 py-1.5 text-sm" />
+            </label>
+          </>
+        ) : (
+          <div className="col-span-2 text-xs text-muted-foreground">
+            {order.tracking_number ? <>Tracking on file: <span className="font-mono">{order.tracking_carrier} — {order.tracking_number}</span></> : "No tracking yet"}
+          </div>
+        )}
+        <button
+          disabled={!dirty}
+          onClick={() => onSave(order.id, { status, tracking_number: tracking || null, tracking_carrier: carrier || null })}
+          className="rounded-md bg-[var(--amber-deep)] text-white px-4 py-2 text-sm font-medium disabled:opacity-40"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  );
+}
+
 
 function Users({ currentUserId }: { currentUserId: string }) {
   const listFn = useServerFn(listAdminUsers);
