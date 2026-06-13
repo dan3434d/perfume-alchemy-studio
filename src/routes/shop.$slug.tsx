@@ -237,7 +237,7 @@ function ProductPage() {
 
           {/* Fragrance notes */}
           <div className="rounded-2xl border border-border p-5 bg-[var(--cream)]/30">
-            <h3 className="font-semibold text-sm uppercase tracking-wider mb-3">Fragrance notes</h3>
+            <h2 className="font-semibold text-sm uppercase tracking-wider mb-3">Fragrance notes</h2>
             <div className="grid grid-cols-3 gap-4 text-sm">
               <NoteCol label="Top" notes={p.notes_top} />
               <NoteCol label="Heart" notes={p.notes_heart} />
@@ -247,7 +247,7 @@ function ProductPage() {
 
           {/* Size */}
           <div>
-            <h3 className="text-sm font-semibold mb-2">Size</h3>
+            <h2 className="text-sm font-semibold mb-2">Size</h2>
             <div className="inline-flex rounded-full border border-foreground bg-foreground px-4 py-2 text-sm text-background">
               50ml
             </div>
@@ -255,10 +255,10 @@ function ProductPage() {
 
           {/* Qty + Buttons */}
           <div className="flex flex-wrap items-center gap-3">
-            <div className="inline-flex items-center rounded-full border border-border overflow-hidden">
-              <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="p-3 hover:bg-secondary"><Minus className="w-4 h-4" /></button>
-              <span className="w-10 text-center text-sm font-medium">{qty}</span>
-              <button onClick={() => setQty((q) => q + 1)} className="p-3 hover:bg-secondary"><Plus className="w-4 h-4" /></button>
+            <div className="inline-flex items-center rounded-full border border-border overflow-hidden" role="group" aria-label="Quantity">
+              <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Decrease quantity" className="p-3 hover:bg-secondary"><Minus className="w-4 h-4" /></button>
+              <span className="w-10 text-center text-sm font-medium" aria-live="polite">{qty}</span>
+              <button type="button" onClick={() => setQty((q) => q + 1)} aria-label="Increase quantity" className="p-3 hover:bg-secondary"><Plus className="w-4 h-4" /></button>
             </div>
             <button onClick={doAdd} className="flex-1 min-w-[160px] inline-flex items-center justify-center gap-2 rounded-full border-2 border-foreground bg-background text-foreground font-semibold py-3 hover:bg-foreground hover:text-background transition">
               <ShoppingBag className="w-4 h-4" /> Add to cart
