@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
+import { ReviewsCarousel } from "@/components/site/ReviewsCarousel";
+import { SocialFeed } from "@/components/site/SocialFeed";
 import { Truck, Lock, Sparkles, MessageCircle, ArrowRight, Star, MapPin, Droplets, Award } from "lucide-react";
 import heroImg from "@/assets/hero-perfume.jpg";
 import blendingImg from "@/assets/craft-blending.jpg";
@@ -211,24 +213,23 @@ function Home() {
         </div>
       </section>
 
-      {/* TESTIMONIALS */}
+      {/* SLIDING TESTIMONIALS */}
+      <ReviewsCarousel />
+
+      {/* SOCIAL FEED */}
+      <SocialFeed />
+
+      {/* SCENT DISCOVERY CTA */}
       <section className="section container-px max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Loved by</span>
-          <h2 className="font-display text-3xl sm:text-4xl mt-2">What customers say</h2>
-        </div>
-        <div className="grid md:grid-cols-3 gap-6">
-          {[
-            { n: "Aaliyah K.", c: "Sydney", b: "Midnight Oud is intoxicating. Lasts the whole day on my skin." },
-            { n: "Daniel R.", c: "Melbourne", b: "Eros Elixir gets me compliments every single time I wear it." },
-            { n: "Sara H.", c: "Brisbane", b: "Beautifully packaged and the scent is honestly luxurious." },
-          ].map((r) => (
-            <div key={r.n} className="card-elevated p-6 rounded-2xl border border-border bg-background">
-              <div className="flex gap-0.5 mb-3">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className="w-4 h-4 fill-[var(--gold)] text-[var(--gold)]" />)}</div>
-              <p className="text-sm leading-relaxed">"{r.b}"</p>
-              <div className="mt-4 text-xs text-muted-foreground">{r.n} · {r.c}</div>
-            </div>
-          ))}
+        <div className="rounded-3xl p-10 md:p-14 text-center relative overflow-hidden" style={{ background: "var(--gradient-warm)" }}>
+          <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">New</span>
+          <h2 className="font-display text-3xl sm:text-4xl mt-2">Not sure where to start?</h2>
+          <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
+            Take our 4-question scent quiz and we'll match you with your perfect fragrance from over 40 UAE-blended scents.
+          </p>
+          <Link to="/scent-discovery" className="btn-gold inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold mt-6">
+            Take the scent quiz <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </section>
 
@@ -284,6 +285,51 @@ function Home() {
           </Link>
         </div>
       </section>
+
+      {/* HANDPICKED FRAGRANCE */}
+      {featured.data && featured.data[0] && (
+        <section className="section container-px max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-10 items-center card-elevated rounded-3xl border border-border overflow-hidden bg-background">
+            <div className="aspect-square lg:aspect-auto lg:h-full bg-[var(--cream)]/40 relative">
+              <img
+                src={featured.data[0].image_url || ""}
+                alt={featured.data[0].name}
+                loading="lazy"
+                className="w-full h-full object-cover"
+              />
+              <span className="absolute top-4 left-4 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] bg-[var(--amber-deep)] text-background px-3 py-1.5 rounded-full font-semibold">
+                <Sparkles className="w-3 h-3" /> Handpicked
+              </span>
+            </div>
+            <div className="p-8 lg:p-12">
+              <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Editor's pick of the week</span>
+              <h2 className="font-display text-3xl sm:text-4xl mt-2">{featured.data[0].name}</h2>
+              {featured.data[0].inspired_by_brand && (
+                <p className="text-sm text-muted-foreground mt-2 italic">
+                  Inspired by {featured.data[0].inspired_by_brand}
+                  {featured.data[0].inspired_by_product ? ` ${featured.data[0].inspired_by_product}` : ""}
+                </p>
+              )}
+              <p className="text-muted-foreground mt-5 leading-relaxed">
+                Our perfumer's pick this week — chosen for its remarkable longevity, balanced composition and unmistakable Abdulrahman signature. A bottle worth keeping on your dresser.
+              </p>
+              <div className="flex items-baseline gap-3 mt-6">
+                <span className="font-display text-3xl text-[var(--amber-deep)]">${Number(featured.data[0].price).toFixed(2)}</span>
+                {featured.data[0].compare_at_price && Number(featured.data[0].compare_at_price) > Number(featured.data[0].price) && (
+                  <span className="text-sm text-muted-foreground line-through">${Number(featured.data[0].compare_at_price).toFixed(2)}</span>
+                )}
+              </div>
+              <Link
+                to="/shop/$slug"
+                params={{ slug: featured.data[0].slug }}
+                className="btn-gold inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold mt-6"
+              >
+                Shop this scent <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* NEWSLETTER */}
       <section className="section container-px max-w-3xl mx-auto text-center">

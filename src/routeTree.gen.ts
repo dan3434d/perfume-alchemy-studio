@@ -13,6 +13,7 @@ import { Route as WholesaleRouteImport } from './routes/wholesale'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ShippingRouteImport } from './routes/shipping'
+import { Route as ScentDiscoveryRouteImport } from './routes/scent-discovery'
 import { Route as ReturnsRouteImport } from './routes/returns'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -55,6 +56,11 @@ const TermsRoute = TermsRouteImport.update({
 const ShippingRoute = ShippingRouteImport.update({
   id: '/shipping',
   path: '/shipping',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScentDiscoveryRoute = ScentDiscoveryRouteImport.update({
+  id: '/scent-discovery',
+  path: '/scent-discovery',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReturnsRoute = ReturnsRouteImport.update({
@@ -189,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/returns': typeof ReturnsRoute
+  '/scent-discovery': typeof ScentDiscoveryRoute
   '/shipping': typeof ShippingRoute
   '/terms': typeof TermsRoute
   '/unsubscribe': typeof UnsubscribeRoute
@@ -218,6 +225,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/returns': typeof ReturnsRoute
+  '/scent-discovery': typeof ScentDiscoveryRoute
   '/shipping': typeof ShippingRoute
   '/terms': typeof TermsRoute
   '/unsubscribe': typeof UnsubscribeRoute
@@ -248,6 +256,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/returns': typeof ReturnsRoute
+  '/scent-discovery': typeof ScentDiscoveryRoute
   '/shipping': typeof ShippingRoute
   '/terms': typeof TermsRoute
   '/unsubscribe': typeof UnsubscribeRoute
@@ -279,6 +288,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/returns'
+    | '/scent-discovery'
     | '/shipping'
     | '/terms'
     | '/unsubscribe'
@@ -308,6 +318,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/returns'
+    | '/scent-discovery'
     | '/shipping'
     | '/terms'
     | '/unsubscribe'
@@ -337,6 +348,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/returns'
+    | '/scent-discovery'
     | '/shipping'
     | '/terms'
     | '/unsubscribe'
@@ -367,6 +379,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ReturnsRoute: typeof ReturnsRoute
+  ScentDiscoveryRoute: typeof ScentDiscoveryRoute
   ShippingRoute: typeof ShippingRoute
   TermsRoute: typeof TermsRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
@@ -412,6 +425,13 @@ declare module '@tanstack/react-router' {
       path: '/shipping'
       fullPath: '/shipping'
       preLoaderRoute: typeof ShippingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scent-discovery': {
+      id: '/scent-discovery'
+      path: '/scent-discovery'
+      fullPath: '/scent-discovery'
+      preLoaderRoute: typeof ScentDiscoveryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/returns': {
@@ -602,6 +622,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ReturnsRoute: ReturnsRoute,
+  ScentDiscoveryRoute: ScentDiscoveryRoute,
   ShippingRoute: ShippingRoute,
   TermsRoute: TermsRoute,
   UnsubscribeRoute: UnsubscribeRoute,

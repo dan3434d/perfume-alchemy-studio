@@ -59,6 +59,53 @@ export async function syncPaidStripeOrder(orderId: string, sessionId: string) {
       ? session.payment_intent
       : (session.payment_intent as any)?.id ?? null;
 
+  // GUEST AUTO-ACCOUNT: if this order has no user_id, create or find a user
+  // by email and link the order to that account so the customer can sign in
+  // and see their order history.
+  let linkedUserId: string | null = existing.user_id ?? null;
+  if (!linkedUserId && existing.email) {
+    try {
+      // Look up existing profile by email
+      const { data: profile } = await supabaseAdmin
+        .from("profiles")
+        .select("id")
+        .eq("email", existing.email)
+        .maybeSingle();
+      if (profile?.id) {
+        linkedUserId = profile.id;
+      } else {
+        // Create a confirmed auth user with a random password
+        const randomPwd =
+          Math.random().toString(36).slice(2) +
+          Math.random().toString(36).slice(2) +
+          "A1!";
+        const { data: created, error: createErr } =
+          await supabaseAdmin.auth.admin.createUser({
+            email: existing.email,
+            password: randomPwd,
+            email_confirm: true,
+            user_metadata: { full_name: existing.full_name },
+          });
+        if (!createErr && created?.user?.id) {
+          linkedUserId = created.user.id;
+        }
+      }
+      // Best-effort: trigger a password-recovery email so the user can sign in
+      if (linkedUserId) {
+        try {
+          await supabaseAdmin.auth.admin.generateLink({
+            type: "recovery",
+            email: existing.email,
+          });
+        } catch {
+          /* non-fatal */
+        }
+      }
+    } catch (e) {
+      console.error("guest auto-account failed", e);
+    }
+  }
+
   await supabaseAdmin
     .from("orders")
     .update({
@@ -66,6 +113,7 @@ export async function syncPaidStripeOrder(orderId: string, sessionId: string) {
       status: paid ? "paid" : "pending",
       stripe_session_id: session.id,
       stripe_payment_intent: paymentIntentId,
+      ...(linkedUserId && !existing.user_id ? { user_id: linkedUserId } : {}),
     })
     .eq("id", orderId);
 

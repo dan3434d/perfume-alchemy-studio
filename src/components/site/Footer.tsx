@@ -14,6 +14,7 @@ export function Footer() {
           <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Shop</h4>
           <ul className="mt-3 space-y-2 text-sm">
             <li><Link to="/shop" className="hover:text-[var(--amber-deep)]">All Perfumes</Link></li>
+            <li><Link to="/scent-discovery" className="hover:text-[var(--amber-deep)]">Scent Discovery Quiz</Link></li>
             <li><Link to="/shop" search={{ category: "oud-perfumes" }} className="hover:text-[var(--amber-deep)]">Oud Collection</Link></li>
             <li><Link to="/shop" search={{ category: "smoky-scents" }} className="hover:text-[var(--amber-deep)]">Smoky Scents</Link></li>
             <li><Link to="/shop" search={{ category: "fresh-scents" }} className="hover:text-[var(--amber-deep)]">Fresh Scents</Link></li>
