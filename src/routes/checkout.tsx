@@ -83,6 +83,7 @@ function Checkout() {
     if (lines.length === 0) { toast.error("Your cart is empty"); return; }
     setSubmitting(true);
     try {
+      const { data: userData } = await supabase.auth.getUser();
       const { url } = await startStripe({
         data: {
         email: form.email,
@@ -101,6 +102,7 @@ function Checkout() {
           })),
           discount_code: freeShip ? "FREESHIPPING" : (discount?.code ?? null),
           discount_percent: freeShip ? 0 : (discount?.percent ?? 0),
+          user_id: userData.user?.id ?? null,
           origin: window.location.origin,
         },
       });

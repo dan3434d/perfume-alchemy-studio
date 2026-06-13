@@ -27,6 +27,7 @@ const CheckoutSchema = z.object({
   lines: z.array(LineSchema).min(1),
   discount_code: z.string().nullable().optional(),
   discount_percent: z.number().min(0).max(100).default(0),
+  user_id: z.string().uuid().nullable().optional(),
   origin: z.string().url(),
 });
 
@@ -98,7 +99,7 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
     const { data: order, error: orderError } = await supabaseAdmin
       .from("orders")
       .insert({
-        user_id: null,
+        user_id: data.user_id ?? null,
         email: data.email,
         full_name: data.full_name,
         phone: data.phone || null,
