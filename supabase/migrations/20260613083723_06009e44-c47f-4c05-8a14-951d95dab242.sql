@@ -1,0 +1,1 @@
+UPDATE public.products SET price = 41.50 WHERE is_active = true;
