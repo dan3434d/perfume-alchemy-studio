@@ -70,23 +70,30 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
 
     const subtotal = +orderLines.reduce((sum, line) => sum + line.price * line.quantity, 0).toFixed(2);
     const totalQty = orderLines.reduce((sum, line) => sum + line.quantity, 0);
-    const codePercent = data.discount_code === "WELCOME5" ? 5 : data.discount_percent || 0;
+    const submittedCode = (data.discount_code || "").toUpperCase();
+    const isFreeShipping = submittedCode === "FREESHIPPING";
+    const codePercent = submittedCode === "WELCOME5" ? 5 : (isFreeShipping ? 0 : (data.discount_percent || 0));
     const discountPercent = computeBulkDiscountPercent(totalQty, codePercent);
     const discountAmount = +(subtotal * discountPercent / 100).toFixed(2);
     const subtotalAfterDiscount = +(subtotal - discountAmount).toFixed(2);
-    const ship = computeShipping(subtotalAfterDiscount, {
+    const rawShip = computeShipping(subtotalAfterDiscount, {
       state: data.shipping_state,
       postcode: data.shipping_postcode,
       country: data.shipping_country,
     });
+    const ship = isFreeShipping
+      ? { ...rawShip, base: 0, handling: 0, total: 0, freeShipping: true }
+      : rawShip;
     const shipping = ship.total;
     const total = +(subtotalAfterDiscount + shipping).toFixed(2);
 
-    const discountCode = discountPercent > 0
-      ? (data.discount_code && data.discount_code === "WELCOME5" && discountPercent === codePercent
-          ? "WELCOME5"
-          : totalQty >= 2 ? "BUY2-15" : null)
-      : null;
+    const discountCode = isFreeShipping
+      ? "FREESHIPPING"
+      : discountPercent > 0
+        ? (submittedCode === "WELCOME5" && discountPercent === codePercent
+            ? "WELCOME5"
+            : totalQty >= 2 ? "BUY2-15" : null)
+        : null;
 
     const { data: order, error: orderError } = await supabaseAdmin
       .from("orders")
