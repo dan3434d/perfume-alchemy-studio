@@ -50,7 +50,7 @@ function Success() {
 
 
 
-  const o = order.data;
+  
 
   return (
     <div className="relative">
