@@ -27,6 +27,7 @@ const CheckoutSchema = z.object({
   lines: z.array(LineSchema).min(1),
   discount_code: z.string().nullable().optional(),
   discount_percent: z.number().min(0).max(100).default(0),
+  user_id: z.string().uuid().nullable().optional(),
   origin: z.string().url(),
 });
 
