@@ -11,10 +11,12 @@ export function PromoPopup() {
 
   useEffect(() => {
     if (localStorage.getItem(KEY) === "1") return;
-    // Don't compete with the spin wheel or stack on an existing discount.
     if (localStorage.getItem(DISCOUNT_KEY)) return;
+    // Wheel takes priority for first-time visitors. Only show this popup
+    // for returning visitors who already saw (and dismissed) the wheel.
+    if (!spinShown()) return;
     const t = window.setTimeout(() => {
-      if (spinShown() || localStorage.getItem(DISCOUNT_KEY)) return;
+      if (localStorage.getItem(DISCOUNT_KEY)) return;
       setOpen(true);
     }, 10000);
     return () => window.clearTimeout(t);
