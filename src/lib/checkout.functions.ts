@@ -95,7 +95,6 @@ export const confirmStripeCheckout = createServerFn({ method: "POST" })
       .update({
         payment_status: paid ? "paid" : "unpaid",
         status: paid ? "paid" : "pending",
-        stripe_session_id: data.session_id,
       })
       .eq("id", data.order_id);
 
