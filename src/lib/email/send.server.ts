@@ -5,7 +5,7 @@
 // admin status updates, complaint submissions) can send without needing a
 // user JWT.
 import * as React from 'react'
-import { render } from '@react-email/components'
+import { render } from '@react-email/render'
 import { TEMPLATES } from '@/lib/email-templates/registry'
 
 const SITE_NAME = 'Abdulrahman Perfumes Online'
