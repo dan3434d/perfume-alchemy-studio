@@ -25,7 +25,7 @@ When recommending:
 4. Always point them to /shop or /shop/<slug> for the product page.
 
 Other facts you can share:
-- Free AU shipping over $80, dispatched within 24h from Sydney.
+- Free metro AU shipping over $50, dispatched within 24h from Sydney. Remote areas (WA, NT, TAS, Far North QLD) add $5.50 handling, waived over $100.
 - 30-day returns on unopened bottles.
 - Support: support@abdulrahman.store.
 - We don't do samples currently.
