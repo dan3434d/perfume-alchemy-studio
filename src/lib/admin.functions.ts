@@ -190,9 +190,9 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
 
     const { data: order, error: getErr } = await supabaseAdmin
       .from("orders")
-      .select("id,order_number,email,full_name,status,tracking_number,tracking_carrier")
+      .select("id,order_number,email,full_name,status,tracking_number,tracking_carrier,shipped_at")
       .eq("id", data.order_id)
-      .single();
+      .single<any>();
     if (getErr) throw getErr;
 
     const patch: Record<string, any> = { status: data.status };
@@ -200,8 +200,9 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
     if (data.tracking_carrier !== undefined) patch.tracking_carrier = data.tracking_carrier || null;
     if (data.status === "shipped" && !order.shipped_at) patch.shipped_at = new Date().toISOString();
 
-    const { error: updErr } = await supabaseAdmin.from("orders").update(patch).eq("id", data.order_id);
+    const { error: updErr } = await (supabaseAdmin.from("orders") as any).update(patch).eq("id", data.order_id);
     if (updErr) throw updErr;
+
 
     const { sendTransactionalEmail } = await import("@/lib/email/send.server");
     const carrier = data.tracking_carrier ?? order.tracking_carrier ?? "";
