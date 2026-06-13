@@ -125,10 +125,10 @@ function ProcessStep({
     <div className={`grid md:grid-cols-2 gap-10 items-center ${reverse ? "md:[&>div:first-child]:order-2" : ""}`}>
       <div>
         <div className="text-xs font-mono tracking-widest text-[var(--amber-deep)]">STEP {n}</div>
-        <h3 className="font-display text-2xl sm:text-3xl mt-2 flex items-center gap-3">
+        <h2 className="font-display text-2xl sm:text-3xl mt-2 flex items-center gap-3">
           <Icon className="w-6 h-6 text-[var(--amber-deep)]" />
           {title}
-        </h3>
+        </h2>
         <p className="text-muted-foreground mt-4 leading-relaxed">{body}</p>
       </div>
       <div className="relative">
