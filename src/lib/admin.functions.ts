@@ -50,13 +50,24 @@ export const setUserRole = createServerFn({ method: "POST" })
       throw new Error("You cannot remove your own admin role");
     }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    // Replace roles: keep only the chosen role
-    await supabaseAdmin.from("user_roles").delete().eq("user_id", data.user_id);
-    const { error } = await supabaseAdmin
+    const { data: target, error: targetError } = await supabaseAdmin.auth.admin.getUserById(data.user_id);
+    if (targetError) throw targetError;
+    if (!target.user) throw new Error("User not found");
+
+    const oppositeRole = data.role === "admin" ? "customer" : "admin";
+    const { error: addError } = await supabaseAdmin
       .from("user_roles")
-      .insert({ user_id: data.user_id, role: data.role });
-    if (error) throw error;
-    return { ok: true };
+      .upsert({ user_id: data.user_id, role: data.role }, { onConflict: "user_id,role" });
+    if (addError) throw addError;
+
+    const { error: removeError } = await supabaseAdmin
+      .from("user_roles")
+      .delete()
+      .eq("user_id", data.user_id)
+      .eq("role", oppositeRole);
+    if (removeError) throw removeError;
+
+    return { ok: true, role: data.role };
   });
 
 const ManualOrderSchema = z.object({
