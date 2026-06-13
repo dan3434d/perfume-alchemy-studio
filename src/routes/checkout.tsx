@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link, Outlet, useChildMatches } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useCart } from "@/hooks/useCart";
@@ -29,6 +29,7 @@ export const Route = createFileRoute("/checkout")({
 const AU_STATES = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"];
 
 function Checkout() {
+  const childMatches = useChildMatches();
   const { lines, subtotal, count } = useCart();
   const { discount, clear: clearDiscount } = useDiscount();
   const navigate = useNavigate();
@@ -113,6 +114,10 @@ function Checkout() {
       setSubmitting(false);
     }
   };
+
+  if (childMatches.length > 0) {
+    return <Outlet />;
+  }
 
   if (lines.length === 0) {
     return (
