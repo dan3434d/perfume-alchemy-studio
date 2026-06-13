@@ -153,8 +153,14 @@ export const createManualOrder = createServerFn({ method: "POST" })
       .insert(orderLines.map((l) => ({ ...l, order_id: order.id })));
     if (iErr) throw iErr;
 
-    // Notify customer
+    // Notify customer + admin
     const { sendTransactionalEmail } = await import("@/lib/email/send.server");
+    const fmt = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" });
+    const itemSummary = orderLines.map((l) => ({
+      name: l.product_name,
+      quantity: l.quantity,
+      price: fmt.format(Number(l.line_total)),
+    }));
     await sendTransactionalEmail({
       templateName: "order-confirmation",
       recipientEmail: data.email,
@@ -162,14 +168,23 @@ export const createManualOrder = createServerFn({ method: "POST" })
       templateData: {
         orderNumber: order.order_number,
         customerName: data.full_name,
-        total: new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(total),
-        items: orderLines.map((l) => ({
-          name: l.product_name,
-          quantity: l.quantity,
-          price: new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(l.line_total),
-        })),
+        total: fmt.format(total),
+        items: itemSummary,
       },
     });
+    await sendTransactionalEmail({
+      templateName: "admin-new-order",
+      recipientEmail: "dbueducation@gmail.com",
+      idempotencyKey: `admin-new-order-${order.id}`,
+      templateData: {
+        orderNumber: order.order_number,
+        customerName: data.full_name,
+        customerEmail: data.email,
+        total: fmt.format(total),
+        items: itemSummary,
+      },
+    });
+
 
     return { id: order.id, order_number: order.order_number };
   });
