@@ -1,8 +1,9 @@
-import { Link } from "@tanstack/react-router";
-import { ShoppingBag, User, Menu, X, Search } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { ShoppingBag, User, Menu, X, Search, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const NAV = [
   { to: "/", label: "Home" },
@@ -14,8 +15,16 @@ const NAV = [
 export function Navbar() {
   const { count } = useCart();
   const { user, isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    setOpen(false);
+    navigate({ to: "/" });
+  };
+
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 8);
