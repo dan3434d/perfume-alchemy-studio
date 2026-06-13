@@ -8,6 +8,7 @@ import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
 import { createStripeCheckout } from "@/lib/checkout.functions";
 import { AddressAutocomplete } from "@/components/site/AddressAutocomplete";
+import { UpsellBuyTwo } from "@/components/site/UpsellBuyTwo";
 import {
   computeBulkDiscountPercent,
   computeShipping,
@@ -128,7 +129,9 @@ function Checkout() {
 
       <form onSubmit={onSubmit} className="grid lg:grid-cols-3 gap-10">
         <div className="lg:col-span-2 space-y-6">
+          <UpsellBuyTwo />
           <Section title="Contact" subtitle="We'll email your order confirmation here.">
+
             <Field label="Email" required value={form.email} onChange={(v) => setForm({ ...form, email: v })} type="email" />
           </Section>
           <Section title="Shipping address" subtitle="Start typing — we'll auto-complete your Australian address.">

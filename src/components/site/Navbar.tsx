@@ -21,14 +21,21 @@ export function Navbar() {
   const [catOpen, setCatOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const categories = useQuery({
-    queryKey: ["categories", "nav"],
+  const brands = useQuery({
+    queryKey: ["brands", "nav"],
     queryFn: async () => {
-      const { data } = await supabase.from("categories").select("name,slug").order("display_order");
-      return data || [];
+      const { data } = await supabase
+        .from("products")
+        .select("inspired_by_brand")
+        .eq("is_active", true)
+        .not("inspired_by_brand", "is", null);
+      const set = new Set<string>();
+      (data || []).forEach((r: any) => r.inspired_by_brand && set.add(r.inspired_by_brand));
+      return Array.from(set).sort();
     },
     staleTime: 5 * 60 * 1000,
   });
+
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -74,33 +81,34 @@ export function Navbar() {
               onClick={() => setCatOpen((o) => !o)}
               className="inline-flex items-center gap-1 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
             >
-              Categories <ChevronDown className={`w-3.5 h-3.5 transition-transform ${catOpen ? "rotate-180" : ""}`} />
+              Shop by brand <ChevronDown className={`w-3.5 h-3.5 transition-transform ${catOpen ? "rotate-180" : ""}`} />
             </button>
             {catOpen && (
-              <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56">
-                <div className="rounded-xl border border-border bg-popover shadow-xl py-2 text-sm">
+              <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-64">
+                <div className="rounded-xl border border-border bg-popover shadow-xl py-2 text-sm max-h-[70vh] overflow-auto">
                   <Link
                     to="/shop"
                     onClick={() => setCatOpen(false)}
                     className="block px-4 py-2 hover:bg-secondary font-medium"
                   >
-                    All categories
+                    All brands
                   </Link>
                   <div className="my-1 h-px bg-border" />
-                  {categories.data?.map((c) => (
+                  {brands.data?.map((b) => (
                     <Link
-                      key={c.slug}
+                      key={b}
                       to="/shop"
-                      search={{ category: c.slug }}
+                      search={{ brand: b }}
                       onClick={() => setCatOpen(false)}
                       className="block px-4 py-2 hover:bg-secondary"
                     >
-                      {c.name}
+                      {b}<span className="text-muted-foreground"> inspired</span>
                     </Link>
                   ))}
                 </div>
               </div>
             )}
+
           </div>
           {isAdmin && (
             <Link to="/admin" className="text-sm font-medium text-[var(--amber-deep)] hover:underline">Admin</Link>
@@ -152,19 +160,20 @@ export function Navbar() {
               </Link>
             ))}
             <div className="pt-2 mt-2 border-t border-border">
-              <div className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground mb-1">Categories</div>
-              {categories.data?.map((c) => (
+              <div className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground mb-1">Shop by brand</div>
+              {brands.data?.map((b) => (
                 <Link
-                  key={c.slug}
+                  key={b}
                   to="/shop"
-                  search={{ category: c.slug }}
+                  search={{ brand: b }}
                   onClick={() => setOpen(false)}
                   className="block py-2 text-sm"
                 >
-                  {c.name}
+                  {b} <span className="text-muted-foreground">inspired</span>
                 </Link>
               ))}
             </div>
+
             {isAdmin && <Link to="/admin" onClick={() => setOpen(false)} className="py-2.5 text-sm font-medium text-[var(--amber-deep)]">Admin Dashboard</Link>}
             {user && (
               <button onClick={signOut} className="py-2.5 text-left text-sm font-medium text-destructive">
