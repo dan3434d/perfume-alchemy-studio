@@ -6,9 +6,12 @@ import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
 import { useCart, useWishlist } from "@/hooks/useCart";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
-import { Heart, ShoppingBag, Truck, RotateCcw, Lock, Minus, Plus, Star, Check, Sparkles } from "lucide-react";
+import { Heart, ShoppingBag, Truck, RotateCcw, Lock, Minus, Plus, Star, Check, Sparkles, Leaf, Droplets, Package, FlaskConical } from "lucide-react";
 import { toast } from "sonner";
 import { trackView } from "@/hooks/useBrowsingHistory";
+import ingredientsImg from "@/assets/craft-ingredients.jpg";
+import blendingImg from "@/assets/craft-blending.jpg";
+import packingImg from "@/assets/craft-packing.jpg";
 
 const SITE = "https://www.abdulrahmanperfumes.com.au";
 
@@ -289,6 +292,69 @@ function ProductPage() {
         </div>
       </div>
 
+      {/* Long description / story */}
+      <section className="mt-16 grid lg:grid-cols-3 gap-8 items-start">
+        <div className="lg:col-span-2 space-y-5">
+          <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">The story</span>
+          <h2 className="font-display text-2xl sm:text-3xl">About {p.name}</h2>
+          <p className="text-muted-foreground leading-relaxed">
+            {p.long_description || p.description || `${p.name} is a 50ml eau de parfum blended in the UAE and packed by hand in Sydney. We layer top, heart and base notes, then let the composition age so the oils marry into a single, balanced scent that lasts from morning meetings to late-night dinners.`}
+          </p>
+          {p.inspired_by_brand && (
+            <p className="text-muted-foreground leading-relaxed">
+              Inspired by <span className="font-medium text-foreground">{p.inspired_by_brand} {p.inspired_by_product}</span>, our take captures the same character at a fraction of the designer price — without copying it. Every bottle is an original Abdulrahman composition, not a knockoff.
+            </p>
+          )}
+          <div className="grid sm:grid-cols-2 gap-3 pt-2">
+            <Feature i={FlaskConical} t="50ml eau de parfum" d="Premium alcohol-based concentration for projection and longevity." />
+            <Feature i={Leaf} t="UAE-sourced oils" d="Oud, amber, rose and vanilla from across the Gulf." />
+            <Feature i={Droplets} t="Hand-blended" d="Composed by perfumers trained in Souk Madinat traditions." />
+            <Feature i={Package} t="Packed in Sydney" d="QC-checked and gift-boxed. Ships within 24 hours." />
+          </div>
+        </div>
+        <aside className="rounded-2xl border border-border bg-[var(--cream)]/40 p-6 space-y-4">
+          <h3 className="font-display text-xl">Fragrance profile</h3>
+          <ProfileRow label="Family" value={p.categories?.name ?? "Signature"} />
+          <ProfileRow label="Size" value="50ml" />
+          <ProfileRow label="Concentration" value="Eau de Parfum" />
+          <ProfileRow label="Longevity" value="6–10 hours" />
+          <ProfileRow label="Sillage" value="Moderate to strong" />
+          <ProfileRow label="Best for" value="Day & night" />
+        </aside>
+      </section>
+
+      {/* How we make it */}
+      <section className="mt-20 rounded-3xl bg-[var(--cream)]/40 border border-border p-6 sm:p-10">
+        <div className="text-center mb-10">
+          <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Our craft</span>
+          <h2 className="font-display text-2xl sm:text-3xl mt-2">How we make every bottle</h2>
+          <p className="text-muted-foreground mt-3 max-w-xl mx-auto text-sm">
+            Three deliberate stages, from raw ingredient to the bottle on your dresser.
+          </p>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          <CraftCard n="01" img={ingredientsImg} alt="Oud wood, dried roses and amber resin" title="Sourcing" body="Highest-grade oud, Bulgarian rose, Madagascar vanilla, ambergris and Gulf aromatic oils — chosen for purity and character." />
+          <CraftCard n="02" img={blendingImg} alt="Perfumer blending fragrance oils" title="Blending" body="Perfumers compose each fragrance by hand. Top, heart and base notes are layered, then aged so the oils marry into one balanced scent." />
+          <CraftCard n="03" img={packingImg} alt="Black perfume bottle being placed into a gift box" title="Bottled in Sydney" body="Every 50ml bottle is filled, QC-checked and gift-boxed in our Sydney atelier. Orders ship across Australia within 24 hours." />
+        </div>
+        <div className="text-center mt-8">
+          <Link to="/about" className="text-sm font-semibold underline-offset-4 hover:underline text-[var(--amber-deep)]">
+            Read more about our atelier →
+          </Link>
+        </div>
+      </section>
+
+      {/* FAQ on product */}
+      <section className="mt-16 max-w-3xl mx-auto">
+        <h2 className="font-display text-2xl sm:text-3xl text-center mb-6">Common questions</h2>
+        <div className="space-y-3">
+          <FaqRow q="How long does this perfume last?" a="Our 50ml eau de parfum typically projects for 6–10 hours, depending on skin chemistry, climate and how much you apply. Spray on pulse points — wrists, neck, behind the ears — for best longevity." />
+          <FaqRow q="Is this a knockoff or replica?" a={`Absolutely not. ${p.inspired_by_brand ? `${p.name} is inspired by ${p.inspired_by_brand} ${p.inspired_by_product ?? ""} but it's an original Abdulrahman composition` : `${p.name} is an original Abdulrahman composition`} — blended in the UAE with our own formula. We are not affiliated with any designer brand.`} />
+          <FaqRow q="How do you make your perfumes?" a="We source raw oils from across the Gulf, hand-blend top/heart/base notes in our perfumery, age the composition, then bottle and gift-box every order in our Sydney atelier." />
+          <FaqRow q="Can I return it if I don't like it?" a="Yes. We offer a 30-day hassle-free returns policy on all orders shipped within Australia." />
+        </div>
+      </section>
+
       {/* Related */}
       {related.data && related.data.length > 0 && (
         <section className="mt-20">
@@ -299,6 +365,54 @@ function ProductPage() {
         </section>
       )}
     </div>
+  );
+}
+
+function Feature({ i: Icon, t, d }: { i: any; t: string; d: string }) {
+  return (
+    <div className="flex items-start gap-3 rounded-xl border border-border p-3 bg-background">
+      <Icon className="w-5 h-5 text-[var(--amber-deep)] mt-0.5 shrink-0" />
+      <div>
+        <div className="text-sm font-semibold">{t}</div>
+        <div className="text-xs text-muted-foreground">{d}</div>
+      </div>
+    </div>
+  );
+}
+
+function ProfileRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between text-sm border-b border-border/60 pb-2 last:border-0 last:pb-0">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-medium">{value}</span>
+    </div>
+  );
+}
+
+function CraftCard({ n, img, alt, title, body }: { n: string; img: string; alt: string; title: string; body: string }) {
+  return (
+    <div className="rounded-2xl overflow-hidden bg-background border border-border">
+      <div className="aspect-[4/3] overflow-hidden">
+        <img src={img} alt={alt} loading="lazy" className="w-full h-full object-cover" />
+      </div>
+      <div className="p-5">
+        <div className="text-xs font-mono text-[var(--amber-deep)]">{n}</div>
+        <h3 className="font-display text-lg mt-1">{title}</h3>
+        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{body}</p>
+      </div>
+    </div>
+  );
+}
+
+function FaqRow({ q, a }: { q: string; a: string }) {
+  return (
+    <details className="group rounded-xl border border-border bg-background p-4">
+      <summary className="cursor-pointer list-none font-medium flex justify-between items-center">
+        {q}
+        <Plus className="w-4 h-4 text-[var(--amber-deep)] group-open:rotate-45 transition" />
+      </summary>
+      <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{a}</p>
+    </details>
   );
 }
 
