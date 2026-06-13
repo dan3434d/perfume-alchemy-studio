@@ -21,7 +21,7 @@ import {
 import { toast } from "sonner";
 import { Lock, Truck, ShieldCheck, BadgePercent, X } from "lucide-react";
 
-export const Route = createFileRoute("/checkout")({
+export const Route = createFileRoute("/checkout/")({
   head: () => ({ meta: [{ title: "Checkout — Abdulrahman Perfumes" }] }),
   component: Checkout,
 });
