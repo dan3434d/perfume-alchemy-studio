@@ -262,5 +262,3 @@ function Field({ label, value, onChange, required, type = "text" }: { label: str
   );
 }
 
-// keep import used
-void clearCart;
