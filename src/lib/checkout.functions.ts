@@ -113,18 +113,21 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
 
     const discountFactor = (100 - discountPercent) / 100;
 
-    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = orderLines.map((l) => ({
-      quantity: l.quantity,
-      price_data: {
-        currency: "aud",
-        unit_amount: Math.round(l.price * discountFactor * 100),
-        product_data: {
-          name: discountPercent > 0 ? `${l.name} (-${discountPercent}%)` : l.name,
-          images: l.image_url ? [l.image_url] : undefined,
-          metadata: { product_id: l.product_id, slug: l.slug },
+    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = orderLines.map((l) => {
+      const imageUrl = l.image_url ? new URL(l.image_url, data.origin).toString() : undefined;
+      return {
+        quantity: l.quantity,
+        price_data: {
+          currency: "aud",
+          unit_amount: Math.round(l.price * discountFactor * 100),
+          product_data: {
+            name: discountPercent > 0 ? `${l.name} (-${discountPercent}%)` : l.name,
+            images: imageUrl ? [imageUrl] : undefined,
+            metadata: { product_id: l.product_id, slug: l.slug },
+          },
         },
-      },
-    }));
+      };
+    });
 
     if (shipping > 0) {
       line_items.push({
