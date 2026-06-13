@@ -138,35 +138,39 @@ function Home() {
         )}
       </section>
 
-      {/* ABOUT — Why Abdulrahman */}
+      {/* ABOUT — Why Abdulrahman, now with imagery */}
       <section className="section bg-[var(--cream)]/40 border-y border-border">
         <div className="container-px max-w-6xl mx-auto">
-          <div className="text-center mb-12 max-w-3xl mx-auto">
-            <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Why Abdulrahman Perfumes</span>
-            <h2 className="font-display text-3xl sm:text-4xl mt-2">The essence of Arabian perfumery, made for you.</h2>
-            <p className="text-muted-foreground mt-5 leading-relaxed">
-              Abdulrahman Perfumes offers an exquisite range of fragrances, blending traditional Arabian scents with modern elegance.
-              Each perfume is crafted with high-quality ingredients, ensuring a long-lasting and captivating aroma — a unique olfactory
-              experience that is both timeless and enchanting.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            <AboutCard
-              icon={Award}
-              title="Perfumes, made to last"
-              body="Our fragrance creators use advanced techniques to perfect every inspired blend, with the longevity and projection of a designer fragrance."
-            />
-            <AboutCard
-              icon={Droplets}
-              title="UAE-blended oils"
-              body="Base oils sourced from across the Gulf — including Dubai and the wider UAE — and composed by perfumers steeped in Arabian tradition."
-            />
-            <AboutCard
-              icon={MapPin}
-              title="Packed in Australia"
-              body="Final packaging is completed in Sydney, so every bottle ships fast across Australia and arrives ready to gift."
-            />
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="grid grid-cols-2 gap-4">
+              <img src={ingredientsImg} alt="Oud wood, dried roses and vanilla" loading="lazy" width={1024} height={1024} className="rounded-2xl shadow-[var(--shadow-elegant)] aspect-square object-cover" />
+              <img src={blendingImg} alt="Perfumer hand-blending fragrance oils" loading="lazy" width={1024} height={1024} className="rounded-2xl shadow-[var(--shadow-elegant)] aspect-square object-cover mt-8" />
+            </div>
+            <div>
+              <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Why Abdulrahman Perfumes</span>
+              <h2 className="font-display text-3xl sm:text-4xl mt-2">The essence of Arabian perfumery, made for you.</h2>
+              <p className="text-muted-foreground mt-5 leading-relaxed">
+                We blend traditional Arabian scents with modern elegance — long-lasting oud, warm amber, and modern compositions inspired by the world's most-loved designers.
+              </p>
+              <div className="mt-6 space-y-4">
+                {[
+                  { i: Award, t: "Made to last", d: "Designer-level longevity and projection in every 50ml bottle." },
+                  { i: Droplets, t: "UAE-blended oils", d: "Composed by perfumers from across the Gulf, including Dubai." },
+                  { i: MapPin, t: "Packed in Sydney", d: "Dispatched within 24 hours, free AU shipping over $80." },
+                ].map(({ i: Icon, t, d }) => (
+                  <div key={t} className="flex gap-4">
+                    <div className="w-10 h-10 shrink-0 rounded-full grid place-items-center bg-[var(--amber-deep)]/10 text-[var(--amber-deep)]"><Icon className="w-5 h-5" /></div>
+                    <div>
+                      <h3 className="font-semibold">{t}</h3>
+                      <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{d}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <Link to="/about" className="inline-flex items-center gap-2 mt-7 text-sm font-semibold text-[var(--amber-deep)] hover:underline">
+                Read our full story <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
