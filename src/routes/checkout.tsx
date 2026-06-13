@@ -47,52 +47,23 @@ function Checkout() {
     if (lines.length === 0) { toast.error("Your cart is empty"); return; }
     setSubmitting(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      const { data: order, error } = await supabase.from("orders").insert({
-        user_id: user?.id ?? null,
-        email: form.email,
-        full_name: form.full_name,
-        phone: form.phone || null,
-        shipping_line1: form.line1,
-        shipping_line2: form.line2 || null,
-        shipping_city: form.city,
-        shipping_state: form.state,
-        shipping_postcode: form.postcode,
-        shipping_country: form.country,
-        subtotal,
-        shipping: shippingCost,
-        total,
-        discount_code: discount?.code ?? null,
-        discount_percent: discountPercent,
-        discount_amount: discountAmount,
-        notes: form.notes || null,
-        status: "pending",
-        payment_status: "unpaid",
-      }).select().single();
-      if (error) throw error;
-
-      const items = lines.map((l) => ({
-        order_id: order.id,
-        product_id: l.product_id,
-        product_name: l.name,
-        product_slug: l.slug,
-        unit_price: l.price,
-        quantity: l.quantity,
-        line_total: l.price * l.quantity,
-        image_url: l.image_url,
-      }));
-      const { error: iErr } = await supabase.from("order_items").insert(items);
-      if (iErr) throw iErr;
-
       const { url } = await startStripe({
         data: {
-          order_id: order.id,
-          email: form.email,
+        email: form.email,
+        full_name: form.full_name,
+          phone: form.phone || null,
+          shipping_line1: form.line1,
+          shipping_line2: form.line2 || null,
+          shipping_city: form.city,
+          shipping_state: form.state,
+          shipping_postcode: form.postcode,
+          shipping_country: form.country,
+          notes: form.notes || null,
           lines: lines.map((l) => ({
             product_id: l.product_id, name: l.name, slug: l.slug,
             price: l.price, quantity: l.quantity, image_url: l.image_url ?? null,
           })),
-          shipping: shippingCost,
+          discount_code: discount?.code ?? null,
           discount_percent: discountPercent,
           origin: window.location.origin,
         },
