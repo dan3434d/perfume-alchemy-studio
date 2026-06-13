@@ -34,11 +34,24 @@ function Checkout() {
   const navigate = useNavigate();
   const startStripe = useServerFn(createStripeCheckout);
   const [submitting, setSubmitting] = useState(false);
+  const [promoInput, setPromoInput] = useState("");
+  const [freeShip, setFreeShip] = useState(false);
   const [form, setForm] = useState({
     email: "", full_name: "", phone: "",
     line1: "", line2: "", city: "", state: "", postcode: "", country: "Australia",
     notes: "",
   });
+
+  const applyPromo = () => {
+    const code = promoInput.trim().toUpperCase();
+    if (!code) return;
+    if (code === "FREESHIPPING") {
+      setFreeShip(true);
+      toast.success("FREESHIPPING applied — shipping is on us");
+    } else {
+      toast.error("Invalid promo code");
+    }
+  };
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
