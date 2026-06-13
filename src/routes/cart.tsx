@@ -3,7 +3,14 @@ import { useEffect, useState } from "react";
 import { useCart } from "@/hooks/useCart";
 import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
-import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
+import {
+  FREE_SHIPPING_THRESHOLD,
+  METRO_SHIPPING_FEE,
+  BULK_DISCOUNT_PERCENT,
+  BULK_DISCOUNT_MIN_QTY,
+  computeBulkDiscountPercent,
+} from "@/lib/pricing";
+import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, BadgePercent } from "lucide-react";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({ meta: [{ title: "Cart — Abdulrahman Perfumes" }] }),
@@ -11,11 +18,15 @@ export const Route = createFileRoute("/cart")({
 });
 
 function CartPage() {
-  const { lines, updateQty, remove, subtotal } = useCart();
+  const { lines, updateQty, remove, subtotal, count } = useCart();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  const shipping = subtotal === 0 ? 0 : subtotal >= 80 ? 0 : 9.95;
-  const total = subtotal + shipping;
+
+  const bulkPercent = computeBulkDiscountPercent(count);
+  const discountAmount = +(subtotal * bulkPercent / 100).toFixed(2);
+  const subtotalAfterDiscount = +(subtotal - discountAmount).toFixed(2);
+  const shipping = subtotalAfterDiscount === 0 ? 0 : subtotalAfterDiscount >= FREE_SHIPPING_THRESHOLD ? 0 : METRO_SHIPPING_FEE;
+  const total = +(subtotalAfterDiscount + shipping).toFixed(2);
 
   if (!mounted) {
     return <div className="container-px max-w-6xl mx-auto py-20 text-center text-muted-foreground">Loading cart…</div>;
@@ -59,13 +70,22 @@ function CartPage() {
                 </div>
               </div>
             ))}
+            {count < BULK_DISCOUNT_MIN_QTY && (
+              <div className="py-4 flex items-center gap-2 text-xs text-[var(--amber-deep)]">
+                <BadgePercent className="w-4 h-4" />
+                Add 1 more bottle to unlock {BULK_DISCOUNT_PERCENT}% off — Buy 2, save {BULK_DISCOUNT_PERCENT}%.
+              </div>
+            )}
           </div>
 
           <aside className="lg:sticky lg:top-24 h-fit">
             <div className="card-elevated p-6 space-y-4">
               <h2 className="font-display text-xl">Order summary</h2>
               <Row k="Subtotal" v={formatAUD(subtotal)} />
-              <Row k="Shipping (AU)" v={shipping === 0 ? "Free" : formatAUD(shipping)} />
+              {bulkPercent > 0 && (
+                <Row k={`Buy ${BULK_DISCOUNT_MIN_QTY}+ discount (−${bulkPercent}%)`} v={`− ${formatAUD(discountAmount)}`} accent />
+              )}
+              <Row k="Shipping (metro AU)" v={shipping === 0 ? "Free" : formatAUD(shipping)} />
               <div className="border-t border-border pt-4 flex items-baseline justify-between">
                 <span className="font-semibold">Total</span>
                 <span className="font-display text-2xl">{formatAUD(total)}</span>
@@ -74,10 +94,13 @@ function CartPage() {
                 Checkout <ArrowRight className="w-4 h-4" />
               </Link>
               <Link to="/shop" className="block text-center text-sm text-muted-foreground hover:text-foreground">Continue shopping</Link>
+              <p className="text-[11px] text-muted-foreground text-center leading-relaxed">
+                Free metro shipping over {formatAUD(FREE_SHIPPING_THRESHOLD)}. Remote areas (WA, NT, TAS, Far North QLD) add a {formatAUD(5.5)} handling fee — waived on orders over {formatAUD(100)}.
+              </p>
             </div>
-            {subtotal < 80 && (
+            {subtotalAfterDiscount > 0 && subtotalAfterDiscount < FREE_SHIPPING_THRESHOLD && (
               <p className="text-xs text-muted-foreground mt-3 text-center">
-                Add {formatAUD(80 - subtotal)} more for free Australian shipping.
+                Add {formatAUD(FREE_SHIPPING_THRESHOLD - subtotalAfterDiscount)} more for free metro shipping.
               </p>
             )}
           </aside>
@@ -87,6 +110,12 @@ function CartPage() {
   );
 }
 
-function Row({ k, v }: { k: string; v: string }) {
-  return <div className="flex justify-between text-sm"><span className="text-muted-foreground">{k}</span><span>{v}</span></div>;
+function Row({ k, v, accent }: { k: string; v: string; accent?: boolean }) {
+  return (
+    <div className="flex justify-between text-sm">
+      <span className="text-muted-foreground">{k}</span>
+      <span className={accent ? "text-[var(--amber-deep)] font-semibold" : ""}>{v}</span>
+    </div>
+  );
 }
+
