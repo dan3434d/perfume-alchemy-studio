@@ -24,7 +24,6 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopIndexRouteImport } from './routes/shop.index'
-import { Route as CheckoutIndexRouteImport } from './routes/checkout.index'
 import { Route as ShopSlugRouteImport } from './routes/shop.$slug'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
@@ -111,11 +110,6 @@ const ShopIndexRoute = ShopIndexRouteImport.update({
   path: '/shop/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CheckoutIndexRoute = CheckoutIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => CheckoutRoute,
-} as any)
 const ShopSlugRoute = ShopSlugRouteImport.update({
   id: '/shop/$slug',
   path: '/shop/$slug',
@@ -188,7 +182,6 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/shop/$slug': typeof ShopSlugRoute
-  '/checkout/': typeof CheckoutIndexRoute
   '/shop/': typeof ShopIndexRoute
   '/checkout/success/$orderId': typeof CheckoutSuccessOrderIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -205,6 +198,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRouteWithChildren
   '/contact': typeof ContactRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -215,7 +209,6 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/shop/$slug': typeof ShopSlugRoute
-  '/checkout': typeof CheckoutIndexRoute
   '/shop': typeof ShopIndexRoute
   '/checkout/success/$orderId': typeof CheckoutSuccessOrderIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -244,7 +237,6 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/shop/$slug': typeof ShopSlugRoute
-  '/checkout/': typeof CheckoutIndexRoute
   '/shop/': typeof ShopIndexRoute
   '/checkout/success/$orderId': typeof CheckoutSuccessOrderIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
@@ -274,7 +266,6 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/email/unsubscribe'
     | '/shop/$slug'
-    | '/checkout/'
     | '/shop/'
     | '/checkout/success/$orderId'
     | '/lovable/email/suppression'
@@ -291,6 +282,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/cart'
+    | '/checkout'
     | '/contact'
     | '/privacy'
     | '/reset-password'
@@ -301,7 +293,6 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/email/unsubscribe'
     | '/shop/$slug'
-    | '/checkout'
     | '/shop'
     | '/checkout/success/$orderId'
     | '/lovable/email/suppression'
@@ -329,7 +320,6 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/email/unsubscribe'
     | '/shop/$slug'
-    | '/checkout/'
     | '/shop/'
     | '/checkout/success/$orderId'
     | '/lovable/email/suppression'
@@ -474,13 +464,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/checkout/': {
-      id: '/checkout/'
-      path: '/'
-      fullPath: '/checkout/'
-      preLoaderRoute: typeof CheckoutIndexRouteImport
-      parentRoute: typeof CheckoutRoute
-    }
     '/shop/$slug': {
       id: '/shop/$slug'
       path: '/shop/$slug'
@@ -555,12 +538,10 @@ declare module '@tanstack/react-router' {
 }
 
 interface CheckoutRouteChildren {
-  CheckoutIndexRoute: typeof CheckoutIndexRoute
   CheckoutSuccessOrderIdRoute: typeof CheckoutSuccessOrderIdRoute
 }
 
 const CheckoutRouteChildren: CheckoutRouteChildren = {
-  CheckoutIndexRoute: CheckoutIndexRoute,
   CheckoutSuccessOrderIdRoute: CheckoutSuccessOrderIdRoute,
 }
 
@@ -597,3 +578,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
