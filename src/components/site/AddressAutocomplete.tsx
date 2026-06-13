@@ -18,8 +18,8 @@ type Props = {
   required?: boolean;
 };
 
-// Free Australian address autocomplete via OpenStreetMap Nominatim.
-// No API key required. Debounced and country-restricted to AU.
+// Australian address autocomplete via Photon (Komoot) — free, no API key,
+// noticeably better street-level suggestions than Nominatim. Restricted to AU.
 export function AddressAutocomplete({ value, onChange, onSelect, placeholder, required }: Props) {
   const [results, setResults] = useState<Suggestion[]>([]);
   const [open, setOpen] = useState(false);
@@ -45,10 +45,9 @@ export function AddressAutocomplete({ value, onChange, onSelect, placeholder, re
     timer.current = window.setTimeout(async () => {
       setLoading(true);
       try {
-        const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&countrycodes=au&limit=6&q=${encodeURIComponent(
-          value,
-        )}`;
-        const res = await fetch(url, { headers: { "Accept-Language": "en-AU" } });
+        // Photon API — centred over Australia for better local ranking.
+        const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(value)}&limit=8&lang=en&lat=-25.27&lon=133.77`;
+        const res = await fetch(url);
         const data = await res.json();
         const stateAbbr: Record<string, string> = {
           "New South Wales": "NSW",
@@ -60,26 +59,25 @@ export function AddressAutocomplete({ value, onChange, onSelect, placeholder, re
           "Australian Capital Territory": "ACT",
           "Northern Territory": "NT",
         };
-        const list: Suggestion[] = (data as any[])
-          .map((d) => {
-            const a = d.address || {};
-            const houseNumber = a.house_number ?? "";
-            const road = a.road ?? a.pedestrian ?? a.footway ?? "";
-            const line1 = [houseNumber, road].filter(Boolean).join(" ").trim();
-            const city = a.suburb ?? a.city ?? a.town ?? a.village ?? a.hamlet ?? "";
-            const state = stateAbbr[a.state] ?? a.state ?? "";
-            const postcode = a.postcode ?? "";
-            return {
-              display: d.display_name as string,
-              line1: line1 || (d.display_name as string).split(",")[0],
-              city,
-              state,
-              postcode,
-              country: "Australia",
-            };
+        const features: any[] = data?.features ?? [];
+        const list: Suggestion[] = features
+          .filter((f) => (f.properties?.countrycode || "").toLowerCase() === "au")
+          .map((f) => {
+            const p = f.properties || {};
+            const houseNumber = p.housenumber ?? "";
+            const street = p.street ?? p.name ?? "";
+            const line1 = [houseNumber, street].filter(Boolean).join(" ").trim() || p.name || "";
+            const city = p.city ?? p.locality ?? p.district ?? p.suburb ?? p.town ?? p.village ?? "";
+            const state = stateAbbr[p.state] ?? p.state ?? "";
+            const postcode = p.postcode ?? "";
+            const display = [line1, city, state, postcode].filter(Boolean).join(", ");
+            return { display, line1, city, state, postcode, country: "Australia" };
           })
           .filter((s) => s.line1);
-        setResults(list);
+        // De-dupe by display string.
+        const seen = new Set<string>();
+        const unique = list.filter((s) => (seen.has(s.display) ? false : (seen.add(s.display), true)));
+        setResults(unique.slice(0, 6));
         setOpen(true);
         setActive(0);
       } catch {
@@ -87,7 +85,7 @@ export function AddressAutocomplete({ value, onChange, onSelect, placeholder, re
       } finally {
         setLoading(false);
       }
-    }, 280);
+    }, 220);
     return () => {
       if (timer.current) window.clearTimeout(timer.current);
     };
