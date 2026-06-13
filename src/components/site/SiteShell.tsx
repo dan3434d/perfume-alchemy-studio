@@ -1,6 +1,7 @@
 import { Toaster } from "sonner";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
+import { ShoppingAssistant } from "./ShoppingAssistant";
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
   return (
@@ -8,6 +9,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
+      <ShoppingAssistant />
       <Toaster position="top-center" richColors />
     </div>
   );

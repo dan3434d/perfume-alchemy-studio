@@ -7,7 +7,7 @@ import { Search } from "lucide-react";
 
 type ShopSearch = { category?: string; sort?: string; q?: string; brand?: string };
 
-export const Route = createFileRoute("/shop")({
+export const Route = createFileRoute("/shop/")({
   validateSearch: (s: Record<string, unknown>): ShopSearch => ({
     category: typeof s.category === "string" ? s.category : undefined,
     sort: typeof s.sort === "string" ? s.sort : undefined,
