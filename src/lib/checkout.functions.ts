@@ -229,7 +229,7 @@ export const confirmStripeCheckout = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: existing } = await supabaseAdmin
       .from("orders")
-      .select("status,payment_status,order_number,email,full_name,total")
+      .select("*")
       .eq("id", data.order_id)
       .single();
 
@@ -241,13 +241,13 @@ export const confirmStripeCheckout = createServerFn({ method: "POST" })
       })
       .eq("id", data.order_id);
 
+    const { data: items } = await supabaseAdmin
+      .from("order_items")
+      .select("*")
+      .eq("order_id", data.order_id);
+
     // Send confirmation only on first transition to paid
     if (paid && existing && existing.payment_status !== "paid") {
-      const { data: items } = await supabaseAdmin
-        .from("order_items")
-        .select("product_name,quantity,line_total")
-        .eq("order_id", data.order_id);
-
       const fmt = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" });
       const { sendTransactionalEmail } = await import("@/lib/email/send.server");
       await sendTransactionalEmail({
@@ -267,6 +267,11 @@ export const confirmStripeCheckout = createServerFn({ method: "POST" })
       });
     }
 
-    return { paid };
+    const order = existing
+      ? { ...existing, payment_status: paid ? "paid" : existing.payment_status, status: paid ? "paid" : existing.status, order_items: items || [] }
+      : null;
+
+    return { paid, order };
   });
+
 
