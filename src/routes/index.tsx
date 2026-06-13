@@ -11,8 +11,8 @@ import ingredientsImg from "@/assets/craft-ingredients.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Abdulrahman Perfumes — Designer-inspired scents from $31.50" },
-      { name: "description", content: "Premium designer-inspired perfumes blended in the UAE, packed in Sydney. Tom Ford, Dior, Louis Vuitton inspired scents for under $32." },
+      { title: "Abdulrahman Perfumes — Designer-inspired scents from $41.50" },
+      { name: "description", content: "Premium designer-inspired perfumes blended in the UAE, packed in Sydney. Every 50ml bottle just $41.50 — buy 2, save 15%." },
     ],
   }),
   component: Home,
@@ -64,7 +64,7 @@ function Home() {
               <span className="italic text-[var(--amber-deep)]">to your home.</span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-md">
-              Premium Arabian perfumery, reimagined for the modern wardrobe. Blended with UAE oils, packed in Sydney — every bottle just <span className="font-semibold text-foreground">$31.50</span>.
+              Premium Arabian perfumery, reimagined for the modern wardrobe. Blended with UAE oils, packed in Sydney — every 50ml bottle just <span className="font-semibold text-foreground">$41.50</span>. <span className="text-[var(--amber-deep)] font-semibold">Buy 2, save 15%</span> — applied automatically.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link to="/shop" className="btn-gold inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold">
@@ -76,7 +76,7 @@ function Home() {
             </div>
             <div className="flex items-center gap-6 pt-2 text-xs text-muted-foreground flex-wrap">
               <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5 fill-[var(--gold)] text-[var(--gold)]" /> 4.9 average rating</div>
-              <div>Free AU shipping over $80</div>
+              <div>Free metro AU shipping over $50</div>
             </div>
           </div>
           <div className="relative">
@@ -156,7 +156,7 @@ function Home() {
                 {[
                   { i: Award, t: "Made to last", d: "Designer-level longevity and projection in every 50ml bottle." },
                   { i: Droplets, t: "UAE-blended oils", d: "Composed by perfumers from across the Gulf, including Dubai." },
-                  { i: MapPin, t: "Packed in Sydney", d: "Dispatched within 24 hours, free AU shipping over $80." },
+                  { i: MapPin, t: "Packed in Sydney", d: "Dispatched within 24 hours, free metro AU shipping over $50." },
                 ].map(({ i: Icon, t, d }) => (
                   <div key={t} className="flex gap-4">
                     <div className="w-10 h-10 shrink-0 rounded-full grid place-items-center bg-[var(--amber-deep)]/10 text-[var(--amber-deep)]"><Icon className="w-5 h-5" /></div>

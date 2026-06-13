@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { ShoppingBag, User, Menu, X, Search, LogOut } from "lucide-react";
+import { ShoppingBag, User, Menu, X, Search, LogOut, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,7 +18,17 @@ export function Navbar() {
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [catOpen, setCatOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  const categories = useQuery({
+    queryKey: ["categories", "nav"],
+    queryFn: async () => {
+      const { data } = await supabase.from("categories").select("name,slug").order("display_order");
+      return data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -54,6 +65,43 @@ export function Navbar() {
               {n.label}
             </Link>
           ))}
+          <div
+            className="relative"
+            onMouseEnter={() => setCatOpen(true)}
+            onMouseLeave={() => setCatOpen(false)}
+          >
+            <button
+              onClick={() => setCatOpen((o) => !o)}
+              className="inline-flex items-center gap-1 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
+            >
+              Categories <ChevronDown className={`w-3.5 h-3.5 transition-transform ${catOpen ? "rotate-180" : ""}`} />
+            </button>
+            {catOpen && (
+              <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56">
+                <div className="rounded-xl border border-border bg-popover shadow-xl py-2 text-sm">
+                  <Link
+                    to="/shop"
+                    onClick={() => setCatOpen(false)}
+                    className="block px-4 py-2 hover:bg-secondary font-medium"
+                  >
+                    All categories
+                  </Link>
+                  <div className="my-1 h-px bg-border" />
+                  {categories.data?.map((c) => (
+                    <Link
+                      key={c.slug}
+                      to="/shop"
+                      search={{ category: c.slug }}
+                      onClick={() => setCatOpen(false)}
+                      className="block px-4 py-2 hover:bg-secondary"
+                    >
+                      {c.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
           {isAdmin && (
             <Link to="/admin" className="text-sm font-medium text-[var(--amber-deep)] hover:underline">Admin</Link>
           )}
@@ -103,6 +151,20 @@ export function Navbar() {
                 {n.label}
               </Link>
             ))}
+            <div className="pt-2 mt-2 border-t border-border">
+              <div className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground mb-1">Categories</div>
+              {categories.data?.map((c) => (
+                <Link
+                  key={c.slug}
+                  to="/shop"
+                  search={{ category: c.slug }}
+                  onClick={() => setOpen(false)}
+                  className="block py-2 text-sm"
+                >
+                  {c.name}
+                </Link>
+              ))}
+            </div>
             {isAdmin && <Link to="/admin" onClick={() => setOpen(false)} className="py-2.5 text-sm font-medium text-[var(--amber-deep)]">Admin Dashboard</Link>}
             {user && (
               <button onClick={signOut} className="py-2.5 text-left text-sm font-medium text-destructive">
@@ -116,3 +178,4 @@ export function Navbar() {
     </header>
   );
 }
+

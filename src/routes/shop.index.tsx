@@ -83,7 +83,7 @@ function Shop() {
       <div className="mb-8">
         <h1 className="font-display text-3xl sm:text-4xl">Shop all perfumes</h1>
         <p className="text-muted-foreground mt-2">
-          {filtered.length} fragrance{filtered.length === 1 ? "" : "s"} — find your designer scent for under $32.
+          {filtered.length} fragrance{filtered.length === 1 ? "" : "s"} — every 50ml just $41.50 · Buy 2, save 15%.
         </p>
       </div>
 

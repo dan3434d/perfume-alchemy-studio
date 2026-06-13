@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useCart } from "@/hooks/useCart";
 import { useDiscount } from "@/hooks/useDiscount";
@@ -7,6 +7,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
 import { createStripeCheckout } from "@/lib/checkout.functions";
+import { AddressAutocomplete } from "@/components/site/AddressAutocomplete";
+import {
+  computeBulkDiscountPercent,
+  computeShipping,
+  BULK_DISCOUNT_PERCENT,
+  BULK_DISCOUNT_MIN_QTY,
+  FREE_SHIPPING_THRESHOLD,
+  RURAL_HANDLING_FEE,
+  RURAL_HANDLING_WAIVED_OVER,
+} from "@/lib/pricing";
 import { toast } from "sonner";
 import { Lock, Truck, ShieldCheck, BadgePercent, X } from "lucide-react";
 
@@ -15,8 +25,10 @@ export const Route = createFileRoute("/checkout")({
   component: Checkout,
 });
 
+const AU_STATES = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"];
+
 function Checkout() {
-  const { lines, subtotal } = useCart();
+  const { lines, subtotal, count } = useCart();
   const { discount, clear: clearDiscount } = useDiscount();
   const navigate = useNavigate();
   const startStripe = useServerFn(createStripeCheckout);
@@ -37,10 +49,17 @@ function Checkout() {
     }
   }, []);
 
-  const shippingCost = subtotal === 0 ? 0 : subtotal >= 80 ? 0 : 9.95;
-  const discountPercent = discount?.percent ?? 0;
+  const discountPercent = useMemo(
+    () => computeBulkDiscountPercent(count, discount?.percent ?? 0),
+    [count, discount?.percent],
+  );
   const discountAmount = +(subtotal * discountPercent / 100).toFixed(2);
-  const total = +(subtotal - discountAmount + shippingCost).toFixed(2);
+  const subtotalAfterDiscount = +(subtotal - discountAmount).toFixed(2);
+  const ship = useMemo(
+    () => computeShipping(subtotalAfterDiscount, { state: form.state, postcode: form.postcode, country: form.country }),
+    [subtotalAfterDiscount, form.state, form.postcode, form.country],
+  );
+  const total = +(subtotalAfterDiscount + ship.total).toFixed(2);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,7 +83,7 @@ function Checkout() {
             price: l.price, quantity: l.quantity, image_url: l.image_url ?? null,
           })),
           discount_code: discount?.code ?? null,
-          discount_percent: discountPercent,
+          discount_percent: discount?.percent ?? 0,
           origin: window.location.origin,
         },
       });
@@ -112,16 +131,44 @@ function Checkout() {
           <Section title="Contact" subtitle="We'll email your order confirmation here.">
             <Field label="Email" required value={form.email} onChange={(v) => setForm({ ...form, email: v })} type="email" />
           </Section>
-          <Section title="Shipping address">
+          <Section title="Shipping address" subtitle="Start typing — we'll auto-complete your Australian address.">
             <div className="grid sm:grid-cols-2 gap-4">
               <Field label="Full name" required value={form.full_name} onChange={(v) => setForm({ ...form, full_name: v })} />
               <Field label="Phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
             </div>
-            <Field label="Address line 1" required value={form.line1} onChange={(v) => setForm({ ...form, line1: v })} />
+            <label className="block">
+              <span className="text-xs font-medium text-muted-foreground">Address line 1 *</span>
+              <div className="mt-1">
+                <AddressAutocomplete
+                  value={form.line1}
+                  onChange={(v) => setForm((f) => ({ ...f, line1: v }))}
+                  onSelect={(s) => setForm((f) => ({
+                    ...f,
+                    line1: s.line1,
+                    city: s.city || f.city,
+                    state: s.state || f.state,
+                    postcode: s.postcode || f.postcode,
+                    country: s.country,
+                  }))}
+                  required
+                />
+              </div>
+            </label>
             <Field label="Apt/Suite (optional)" value={form.line2} onChange={(v) => setForm({ ...form, line2: v })} />
             <div className="grid sm:grid-cols-3 gap-4">
-              <Field label="City" required value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
-              <Field label="State" required value={form.state} onChange={(v) => setForm({ ...form, state: v })} />
+              <Field label="City / Suburb" required value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
+              <label className="block">
+                <span className="text-xs font-medium text-muted-foreground">State *</span>
+                <select
+                  required
+                  value={form.state}
+                  onChange={(e) => setForm({ ...form, state: e.target.value })}
+                  className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                >
+                  <option value="">Select…</option>
+                  {AU_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </label>
               <Field label="Postcode" required value={form.postcode} onChange={(v) => setForm({ ...form, postcode: v })} />
             </div>
             <Field label="Country" value={form.country} onChange={(v) => setForm({ ...form, country: v })} />
@@ -166,10 +213,16 @@ function Checkout() {
               ))}
             </div>
 
+            {count >= BULK_DISCOUNT_MIN_QTY && (
+              <div className="flex items-center gap-2 rounded-xl bg-[var(--amber-deep)]/10 px-3 py-2 text-xs text-[var(--amber-deep)] font-semibold">
+                <BadgePercent className="w-4 h-4" /> Buy {BULK_DISCOUNT_MIN_QTY}+ unlocked — {BULK_DISCOUNT_PERCENT}% off applied
+              </div>
+            )}
+
             {discount && (
               <div className="flex items-center justify-between gap-2 rounded-xl bg-[var(--amber-deep)]/10 px-3 py-2 text-xs">
                 <span className="flex items-center gap-2 text-[var(--amber-deep)] font-semibold">
-                  <BadgePercent className="w-4 h-4" /> {discount.code} applied · −{discount.percent}%
+                  <BadgePercent className="w-4 h-4" /> {discount.code} · −{discount.percent}%
                 </span>
                 <button type="button" onClick={clearDiscount} aria-label="Remove discount" className="p-1 hover:opacity-70">
                   <X className="w-3.5 h-3.5" />
@@ -179,8 +232,11 @@ function Checkout() {
 
             <div className="border-t border-border pt-3 space-y-1.5 text-sm">
               <Row label="Subtotal" value={formatAUD(subtotal)} />
-              {discountAmount > 0 && <Row label={`Discount (${discountPercent}%)`} value={`− ${formatAUD(discountAmount)}`} accent />}
-              <Row label="Shipping" value={shippingCost === 0 ? "Free" : formatAUD(shippingCost)} />
+              {discountAmount > 0 && <Row label={`Discount (−${discountPercent}%)`} value={`− ${formatAUD(discountAmount)}`} accent />}
+              <Row label={ship.freeShipping ? "Shipping" : "Shipping (metro)"} value={ship.base === 0 ? "Free" : formatAUD(ship.base)} />
+              {ship.handling > 0 && (
+                <Row label="Remote area handling" value={formatAUD(ship.handling)} />
+              )}
               <div className="flex justify-between font-semibold text-base pt-2 border-t border-border">
                 <span>Total</span><span>{formatAUD(total)}</span>
               </div>
@@ -189,7 +245,9 @@ function Checkout() {
               <Lock className="w-4 h-4" />
               {submitting ? "Redirecting…" : `Pay ${formatAUD(total)} securely`}
             </button>
-            <p className="text-[11px] text-center text-muted-foreground">By placing this order you agree to our terms and privacy policy.</p>
+            <p className="text-[11px] text-center text-muted-foreground leading-relaxed">
+              Free metro shipping over {formatAUD(FREE_SHIPPING_THRESHOLD)}. Remote (WA, NT, TAS, Far North QLD) adds {formatAUD(RURAL_HANDLING_FEE)} handling — waived over {formatAUD(RURAL_HANDLING_WAIVED_OVER)}.
+            </p>
           </div>
         </aside>
       </form>
@@ -232,4 +290,5 @@ function Field({ label, value, onChange, required, type = "text" }: { label: str
     </label>
   );
 }
+
 
