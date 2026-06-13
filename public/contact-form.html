@@ -1,0 +1,1055 @@
+<!doctype html>
+<html lang="en">
+<head>
+meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abdulrahman Perfumes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#fff;--ink:#1a1a1a;--ink2:#3a3a3a;--mid:#6b6b6b;--light:#9a9a9a;
+  --line:#e0e0e0;--line2:#d0d0d0;--red:#e8002a;--red-pale:#fff3f4;--red-glow:rgba(232,0,42,.06);
+  --green:#1a7f4b;--green-pale:#f0fdf4;--amber:#b45309;--amber-pale:#fffbeb;
+  --font:'DM Sans',system-ui,sans-serif;--r:4px;
+}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{background:var(--bg);font-family:var(--font);color:var(--ink);min-height:100vh;font-size:15px}
+button,input,textarea,select{font-family:var(--font)}
+button{cursor:pointer;border:none;background:none}
+input,textarea{outline:none}
+::placeholder{color:#b0b0b0}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:99px}
+button:active{opacity:.75;transition:opacity 60ms!important}
+
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes pop{0%{transform:scale(.84);opacity:0}55%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+@keyframes stagger{from{opacity:0;transform:translateX(-4px)}to{opacity:1;transform:translateX(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+
+/* ─── Shell ─── */
+#root{min-height:100vh;padding:0 0 80px}
+.wrap{max-width:820px;margin:0 auto;padding:0 24px}
+
+/* ─── Breadcrumb ─── */
+.breadcrumb{display:flex;align-items:center;gap:6px;padding:20px 0 0;font-size:13px;color:var(--mid)}
+.breadcrumb span{color:var(--mid);cursor:pointer}
+.breadcrumb span:hover{text-decoration:underline}
+.breadcrumb .sep{color:var(--light);font-size:11px;cursor:default}
+.breadcrumb .sep:hover,.breadcrumb .cur:hover{text-decoration:none}
+.breadcrumb .cur{color:var(--ink);font-weight:400;cursor:default}
+
+/* ─── Page header ─── */
+.page-hdr{padding:28px 0 26px}
+.page-hdr h1{font-size:clamp(30px,5vw,44px);font-weight:400;color:var(--ink);line-height:1.1;letter-spacing:-.3px;margin-bottom:16px}
+.page-hdr p{font-size:16px;color:var(--ink2);line-height:1.65;max-width:560px;font-weight:300}
+
+/* ─── Status bar (collapsible) ─── */
+.status-bar{display:flex;flex-direction:column;align-items:stretch;padding:16px 0 28px;border-bottom:1px solid var(--line);margin-bottom:36px}
+.status-bar-row{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.status-bar-row p{font-size:14px;color:var(--mid);margin:0}
+.pdot{width:6px;height:6px;border-radius:50%;animation:pulse 2.2s ease infinite;flex-shrink:0}
+#direct-panel{max-height:0;overflow:hidden;transition:max-height .3s ease}
+#direct-chevron{transition:transform .22s;flex-shrink:0}
+
+/* ─── Section heading ─── */
+.section-heading{font-size:16px;font-weight:600;color:var(--ink);padding-bottom:4px}
+.section-sub{font-size:14px;color:var(--mid);font-weight:300;margin-top:3px}
+
+/* ─── Row list ─── */
+.row-list{border-top:1px solid var(--line);margin-top:14px}
+.row-item{display:flex;align-items:center;gap:14px;padding:15px 0;border-bottom:1px solid var(--line);cursor:pointer;transition:background .1s;background:var(--bg)}
+.row-item:hover{background:#fafafa}
+.row-item:hover .row-chevron{color:var(--red)}
+.row-icon{width:32px;height:32px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px}
+.row-text{flex:1;min-width:0}
+.row-name{font-size:15px;font-weight:400;color:var(--ink);line-height:1.3}
+.row-desc{font-size:13px;color:var(--mid);margin-top:2px;font-weight:300}
+.row-chevron{color:#bbb;flex-shrink:0;transition:color .12s}
+
+/* ─── Back link ─── */
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--mid);padding-bottom:22px;cursor:pointer;transition:color .13s;background:none;border:none}
+.back-link:hover{color:var(--ink)}
+
+/* ─── Sub-page header ─── */
+.sub-hdr{padding:0 0 24px}
+.sub-hdr .cat-label{font-size:12px;font-weight:500;color:var(--mid);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.sub-hdr h2{font-size:clamp(22px,4vw,32px);font-weight:400;color:var(--ink);letter-spacing:-.3px;line-height:1.2}
+
+/* ─── Answer box ─── */
+.ans-box{background:#f7f7f7;border-left:3px solid var(--red);padding:16px 18px;margin-bottom:20px}
+.ans-label{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--mid);margin-bottom:8px}
+.ans-text{font-size:15px;color:var(--ink2);line-height:1.7;font-weight:300}
+
+/* ─── Steps box ─── */
+.steps-box{border:1px solid var(--line);margin-bottom:18px}
+.steps-hdr{padding:12px 16px;border-bottom:1px solid var(--line);font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--mid)}
+.step-row{display:flex;gap:14px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.step-row:last-child{border-bottom:none}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--ink);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.step-h{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.step-b{font-size:13.5px;color:var(--mid);line-height:1.6;font-weight:300}
+
+/* ─── Resolve panel ─── */
+.resolve-panel{border-top:1px solid var(--line);padding:22px 0 0;margin-top:6px}
+.resolve-q{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:16px}
+.resolve-row{display:flex;gap:10px}
+
+/* ─── AUTO-SOLVE cards ─── */
+.autosolve{border:1px solid var(--line);margin-bottom:18px;animation:up .22s ease}
+.autosolve-hdr{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.autosolve-hdr-icon{font-size:16px}
+.autosolve-hdr-text{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--mid)}
+.autosolve-body{padding:16px}
+
+/* Tracking widget */
+.track-status{display:flex;flex-direction:column;gap:0}
+.track-step{display:flex;gap:14px;position:relative}
+.track-step:not(:last-child)::after{content:'';position:absolute;left:11px;top:28px;bottom:-4px;width:1.5px;background:var(--line)}
+.track-dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);background:var(--bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;font-weight:700;color:var(--light);position:relative;z-index:1}
+.track-dot.done{background:var(--green);border-color:var(--green);color:#fff}
+.track-dot.active{background:var(--red);border-color:var(--red);color:#fff;animation:pulse 1.6s ease infinite}
+.track-info{padding-bottom:16px;flex:1}
+.track-label{font-size:13.5px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.track-sub{font-size:12.5px;color:var(--mid);font-weight:300}
+
+/* Refund timeline */
+.refund-timeline{display:flex;gap:0;margin-bottom:4px}
+.rt-seg{flex:1;text-align:center}
+.rt-bar{height:6px;background:var(--line);position:relative;margin-bottom:6px}
+.rt-bar.fill{background:var(--green)}
+.rt-bar.fill-part{background:linear-gradient(90deg,var(--green) 60%,var(--line) 60%)}
+.rt-seg:first-child .rt-bar{border-radius:3px 0 0 3px}
+.rt-seg:last-child .rt-bar{border-radius:0 3px 3px 0}
+.rt-lbl{font-size:11px;color:var(--mid);font-weight:300;line-height:1.3}
+.rt-lbl strong{display:block;font-size:12px;font-weight:500;color:var(--ink);margin-bottom:2px}
+
+/* Order modify banner */
+.urgency-banner{padding:12px 14px;display:flex;gap:10px;align-items:flex-start;margin-bottom:4px}
+.urgency-banner.ok{background:var(--green-pale);border:1px solid #bbf7d0}
+.urgency-banner.warn{background:var(--amber-pale);border:1px solid #fde68a}
+.urgency-banner.err{background:var(--red-pale);border:1px solid rgba(232,0,42,.2)}
+.ub-ico{font-size:18px;flex-shrink:0;margin-top:1px}
+.ub-title{font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.ub-body{font-size:13px;color:var(--mid);line-height:1.55;font-weight:300}
+
+/* Fragrance match card */
+.scent-match{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:4px}
+.scent-card{border:1px solid var(--line);padding:14px;cursor:pointer;transition:border-color .14s}
+.scent-card:hover{border-color:var(--ink)}
+.scent-card.sel{border-color:var(--red);background:var(--red-glow)}
+.scent-emoji{font-size:22px;margin-bottom:8px;display:block}
+.scent-name{font-size:13.5px;font-weight:500;color:var(--ink);margin-bottom:3px}
+.scent-desc{font-size:12px;color:var(--mid);line-height:1.5;font-weight:300}
+
+/* Stepper */
+.stepper{display:flex;align-items:center;margin-bottom:28px}
+.sn{display:flex;flex-direction:column;align-items:center;gap:4px}
+.sdot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--line);background:var(--bg);font-size:11px;font-weight:600;color:var(--light);transition:all .25s}
+.sdot.done{background:var(--ink);border-color:var(--ink);color:#fff}
+.sdot.now{background:var(--bg);border-color:var(--red);color:var(--red)}
+.slbl{font-size:10px;font-weight:500;letter-spacing:.6px;text-transform:uppercase;color:var(--light)}
+.slbl.now{color:var(--red)}.slbl.done{color:var(--ink)}
+.sline{flex:1;height:1px;background:var(--line);margin:0 6px;margin-bottom:18px;transition:background .3s}
+.sline.done{background:var(--ink)}
+
+/* Kicker */
+.kicker{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.kcat{font-size:11.5px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.ksep{color:var(--line2)}
+.kstep{font-size:13px;color:var(--mid)}
+.fq{font-size:clamp(18px,3vw,26px);font-weight:400;color:var(--ink);margin-bottom:20px;line-height:1.3;letter-spacing:-.2px}
+
+/* Return */
+.return-confirm-box{background:#fff8f8;border:1px solid rgba(232,0,42,.15);padding:16px 18px;margin-bottom:18px}
+.return-confirm-box h4{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.return-confirm-box p{font-size:14px;color:var(--mid);line-height:1.6;font-weight:300}
+.return-info-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.return-info-item{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--ink2);line-height:1.55}
+.ri-num{width:20px;height:20px;border-radius:50%;background:var(--ink);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+
+/* Chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:8px 16px;border-radius:99px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink2);font-size:14px;font-weight:400;transition:all .13s;cursor:pointer}
+.chip:hover{border-color:var(--ink)}
+.chip.sel{border-color:var(--red);background:var(--red-glow);color:var(--red);font-weight:500}
+
+/* Inputs */
+.inp,.ta{width:100%;padding:11px 14px;border:1.5px solid var(--line2);border-radius:var(--r);font-size:15px;color:var(--ink);transition:border-color .14s,box-shadow .14s;background:var(--bg);font-family:var(--font);font-weight:400}
+.inp:focus,.ta:focus{border-color:var(--ink);outline:none;box-shadow:0 0 0 3px rgba(26,26,26,.06)}
+.inp.v-ok{border-color:var(--green)}
+.inp.v-err{border-color:var(--red);animation:shake .3s ease}
+.ta{resize:vertical;line-height:1.65;min-height:90px}
+.lbl{display:block;font-size:13px;font-weight:500;color:var(--ink2);margin-bottom:6px}
+.lbl-hint{font-size:12px;color:var(--light);font-weight:300}
+.frow{margin-bottom:18px;position:relative}
+.frow .v-msg{font-size:12px;margin-top:5px;display:none}
+.frow .v-msg.show{display:block}
+.frow .v-msg.err{color:var(--red)}
+.frow .v-msg.ok{color:var(--green)}
+.counter{font-size:11px;color:var(--light);float:right;margin-top:5px}
+.email-suggest{margin-top:5px;font-size:13px;color:var(--mid);display:none}
+.email-suggest button{background:#f0f0f0;border:1px solid var(--line);padding:3px 10px;border-radius:4px;font-size:13px;cursor:pointer;transition:background .12s}
+.email-suggest button:hover{background:#e4e4e4}
+
+/* Buttons */
+.btn-dark{padding:13px 22px;background:var(--ink);border-radius:99px;color:#fff;font-size:14px;font-weight:500;transition:background .14s;width:100%;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-dark:hover{background:#333}
+.btn-dark:disabled{opacity:.28;cursor:not-allowed;pointer-events:none}
+.btn-red{padding:13px 22px;background:var(--red);border-radius:99px;color:#fff;font-size:14px;font-weight:500;transition:background .14s;width:100%;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-red:hover{background:#c8001f}
+.btn-red:disabled{opacity:.28;cursor:not-allowed;pointer-events:none}
+.btn-outline{padding:12px 20px;background:var(--bg);border:1.5px solid var(--line2);border-radius:99px;color:var(--ink2);font-size:14px;font-weight:400;transition:all .14s;display:flex;align-items:center;justify-content:center;gap:7px}
+.btn-outline:hover{border-color:var(--ink);color:var(--ink)}
+.brow{display:flex;gap:10px}
+.skip{color:var(--light);font-size:13px;display:block;margin:12px auto 0;padding:4px;cursor:pointer;transition:color .13s;background:none;border:none}
+.skip:hover{color:var(--mid)}
+
+/* Contact form */
+.contact-top{padding-bottom:24px;border-bottom:1px solid var(--line);margin-bottom:24px}
+.contact-top h3{font-size:22px;font-weight:400;color:var(--ink);margin-bottom:4px}
+.contact-top p{font-size:14px;color:var(--mid);font-weight:300}
+.recap{background:#f7f7f7;padding:14px 16px;margin-bottom:18px}
+.recap-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:7px}
+.recap-row:last-child{margin-bottom:0}
+.rdot{width:4px;height:4px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:7px}
+.autosave-bar{font-size:12px;color:var(--green);display:flex;align-items:center;gap:6px;margin-bottom:16px}
+
+/* Feedback */
+.fb-top{padding:8px 0 20px}
+.fb-top h3{font-size:22px;font-weight:400;color:var(--ink);margin-bottom:5px}
+.fb-top p{font-size:14px;color:var(--mid);line-height:1.6;font-weight:300}
+.rgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:20px}
+.rbtn{padding:12px 4px;border:1.5px solid var(--line);background:var(--bg);display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:all .13s;width:100%}
+.rbtn .re{font-size:22px;line-height:1}
+.rbtn .rl{font-size:9.5px;font-weight:500;letter-spacing:.3px;text-transform:uppercase;color:var(--light)}
+.rbtn:hover,.rbtn.sel{border-color:var(--red);background:var(--red-glow)}
+.rbtn.sel .rl{color:var(--red)}
+.fb-reveal{animation:up .2s ease}
+.fb-hint{padding:12px 0;font-size:14px;color:var(--light)}
+
+/* Loaders */
+.ploader{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:14px}
+.spinner{width:32px;height:32px;animation:spin .85s linear infinite}
+.btn-spin{width:15px;height:15px;animation:spin .8s linear infinite;flex-shrink:0}
+.divider{height:1px;background:var(--line);margin:20px 0}
+
+/* Confirm */
+.ctop{border:1px solid var(--line);padding:28px 24px;text-align:center;margin-bottom:16px;background:#f7f7f7}
+.ctick{width:52px;height:52px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;animation:pop .42s ease}
+.ctop h2{font-size:22px;font-weight:400;color:var(--ink);margin-bottom:5px}
+.ctop p{font-size:14px;color:var(--mid);margin-bottom:18px;line-height:1.55}
+.tid{display:inline-flex;align-items:center;background:var(--ink);border-radius:99px;padding:8px 18px}
+.tid span{font-size:12px;font-weight:600;color:#fff;letter-spacing:2px}
+.prow{display:flex;align-items:center;gap:10px;padding:12px 15px;margin-bottom:12px;border:1px solid}
+.dtable{border:1px solid var(--line);overflow:hidden;margin-bottom:12px}
+.drow{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
+.drow:last-child{border-bottom:none}
+.drow:nth-child(even){background:#f9f9f9}
+.dk{font-size:11px;color:var(--light);font-weight:600;letter-spacing:.4px;text-transform:uppercase}
+.dv{font-size:14px;color:var(--ink);font-weight:400;text-align:right;max-width:58%}
+.eok{display:flex;gap:10px;align-items:center;background:var(--green-pale);border:1px solid #bbf7d0;padding:13px 15px;margin-bottom:12px}
+.eico{width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* FB sent */
+.fbsent{padding:40px 0 20px;animation:up .28s ease}
+.fbsent-emoji{font-size:48px;display:block;margin-bottom:16px;animation:pop .38s ease}
+.fbsent h2{font-size:26px;font-weight:400;color:var(--ink);margin-bottom:8px}
+.fbsent p{font-size:15px;color:var(--mid);line-height:1.65;font-weight:300;max-width:400px}
+
+/* Direct contact */
+.direct-options{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:4px}
+.direct-card{border:1.5px solid var(--line);padding:24px 22px;display:flex;flex-direction:column;gap:10px;animation:up .24s ease}
+.direct-card.best{border-color:var(--red)}
+.direct-card-top{display:flex;align-items:center;justify-content:space-between}
+.direct-badge{display:inline-flex;background:var(--red);color:#fff;font-size:10.5px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;padding:4px 10px;border-radius:99px}
+.direct-icon{font-size:28px;line-height:1}
+.direct-title{font-size:18px;font-weight:500;color:var(--ink)}
+.direct-body{font-size:14px;color:var(--mid);line-height:1.65;font-weight:300;flex:1}
+.direct-btn{margin-top:6px;text-decoration:none;width:100%}
+
+/* Screens */
+.scr{display:none}.scr.on{display:block;animation:up .2s ease}
+
+/* Footer */
+.foot{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--light)}
+</style>
+
+<div id="root"><div class="wrap">
+
+<div class="breadcrumb">
+  <span onclick="goHome()">Home</span><span class="sep">›</span>
+  <span onclick="goHome()">Help</span><span class="sep">›</span>
+  <span class="cur" id="bc-cur">Contact us</span>
+</div>
+
+
+<div id="s-home" class="scr on">
+  <div class="page-hdr">
+    <h1>Contact us</h1>
+    <p>Choose the topic you need help with, so we can guide you to the information you're looking for — or put you in touch with someone who can help.</p>
+  </div>
+  <div class="status-bar" id="contact-bar">
+    <div class="status-bar-row" onclick="toggleDirect()">
+      <p>Access quicker help by contacting us directly</p>
+      <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="pdot" style="background:#1a7f4b"></div>
+          <span style="font-size:12px;color:#1a7f4b;font-weight:500">Online now</span>
+        </div>
+        <svg id="direct-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--mid)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+      </div>
+    </div>
+    <div id="direct-panel">
+      <div style="padding-top:16px">
+        <div style="border:1.5px solid var(--red);padding:20px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+            <div>
+              <div style="display:inline-flex;background:var(--red);color:#fff;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border-radius:99px;margin-bottom:8px">Best option</div>
+              <div style="font-size:16px;font-weight:500;color:var(--ink)">Email us</div>
+            </div>
+            <span style="font-size:24px;line-height:1;margin-top:2px">✉️</span>
+          </div>
+          <div style="font-size:13.5px;color:var(--mid);line-height:1.65;font-weight:300">We reply personally to every email — usually within 24–48 hours. Include your order number if you have one.</div>
+          <a href="mailto:support@abdulrahman.store" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 18px;background:var(--red);border-radius:99px;color:#fff;font-size:13.5px;font-weight:500;text-decoration:none">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            support@abdulrahman.store
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section-heading">How can we help?</div>
+  <div class="section-sub">Select from orders, products, returns or other enquiries</div>
+  <div class="row-list" id="cat-grid"></div>
+  <p class="foot">© <span id="yr"></span> Abdulrahman Perfumes</p>
+</div>
+
+
+<div id="s-loader" class="scr">
+  <div class="ploader">
+    <svg class="spinner" viewBox="0 0 34 34"><circle cx="17" cy="17" r="13" fill="none" stroke="#e0e0e0" stroke-width="2.6"></circle><circle cx="17" cy="17" r="13" fill="none" stroke="var(--red)" stroke-width="2.6" stroke-dasharray="46 70" stroke-linecap="round"></circle></svg>
+    <p id="lmsg" style="font-size:14px;color:var(--mid)">Loading…</p>
+  </div>
+</div>
+
+
+<div id="s-direct" class="scr">
+  <button class="back-link" onclick="goHome()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>Back</button>
+  <div class="page-hdr" style="padding-top:4px"><h1 style="font-size:clamp(24px,4vw,36px)">Contact us directly</h1><p>Our team is online and ready to help.</p></div>
+  <div class="direct-options">
+    <div class="direct-card best">
+      <div class="direct-card-top"><div class="direct-badge">Best option</div><div class="direct-icon">✉️</div></div>
+      <div class="direct-title">Email us</div>
+      <div class="direct-body">We reply personally to every email — usually within 24–48 hours. Include your order number if you have one.</div>
+      <a class="btn-red direct-btn" href="mailto:support@abdulrahman.store" style="text-decoration:none"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>support@abdulrahman.store</a>
+    </div>
+    <div class="direct-card">
+      <div class="direct-card-top"><div class="direct-icon">🗂️</div></div>
+      <div class="direct-title">Browse help topics</div>
+      <div class="direct-body">Find instant answers to common questions about orders, fragrances, returns and more.</div>
+      <button class="btn-outline direct-btn" onclick="goHome()">← Back to Help Centre</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="s-topics" class="scr">
+  <button class="back-link" onclick="goHome()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>Back</button>
+  <div class="sub-hdr"><div class="cat-label" id="tbcat"></div><h2>What do you need help with?</h2></div>
+  <div class="row-list" id="tlist"></div>
+</div>
+
+
+<div id="s-flow" class="scr">
+  <button class="back-link" onclick="flowBack()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>Back</button>
+  <div class="stepper" id="stepper"></div>
+
+  <div id="p-res">
+    <div class="kicker"><span id="r-cat" class="kcat"></span><span class="ksep">·</span><span class="kstep">Step 1 of 3</span></div>
+    <h2 id="r-q" class="fq"></h2>
+    <div class="ans-box" id="r-abox"><div class="ans-label">Quick answer</div><p id="r-text" class="ans-text"></p></div>
+    <div id="r-autosolve"></div>
+    <div id="r-steps"></div>
+    <div id="r-actions"></div>
+  </div>
+
+  <div id="p-return" style="display:none">
+    <div class="kicker"><span class="kcat" style="color:var(--red)">Returns &amp; Refunds</span><span class="ksep">·</span><span class="kstep" id="ret-step-lbl"></span></div>
+    <h2 id="ret-heading" class="fq"></h2>
+    <div id="ret-content"></div>
+  </div>
+
+  <div id="p-fu" style="display:none">
+    <div class="kicker"><span id="f-cat" class="kcat"></span><span class="ksep">·</span><span id="f-step" class="kstep"></span></div>
+    <h2 id="f-q" class="fq"></h2>
+    <div id="f-in"></div>
+    <div id="f-err" style="display:none;font-size:13px;color:var(--red);margin-top:10px;padding:10px 14px;background:var(--red-pale);border:1px solid rgba(232,0,42,.15)"></div>
+    <div class="brow" style="margin-top:20px">
+      <button class="btn-outline" style="flex:0 0 92px" onclick="fuBack()">← Back</button>
+      <button class="btn-dark" id="fu-next" style="flex:1;opacity:.28" onclick="fuNext()">Continue →</button>
+    </div>
+    <button class="skip" id="fu-skip" onclick="fuSkip()" style="display:none">Skip this question</button>
+  </div>
+
+  <div id="p-contact" style="display:none">
+    <div class="contact-top"><h3 id="ch3">We've got you covered</h3><p id="cp">Tell us who you are and our team will reply personally.</p></div>
+    <div id="autosave-bar" style="display:none" class="autosave-bar">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
+      Fields restored from your last visit
+    </div>
+    <div class="frow">
+      <label class="lbl">Your name</label>
+      <input class="inp" id="inp-name" placeholder="e.g. Sara Al Rashid" autocomplete="name" oninput="onName()" onblur="vField('inp-name','name')">
+      <div class="v-msg err" id="v-name">Please enter your full name</div>
+    </div>
+    <div class="frow">
+      <label class="lbl">Email address</label>
+      <input class="inp" id="inp-email" type="email" placeholder="e.g. sara@email.com" autocomplete="email" oninput="chkSub();emailSuggest(this)" onblur="vField('inp-email','email')">
+      <div class="v-msg err" id="v-email">Please enter a valid email address</div>
+      <div class="email-suggest" id="email-suggest"></div>
+    </div>
+    <div class="frow">
+      <label class="lbl">Anything to add? <span class="lbl-hint">(optional)</span></label>
+      <textarea class="ta" id="inp-extra" placeholder="Extra context, order numbers, photos to mention…" maxlength="800" oninput="updateCtr('inp-extra','ctr-extra',800)"></textarea>
+      <span class="counter" id="ctr-extra">0 / 800</span>
+    </div>
+    <div id="recap-box"></div>
+    <button class="btn-red" id="sub-btn" disabled="" onclick="submitTicket()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"></path></svg>
+      Submit request
+    </button>
+  </div>
+
+  <div id="p-feedback" style="display:none">
+    <div class="fb-top"><h3 id="fb-h">Your feedback matters</h3><p id="fb-p">How are we doing? Every word goes directly to our team.</p></div>
+    <label class="lbl" style="margin-bottom:10px">How would you rate your experience?</label>
+    <div class="rgrid" id="rgrid"></div>
+    <div id="fb-fields" style="display:none" class="fb-reveal">
+      <div class="frow"><label class="lbl">Tell us more</label><textarea class="ta" id="fb-detail" placeholder="What stood out — or what could be better?"></textarea></div>
+      <div class="divider"></div>
+      <p style="font-size:14px;color:var(--mid);margin-bottom:16px;line-height:1.6;font-weight:300">Want a personal reply? Add your name and email — totally optional.</p>
+      <div class="frow"><label class="lbl">Your name <span class="lbl-hint">(optional)</span></label><input class="inp" id="fb-name" placeholder="e.g. Sara" autocomplete="name"></div>
+      <div class="frow"><label class="lbl">Email <span class="lbl-hint">(optional)</span></label><input class="inp" id="fb-email" type="email" placeholder="e.g. sara@email.com" autocomplete="email"></div>
+      <button class="btn-red" id="fb-btn" onclick="submitFeedback()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"></path></svg>Send feedback</button>
+    </div>
+    <div id="fb-hint" class="fb-hint">Select a rating to continue ↑</div>
+  </div>
+</div>
+
+
+<div id="s-confirm" class="scr">
+  <div class="ctop"><div class="ctick"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg></div>
+    <h2 id="c-h">Request received</h2><p id="c-p"></p><div class="tid"><span id="c-id"></span></div>
+  </div>
+  <div id="c-prio"></div><div class="dtable" id="c-details"></div><div id="c-email"></div>
+  <button class="btn-outline" style="width:100%" onclick="goHome()">← Back to Help</button>
+</div>
+
+
+<div id="s-fbsent" class="scr">
+  <div class="fbsent"><span class="fbsent-emoji" id="fbsent-emoji">🙏</span><h2>Thank you!</h2><p id="fbsent-msg"></p></div>
+  <button class="btn-outline" style="width:100%;margin-top:8px" onclick="goHome()">← Back to Help</button>
+</div>
+
+</div></div>
+
+<script>
+// ═══ CONFIG ═══════════════════════════════════════════════════════════
+const EJS_PUB='xnDiFpAkFFsWyWkuh',EJS_SVC='service_n99efe7',EJS_CUST='template_rkhh8ka',EJS_AGNT='template_huvgxfm',AGENT='support@dbueducation.com.au';
+document.getElementById('yr').textContent=new Date().getFullYear();
+
+// ═══ SVG / SPINNER ═══
+const P={chk:'M20 6L9 17l-5-5',send:'M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z',warn:'M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01'};
+const ico=(n,s=14,c='currentColor',w=2)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;display:block"><path d="${P[n]}"/></svg>`;
+const btnSpin=`<svg class="btn-spin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2.5"/><circle cx="12" cy="12" r="9" fill="none" stroke="#fff" stroke-width="2.5" stroke-dasharray="34 48" stroke-linecap="round"/></svg>`;
+const chevron=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
+
+// ═══ LABELS ═══
+const LABELS={orderNumber:'Order #',orderDate:'Order Date',receivedEmail:'Dispatch Email',modifyWhat:'Change Needed',urgency:'Order Placed',issueType:'Issue',photos:'Photos',resolution:'Preferred Outcome',daysWaiting:'Wait Time',location:'Country',fragranceName:'Fragrance',concern:'Query',skinType:'Skin Type',application:'Application',allergyReason:'Reason',allergenDetail:'Concern Detail',scentFamily:'Scent Family',occasion:'Occasion',budget:'Budget',notes:'Notes',damageType:'Damage Type',purchaseDate:'Purchase Date',returnReason:'Return Reason',returnSentDate:'Return Sent',currentItem:'Item to Exchange',newItem:'Replacement Item',platform:'Platform',brief:'Proposal',businessName:'Business',country:'Country',storeType:'Store Type',moq:'Est. Qty',itemOpened:'Condition',daysSinceReturn:'Days Since Return',refundMethod:'Payment Method',itemCondition:'Item Condition',preference:'Preferred Resolution',collabType:'Collaboration Type'};
+
+// ═══ DATA ═══
+const CATS=[
+  {id:'order',  emoji:'📦',label:'Orders & Shipping', desc:'Track, modify or enquire about your order',  accent:'#e8002a'},
+  {id:'product',emoji:'🌹',label:'Products & Scents',  desc:'Notes, ingredients & fragrance guidance',   accent:'#4361ee'},
+  {id:'returns',emoji:'↩️',label:'Returns & Refunds',  desc:'Start a return, exchange or check your refund',accent:'#1a7f4b'},
+  {id:'other',  emoji:'💬',label:'Other Enquiries',    desc:'Collaborations, wholesale & feedback',      accent:'#b45309'},
+];
+
+const TOPICS={
+order:[
+  {id:'track',q:'Where is my order?',r:'Orders dispatch within 2–3 business days. A tracking link is emailed the moment your parcel ships.',
+   autosolve:'tracking',
+   solveSteps:[{h:'Check your dispatch email',b:'Search your inbox (including spam) for a dispatch email — it contains your live carrier tracking link.'},{h:'Track on the carrier site',b:'Copy your tracking number and use it on the carrier\'s website for real-time updates.'},{h:'Ordered in the last 48 hours?',b:'Your order may still be in preparation. Dispatch notifications go out same-day.'}],
+   followups:[{key:'orderNumber',label:'Your order number',type:'text',placeholder:'e.g. ORD-12345',required:true},{key:'orderDate',label:'When did you place it?',type:'text',placeholder:'e.g. 20 Jan 2026',required:false},{key:'receivedEmail',label:'Did you receive a dispatch email?',type:'choice',options:['Yes — but tracking isn\'t updating','No dispatch email received','Not sure'],required:true},{key:'location',label:'Which country are you in?',type:'text',placeholder:'e.g. Australia',required:true}]},
+  {id:'modify',q:'I need to modify my order',r:'Orders can be changed within 1 hour of placement — after that, fulfilment begins.',
+   autosolve:'orderModify',
+   solveSteps:[{h:'Act within 60 minutes',b:'Reply directly to your order confirmation email with the exact change needed.'},{h:'Address changes after 1 hour',b:'Some delivery address corrections are still possible if your order hasn\'t shipped yet.'}],
+   followups:[{key:'orderNumber',label:'Your order number',type:'text',placeholder:'e.g. ORD-12345',required:true},{key:'modifyWhat',label:'What needs to change?',type:'choice',options:['Shipping address','Item / variant','Quantity','Cancel order','Other'],required:true},{key:'urgency',label:'When did you place the order?',type:'choice',options:['Within the last hour','1–6 hours ago','More than 6 hours ago'],required:true}]},
+  {id:'missing',q:'My order arrived incomplete or incorrect',r:'We sincerely apologise — these are treated as urgent and resolved within 24–48 hours.',
+   solveSteps:[{h:'Check for split shipments',b:'Some orders ship in multiple parcels. Check all boxes received and your dispatch email.'}],
+   followups:[{key:'orderNumber',label:'Your order number',type:'text',placeholder:'e.g. ORD-12345',required:true},{key:'issueType',label:'What happened?',type:'choice',options:['Item missing from box','Wrong item received','Damaged on arrival','Never delivered'],required:true},{key:'photos',label:'Do you have photos?',type:'choice',options:['Yes','No'],required:true},{key:'resolution',label:'What would you prefer?',type:'choice',options:['Re-send missing item','Full refund','Replacement','Not sure yet'],required:true}]},
+  {id:'delay',q:'My order is delayed',r:'Delays can happen due to customs or peak periods. Every order is actively monitored.',
+   solveSteps:[{h:'Check live carrier status',b:'Open the tracking link in your dispatch email — carrier tracking is updated in real time.'},{h:'International orders',b:'Cross-border shipments may require customs clearance, adding 3–10 business days.'},{h:'Peak & sale periods',b:'During high-volume events, dispatch may take an extra 1–2 business days.'}],
+   followups:[{key:'orderNumber',label:'Your order number',type:'text',placeholder:'e.g. ORD-12345',required:true},{key:'daysWaiting',label:'How long have you been waiting?',type:'choice',options:['3–5 days','6–10 days','More than 10 days','Over 3 weeks'],required:true},{key:'location',label:'Which country?',type:'text',placeholder:'e.g. Australia',required:true}]},
+],
+product:[
+  {id:'notes',q:'What are the fragrance notes?',r:'Full note pyramids — top, heart and base — are on every product page.',
+   solveSteps:[{h:'Visit the product page',b:'Every listing shows the complete note pyramid, concentration, projected longevity, and our perfumer\'s scent description.'},{h:'Use scent family filters',b:'Filter by Oud/Woody, Floral, Citrus, Spicy/Oriental and more on our website.'}],
+   followups:[{key:'fragranceName',label:'Which fragrance?',type:'text',placeholder:'e.g. Oud Royale, Rose Nuit…',required:true},{key:'concern',label:'What would you like to know?',type:'choice',options:['Top / heart / base notes','Oud or alcohol content','Suitable for sensitive skin','Gender suitability','Best season to wear'],required:true}]},
+  {id:'longevity',q:'How long does the scent last?',r:'Our EDP concentrations typically last 8–12 hours. Application technique makes a real difference.',
+   solveSteps:[{h:'Moisturise first',b:'Fragrance lasts significantly longer on hydrated skin.'},{h:'Target pulse points',b:'Wrists, neck, inner elbows and behind the knees. Never rub — it crushes the delicate top notes.'},{h:'Layer onto clothing',b:'Fabric holds fragrance far longer than skin — extend wear to 24+ hours.'}],
+   followups:[{key:'fragranceName',label:'Which fragrance?',type:'text',placeholder:'e.g. Oud Royale',required:true},{key:'skinType',label:'Your skin type',type:'choice',options:['Dry','Normal','Oily','Combination','Not sure'],required:true},{key:'application',label:'Where do you apply?',type:'choice',options:['Pulse points (wrist, neck)','Clothing','Hair','All of the above'],required:true}]},
+  {id:'ingredients',q:'Ingredient list / allergen concern',r:'Full INCI lists are on packaging and every product page. Medical queries go straight to our safety team.',
+   solveSteps:[{h:'Check the product page',b:'Every listing includes the full INCI ingredient list and allergen declarations (EU cosmetic regulations).'},{h:'Check your packaging',b:'The ingredient list is printed on the box and inside insert.'}],
+   followups:[{key:'fragranceName',label:'Which fragrance?',type:'text',placeholder:'e.g. Amber Elixir',required:true},{key:'allergyReason',label:'Why do you need the list?',type:'choice',options:['Known allergy','Sensitive skin','Vegan / cruelty-free check','Healthcare professional','Other'],required:true},{key:'allergenDetail',label:'Describe your concern',type:'textarea',placeholder:'e.g. allergic to benzyl alcohol…',required:false}]},
+  {id:'recommend',q:'Help me find the right fragrance',r:'Our consultants love matching people to their perfect scent.',
+   autosolve:'scentFinder',
+   solveSteps:[{h:'Try our Fragrance Finder',b:'Interactive quiz on our website — recommends fragrances based on your preferences. Takes 2 minutes.'},{h:'Order a Discovery Set',b:'Try 10 × 2ml samples before committing. The set price is credited against your next full-size purchase.'}],
+   followups:[{key:'scentFamily',label:'Scent families you enjoy',type:'choice',options:['Oud / Woody','Floral / Rose','Fresh / Citrus','Spicy / Oriental','Aquatic / Clean','Surprise me'],required:true},{key:'occasion',label:'Main occasion',type:'choice',options:['Daily wear','Evening / events','Special occasion','Gift for someone','Layering'],required:true},{key:'budget',label:'Your budget',type:'choice',options:['Under £50','£50–£100','£100–£200','£200+','No preference'],required:true},{key:'notes',label:'Fragrances you love or dislike',type:'textarea',placeholder:'e.g. love Tom Ford Oud Wood, dislike heavy musks…',required:false}]},
+],
+returns:[
+  {id:'startreturn',q:'I want to start a return',r:'',isReturnWizard:true,followups:[]},
+  {id:'refundstatus',q:'Where is my refund?',r:'Refunds are processed within 5–10 business days of receiving your return.',
+   autosolve:'refundTimeline',
+   solveSteps:[{h:'Allow 5–10 business days',b:'Once we receive your return it\'s inspected within 2 business days. Card refunds take a further 3–5 days.'},{h:'Check your original payment method',b:'Refunds always return to the original method — check your card statement or PayPal.'},{h:'Still nothing after 10 business days?',b:'If it\'s been over 10 days since your return was delivered to us, submit this form and we\'ll investigate immediately.'}],
+   followups:[{key:'orderNumber',label:'Your order number',type:'text',placeholder:'e.g. ORD-12345',required:true},{key:'returnSentDate',label:'When did you send the return?',type:'text',placeholder:'e.g. 15 Jan 2026',required:true},{key:'daysSinceReturn',label:'How long since we received it?',type:'choice',options:['Less than 5 days','5–10 days','More than 10 days','Not sure if received'],required:true},{key:'refundMethod',label:'Original payment method',type:'choice',options:['Credit/debit card','PayPal','Gift card / store credit','Other'],required:true}]},
+  {id:'damaged',q:'My product arrived damaged',r:'Damaged items are treated as urgent — we\'ll arrange a replacement or full refund within 24–48 hours.',
+   solveSteps:[{h:'Photograph everything first',b:'Take clear photos of the damage, the exterior box and the item before discarding packaging.'}],
+   followups:[{key:'orderNumber',label:'Your order number',type:'text',placeholder:'e.g. ORD-12345',required:true},{key:'damageType',label:'How was it damaged?',type:'choice',options:['Bottle cracked / broken','Box damaged, product okay','Liquid leaked','Seal broken on arrival','Other'],required:true},{key:'photos',label:'Photos available?',type:'choice',options:['Yes','No'],required:true},{key:'preference',label:'Your preferred outcome',type:'choice',options:['Send a replacement','Full refund','Store credit'],required:true}]},
+  {id:'exchange',q:'I\'d like to exchange for another fragrance',r:'Exchanges available on unopened items within 14 days of delivery.',
+   solveSteps:[{h:'How exchanges work',b:'Submit this form and our team will send you a prepaid return label. Once we receive the item, your chosen replacement is dispatched within 1–2 business days.'}],
+   followups:[{key:'orderNumber',label:'Your order number',type:'text',placeholder:'e.g. ORD-12345',required:true},{key:'currentItem',label:'Item you\'re exchanging',type:'text',placeholder:'e.g. Oud Royale 100ml',required:true},{key:'newItem',label:'What would you like instead?',type:'text',placeholder:'e.g. Rose Nuit 50ml',required:true},{key:'itemCondition',label:'Condition of the item',type:'choice',options:['Sealed / unopened','Opened but unused','Not sure it qualifies'],required:true}]},
+],
+other:[
+  {id:'collab',q:'Collaboration or press enquiry',r:'Our partnerships team reviews all briefs and responds within 3–5 business days.',
+   solveSteps:[{h:'What we look for',b:'We partner with creators, publications and brands that align with our luxury positioning. Micro-creators with engaged audiences are just as welcome.'},{h:'How to stand out',b:'Include platform links, audience demographics and a specific creative proposal.'}],
+   followups:[{key:'collabType',label:'Type of collaboration',type:'choice',options:['Influencer / creator','PR / media','Brand partnership','Event','Other'],required:true},{key:'platform',label:'Your platform or publication',type:'text',placeholder:'e.g. @yourhandle on Instagram, or Magazine name',required:true},{key:'brief',label:'Your proposal',type:'textarea',placeholder:'Audience size, demographics, and what you\'d like to create…',required:true}]},
+  {id:'wholesale',q:'Wholesale & stockist enquiry',r:'We welcome wholesale partners globally. Our commercial team will send our trade catalogue within 2 business days.',
+   solveSteps:[{h:'Minimum order quantities',b:'Our wholesale MOQ is 50 units per order. New accounts access a curated bestseller selection.'},{h:'Territory availability',b:'We operate on exclusive and non-exclusive models. Submit your details and we\'ll confirm availability.'}],
+   followups:[{key:'businessName',label:'Business / store name',type:'text',placeholder:'e.g. The Fragrance Boutique',required:true},{key:'country',label:'Country',type:'text',placeholder:'e.g. Australia',required:true},{key:'storeType',label:'Type of business',type:'choice',options:['Brick & mortar retail','Online store','Both','Department store','Duty free / travel retail','Other'],required:true},{key:'moq',label:'Estimated monthly order quantity',type:'choice',options:['Under 50 units','50–200 units','200–500 units','500+ units','Not sure yet'],required:true}]},
+  {id:'feedback',q:'Leave us feedback',r:'Every word you write goes directly to our team and is read personally — no ticket numbers, no bots.',
+   isFeedback:true,
+   solveSteps:[{h:'Why your feedback matters',b:'We use it to improve everything — products, packaging, service, and the website experience.'},{h:'Want a personal reply?',b:'Leave your email on the next screen. We reply to all feedback that includes an email address within 3 business days — personally, not from a template.'}],
+   followups:[]},
+],
+};
+
+const URGENT=['damaged','broken','missing','incomplete','incorrect','never delivered','leaked','lost','more than 10 days','over 3 weeks','allergy','healthcare','cancel order','wrong item'];
+const HIGH=['refund','exchange','delay','6–10 days','more than a week','500+','damaged on arrival'];
+
+// ═══ STATE ═══
+let S={cat:null,topic:null,phase:'res',fuStep:0,answers:{},ticket:null,fbRating:null,retStep:0,retAnswers:{}};
+
+// ═══ SCREENS ═══
+function show(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById('s-'+id)?.classList.add('on');window.scrollTo(0,0);}
+function showLoader(msg='Loading…'){document.getElementById('lmsg').textContent=msg;show('loader');}
+function phases(r,ret,fu,con,fb){['p-res','p-return','p-fu','p-contact','p-feedback'].forEach((id,i)=>document.getElementById(id).style.display=[r,ret,fu,con,fb][i]?'block':'none');}
+
+// ═══ COLLAPSIBLE DIRECT PANEL ═══
+function toggleDirect(){
+  const panel=document.getElementById('direct-panel');
+  const chev=document.getElementById('direct-chevron');
+  const isOpen=panel.style.maxHeight&&panel.style.maxHeight!=='0px';
+  if(isOpen){panel.style.maxHeight='0';chev.style.transform='rotate(0deg)';}
+  else{panel.style.maxHeight=panel.scrollHeight+200+'px';chev.style.transform='rotate(180deg)';}
+}
+
+// ═══ HOME ═══
+function renderHome(){
+  document.getElementById('cat-grid').innerHTML=CATS.map((c,i)=>`
+    <div class="row-item" onclick="pickCat('${c.id}')" style="animation:up .26s ease ${i*.05}s both">
+      <div class="row-icon">${c.emoji}</div>
+      <div class="row-text"><div class="row-name">${c.label}</div><div class="row-desc">${c.desc}</div></div>
+      <span class="row-chevron">${chevron}</span>
+    </div>`).join('');
+}
+function goHome(){
+  S={cat:null,topic:null,phase:'res',fuStep:0,answers:{},ticket:null,fbRating:null,retStep:0,retAnswers:{}};
+  ['inp-name','inp-email','inp-extra','fb-detail','fb-name','fb-email'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('bc-cur').textContent='Contact us';
+  show('home');
+}
+
+// ═══ CATEGORIES ═══
+function pickCat(id){
+  S.cat=CATS.find(c=>c.id===id);
+  showLoader('Loading topics…');
+  setTimeout(()=>{renderTopics();show('topics');},350);
+}
+function renderTopics(){
+  const c=S.cat;
+  document.getElementById('tbcat').textContent=c.label;
+  document.getElementById('bc-cur').textContent=c.label;
+  document.getElementById('tlist').innerHTML=(TOPICS[c.id]||[]).map(t=>`
+    <div class="row-item" onclick="pickTopic('${t.id}')">
+      <div class="row-text"><div class="row-name">${t.q}</div></div>
+      <span class="row-chevron">${chevron}</span>
+    </div>`).join('');
+}
+function flowBack(){if(S.phase==='res'||S.phase==='ret')show('topics');else{S.phase='res';renderFlow();}}
+
+// ═══ FLOW ═══
+function pickTopic(id){
+  S.topic=(TOPICS[S.cat.id]||[]).find(t=>t.id===id);
+  S.phase='res';S.fuStep=0;S.answers={};S.retStep=0;S.retAnswers={};
+  document.getElementById('bc-cur').textContent=S.topic.q;
+  renderFlow();show('flow');
+}
+function renderFlow(){
+  const{topic,phase}=S;
+  const phIdx=phase==='res'?0:phase==='fu'||phase==='ret'?1:2;
+  const steps=topic.isReturnWizard?['Eligibility','Details','Contact']:['Answer','Details','Contact'];
+  document.getElementById('stepper').innerHTML=steps.map((s,i)=>`
+    <div class="sn">
+      <div class="sdot ${i<phIdx?'done':i===phIdx?'now':''}">${i<phIdx?ico('chk',10,'#fff',2.8):`<span>${i+1}</span>`}</div>
+      <span class="slbl ${i<phIdx?'done':i===phIdx?'now':''}">${s}</span>
+    </div>${i<2?`<div class="sline ${i<phIdx?'done':''}"></div>`:''}`).join('');
+  if(phase==='res'){phases(1,0,0,0,0);renderRes();}
+  else if(phase==='ret'){phases(0,1,0,0,0);renderReturn();}
+  else if(phase==='fu'){phases(0,0,1,0,0);renderFU();}
+  else if(phase==='contact'){phases(0,0,0,1,0);renderContact();}
+  else if(phase==='feedback'){phases(0,0,0,0,1);renderFeedback();}
+}
+
+// ═══ AUTO-SOLVE WIDGETS ═══
+function renderAutosolve(type){
+  const el=document.getElementById('r-autosolve');
+  if(!type){el.innerHTML='';return;}
+  if(type==='tracking'){
+    el.innerHTML=`
+    <div class="autosolve">
+      <div class="autosolve-hdr"><span class="autosolve-hdr-icon">📍</span><span class="autosolve-hdr-text">Live Order Status — What to expect</span></div>
+      <div class="autosolve-body">
+        <div class="track-status">
+          <div class="track-step"><div class="track-dot done">✓</div><div class="track-info"><div class="track-label">Order confirmed</div><div class="track-sub">You received a confirmation email</div></div></div>
+          <div class="track-step"><div class="track-dot active">→</div><div class="track-info"><div class="track-label">Preparing your order</div><div class="track-sub">Usually completes within 2–3 business days</div></div></div>
+          <div class="track-step"><div class="track-dot">3</div><div class="track-info"><div class="track-label">Dispatched</div><div class="track-sub">Tracking link sent to your email</div></div></div>
+          <div class="track-step"><div class="track-dot">4</div><div class="track-info"><div class="track-label">Out for delivery</div><div class="track-sub">Carrier en route to your address</div></div></div>
+          <div class="track-step"><div class="track-dot">✓</div><div class="track-info"><div class="track-label">Delivered</div><div class="track-sub">Your fragrance has arrived</div></div></div>
+        </div>
+        <div style="margin-top:12px;padding:10px 14px;background:#f7f7f7;font-size:13px;color:var(--mid);line-height:1.6">💡 <strong style="color:var(--ink)">No dispatch email?</strong> Check your spam folder first. If you ordered over 3 business days ago and have nothing, use the form below.</div>
+      </div>
+    </div>`;
+  } else if(type==='orderModify'){
+    el.innerHTML=`
+    <div class="autosolve">
+      <div class="autosolve-hdr"><span class="autosolve-hdr-icon">⏱️</span><span class="autosolve-hdr-text">Can your order still be modified?</span></div>
+      <div class="autosolve-body">
+        <div class="urgency-banner ok" style="margin-bottom:10px"><span class="ub-ico">✅</span><div><div class="ub-title">Ordered within 1 hour — changes likely possible</div><div class="ub-body">Reply directly to your order confirmation email right now with the exact change. This is the fastest route to our fulfilment team.</div></div></div>
+        <div class="urgency-banner warn" style="margin-bottom:10px"><span class="ub-ico">⚠️</span><div><div class="ub-title">Ordered 1–6 hours ago — depends on status</div><div class="ub-body">Address changes may still be possible if your order hasn't been picked. Submit the form below immediately — include your order number.</div></div></div>
+        <div class="urgency-banner err"><span class="ub-ico">❌</span><div><div class="ub-title">Ordered more than 6 hours ago — likely packed</div><div class="ub-body">Orders are typically dispatched within 6 hours. If it's already shipped, you may need to arrange a return after delivery.</div></div></div>
+      </div>
+    </div>`;
+  } else if(type==='refundTimeline'){
+    el.innerHTML=`
+    <div class="autosolve">
+      <div class="autosolve-hdr"><span class="autosolve-hdr-icon">💳</span><span class="autosolve-hdr-text">Refund Timeline Tracker</span></div>
+      <div class="autosolve-body">
+        <div class="refund-timeline">
+          <div class="rt-seg"><div class="rt-bar fill"></div><div class="rt-lbl"><strong>Day 1–2</strong>Return received &amp; inspected</div></div>
+          <div class="rt-seg"><div class="rt-bar fill-part"></div><div class="rt-lbl"><strong>Day 3–7</strong>Refund processed to payment method</div></div>
+          <div class="rt-seg"><div class="rt-bar"></div><div class="rt-lbl"><strong>Day 8–12</strong>Appears on your statement</div></div>
+        </div>
+        <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--mid)"><span style="color:var(--green);font-weight:600;flex-shrink:0">Credit/Debit</span>3–5 working days after we process it</div>
+          <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--mid)"><span style="color:#0070ba;font-weight:600;flex-shrink:0">PayPal</span>1–3 working days, usually faster</div>
+          <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--mid)"><span style="color:var(--amber);font-weight:600;flex-shrink:0">Gift card</span>Store credit applied same day</div>
+        </div>
+        <div style="margin-top:12px;padding:10px 14px;background:#f7f7f7;font-size:13px;color:var(--mid)">⚠️ <strong style="color:var(--ink)">Still waiting after 12 days?</strong> Fill out the form below — we'll investigate with the payment processor directly.</div>
+      </div>
+    </div>`;
+  } else if(type==='scentFinder'){
+    el.innerHTML=`
+    <div class="autosolve">
+      <div class="autosolve-hdr"><span class="autosolve-hdr-icon">🌹</span><span class="autosolve-hdr-text">Popular Fragrance Families</span></div>
+      <div class="autosolve-body">
+        <div class="scent-match">
+          <div class="scent-card"><span class="scent-emoji">🪵</span><div class="scent-name">Oud & Woody</div><div class="scent-desc">Deep, smoky, rich. Long-lasting & bold</div></div>
+          <div class="scent-card"><span class="scent-emoji">🌹</span><div class="scent-name">Floral & Rose</div><div class="scent-desc">Elegant, feminine, romantic</div></div>
+          <div class="scent-card"><span class="scent-emoji">🍋</span><div class="scent-name">Fresh & Citrus</div><div class="scent-desc">Light, energising, everyday wear</div></div>
+          <div class="scent-card"><span class="scent-emoji">🌶️</span><div class="scent-name">Spicy & Oriental</div><div class="scent-desc">Warm, sensual, evening occasions</div></div>
+        </div>
+        <div style="padding:10px 14px;background:#f7f7f7;font-size:13px;color:var(--mid)">💡 Not sure? Tell our team your favourite brands or scents and we'll match you perfectly via the form below.</div>
+      </div>
+    </div>`;
+  } else {
+    el.innerHTML='';
+  }
+}
+
+// ═══ RESOLUTION ═══
+function renderRes(){
+  const{cat,topic}=S;
+  const rc=document.getElementById('r-cat');rc.textContent=cat.label;rc.style.color=cat.accent;
+  document.getElementById('r-q').textContent=topic.q;
+  document.getElementById('r-text').textContent=topic.r;
+  document.getElementById('r-abox').style.display=topic.isReturnWizard?'none':'block';
+  renderAutosolve(topic.autosolve||null);
+  const steps=topic.solveSteps||[];
+  document.getElementById('r-steps').innerHTML=steps.length&&!topic.isReturnWizard?`
+    <div class="steps-box">
+      <div class="steps-hdr">Try these first</div>
+      ${steps.map((s,i)=>`<div class="step-row" style="animation:stagger .22s ease ${i*.07}s both">
+        <div class="step-num">${i+1}</div><div><div class="step-h">${s.h}</div><div class="step-b">${s.b}</div></div>
+      </div>`).join('')}
+    </div>`:'';
+  const fqs=topic.followups||[];
+  if(topic.isReturnWizard){
+    document.getElementById('r-q').textContent='I want to start a return';
+    document.getElementById('r-actions').innerHTML=`<div class="resolve-panel"><div class="resolve-q">Let\'s check your eligibility first.</div><div class="resolve-row"><button class="btn-red" style="flex:1" onclick="startReturnWizard()">Start return →</button></div></div>`;
+  } else if(topic.isFeedback){
+    document.getElementById('r-actions').innerHTML=`<div class="resolve-panel"><div class="resolve-q">Ready to share your thoughts?</div><div class="resolve-row"><button class="btn-outline" style="flex:1" onclick="show('topics')">Maybe later</button><button class="btn-red" style="flex:1.4" onclick="goFeedback()">Leave feedback →</button></div></div>`;
+  } else if(fqs.length>0){
+    document.getElementById('r-actions').innerHTML=`<div class="resolve-panel"><div class="resolve-q">Did that help?</div><div class="resolve-row"><button class="btn-dark" style="flex:1" onclick="show('topics')">Yes, sorted ✓</button><button class="btn-outline" style="flex:1.3" onclick="S.phase='fu';renderFlow()">No, I need help →</button></div></div>`;
+  } else {
+    document.getElementById('r-actions').innerHTML=`<div class="divider"></div><button class="btn-red" onclick="S.phase='fu';renderFlow()">Contact our team →</button>`;
+  }
+}
+
+// ═══ RETURN WIZARD ═══
+const RET_REASONS=[{id:'mind',label:'Changed my mind',eligible:true},{id:'scent',label:'Scent not as expected',eligible:true},{id:'gift',label:'Received as a gift — wrong choice',eligible:true},{id:'mistake',label:'Purchased by mistake',eligible:true},{id:'faulty',label:'Item is faulty or damaged',eligible:true,urgent:true},{id:'used',label:'Used and disliked',eligible:false}];
+function startReturnWizard(){S.retStep=0;S.retAnswers={};S.phase='ret';renderFlow();}
+function renderReturn(){
+  const step=S.retStep;
+  document.getElementById('ret-step-lbl').textContent=`Step ${step+1} of 3`;
+  const h=document.getElementById('ret-heading');
+  const content=document.getElementById('ret-content');
+  if(step===0){
+    h.textContent="Let's check if your item qualifies";
+    content.innerHTML=`
+      <div class="return-confirm-box"><h4>Return policy at a glance</h4><p>Items must be <strong>unopened and unused</strong> in original packaging, within <strong>14 days of delivery</strong>. Faulty or incorrect items are always eligible regardless of condition.</p></div>
+      <div class="frow">
+        <label class="lbl">Is the item still sealed and unused?</label>
+        <div class="chips">${['Yes — completely sealed','Opened but unused','Used — it\'s faulty','Used — not faulty'].map(o=>`<button class="chip ${S.retAnswers.condition===o?'sel':''}" onclick="retChip('condition','${o.replace(/'/g,"\\'")}')">${S.retAnswers.condition===o?'✓ ':''}${o}</button>`).join('')}</div>
+      </div>
+      <div id="ret-cta-0"></div>`;
+    renderRetCTA0();
+  } else if(step===1){
+    h.textContent='Tell us a little more';
+    content.innerHTML=`
+      <div class="frow"><label class="lbl">Reason for return</label><div class="chips">${RET_REASONS.filter(r=>r.eligible).map(r=>`<button class="chip ${S.retAnswers.reason===r.label?'sel':''}" onclick="retChip('reason','${r.label.replace(/'/g,"\\'")}')">${S.retAnswers.reason===r.label?'✓ ':''}${r.label}</button>`).join('')}</div></div>
+      <div class="frow"><label class="lbl">Your order number</label><input class="inp" id="ret-order" placeholder="e.g. ORD-12345" autocomplete="off" value="${S.retAnswers.orderNumber||''}" oninput="S.retAnswers.orderNumber=this.value;retChkNext1()"></div>
+      <div class="frow"><label class="lbl">Item being returned</label><input class="inp" id="ret-item" placeholder="e.g. Oud Royale 100ml" value="${S.retAnswers.itemName||''}" oninput="S.retAnswers.itemName=this.value;retChkNext1()"></div>
+      <div id="ret-err1" style="display:none;font-size:13px;color:var(--red);padding:10px 14px;background:var(--red-pale);border:1px solid rgba(232,0,42,.15);margin-bottom:12px"></div>
+      <div class="brow" style="margin-top:8px"><button class="btn-outline" style="flex:0 0 92px" onclick="S.retStep=0;renderFlow()">← Back</button><button class="btn-dark" id="ret-next1" style="flex:1;opacity:.28" onclick="retNext1()">Continue →</button></div>`;
+    retChkNext1();
+  } else if(step===2){
+    const isFaulty=S.retAnswers.reason&&S.retAnswers.reason.toLowerCase().includes('faulty');
+    h.textContent='Almost done — confirm your return';
+    content.innerHTML=`
+      <div class="return-confirm-box"><h4>${isFaulty?'⚡ Urgent return — faulty item':'Your return request'}</h4>
+      <div class="return-info-list">
+        <div class="return-info-item"><div class="ri-num">1</div><span><strong>We review your request</strong> and email you a prepaid return label within 1 business day.</span></div>
+        <div class="return-info-item"><div class="ri-num">2</div><span><strong>Pack your item</strong> securely. Attach the label and drop off at the carrier point.</span></div>
+        <div class="return-info-item"><div class="ri-num">3</div><span><strong>Once received</strong>, inspected within 2 business days. Refund processed within 5–10 business days.</span></div>
+      </div></div>
+      <div class="recap" style="margin-bottom:16px">
+        <p style="font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--mid);margin-bottom:9px">Return summary</p>
+        ${[['Condition',S.retAnswers.condition],['Reason',S.retAnswers.reason],['Order #',S.retAnswers.orderNumber],['Item',S.retAnswers.itemName]].filter(([,v])=>v).map(([k,v])=>`<div class="recap-row"><div class="rdot"></div><p style="font-size:13.5px;color:var(--ink2);margin:0"><strong style="color:var(--ink)">${k}:</strong> ${v}</p></div>`).join('')}
+      </div>
+      <div class="frow"><label class="lbl">Your name</label><input class="inp" id="ret-name" placeholder="e.g. Sara Al Rashid" autocomplete="name" value="${S.retAnswers.name||''}" oninput="S.retAnswers.name=this.value;retChkFinal()"><div class="v-msg err" id="v-ret-name">Please enter your name</div></div>
+      <div class="frow"><label class="lbl">Email address</label><input class="inp" id="ret-email" placeholder="e.g. sara@email.com" type="email" autocomplete="email" value="${S.retAnswers.email||''}" oninput="S.retAnswers.email=this.value;retChkFinal()"><div class="v-msg err" id="v-ret-email">Please enter a valid email</div></div>
+      <div id="ret-err2" style="display:none;font-size:13px;color:var(--red);padding:10px 14px;background:var(--red-pale);border:1px solid rgba(232,0,42,.15);margin-bottom:12px"></div>
+      <div class="brow"><button class="btn-outline" style="flex:0 0 92px" onclick="S.retStep=1;renderFlow()">← Back</button><button class="btn-red" id="ret-submit" style="flex:1;opacity:.28" disabled onclick="retSubmitValidated()">Submit return →</button></div>`;
+    retChkFinal();
+    // pre-fill from saved
+    const sv=getSaved();
+    if(sv.name&&!document.getElementById('ret-name').value){document.getElementById('ret-name').value=sv.name;S.retAnswers.name=sv.name;retChkFinal();}
+    if(sv.email&&!document.getElementById('ret-email').value){document.getElementById('ret-email').value=sv.email;S.retAnswers.email=sv.email;retChkFinal();}
+  }
+}
+function retChip(key,val){S.retAnswers[key]=S.retAnswers[key]===val?null:val;if(key==='condition')renderRetCTA0();else renderReturn();}
+function renderRetCTA0(){
+  const cond=S.retAnswers.condition;const el=document.getElementById('ret-cta-0');if(!el)return;
+  if(!cond){el.innerHTML='';return;}
+  if(cond==='Used — not faulty'){el.innerHTML=`<div style="background:var(--amber-pale);border:1px solid #fde68a;padding:14px 16px;margin-top:8px"><p style="font-size:14px;color:#92400e;line-height:1.6">Unfortunately, used items that are not faulty or incorrect are not eligible for return under our policy.</p><button class="btn-outline" style="margin-top:12px;width:100%" onclick="show('topics')">← Back to topics</button></div>`;}
+  else{el.innerHTML=`<div style="margin-top:8px"><button class="btn-dark" style="width:100%" onclick="S.retStep=1;renderFlow()">${cond==='Used — it\'s faulty'?'Yes, continue with faulty return →':'Continue to next step →'}</button></div>`;}
+}
+function retChkNext1(){
+  const ok=S.retAnswers.reason&&S.retAnswers.orderNumber?.trim()&&S.retAnswers.itemName?.trim();
+  const btn=document.getElementById('ret-next1');if(btn){btn.disabled=!ok;btn.style.opacity=ok?'1':'.28';}
+}
+function retNext1(){
+  const errors=[];
+  if(!S.retAnswers.reason)errors.push('Please select a reason for your return.');
+  if(!S.retAnswers.orderNumber?.trim())errors.push('Please enter your order number.');
+  if(!S.retAnswers.itemName?.trim())errors.push('Please enter the item name.');
+  const errEl=document.getElementById('ret-err1');
+  if(errors.length){errEl.style.display='block';errEl.innerHTML=errors.map(e=>`• ${e}`).join('<br>');return;}
+  errEl.style.display='none';
+  S.retStep=2;renderFlow();
+}
+function retChkFinal(){
+  const ok=S.retAnswers.name?.trim()&&S.retAnswers.email?.includes('@')&&S.retAnswers.email?.includes('.');
+  const btn=document.getElementById('ret-submit');if(btn){btn.disabled=!ok;btn.style.opacity=ok?'1':'.28';}
+}
+function retSubmitValidated(){
+  const errors=[];
+  if(!S.retAnswers.name?.trim())errors.push('Please enter your name.');
+  if(!S.retAnswers.email?.trim())errors.push('Please enter your email.');
+  else if(!/^[^@]+@[^@]+[.][^@]+$/.test(S.retAnswers.email))errors.push('Please enter a valid email address.');
+  const errEl=document.getElementById('ret-err2');
+  if(errors.length){errEl.style.display='block';errEl.innerHTML=errors.map(e=>`• ${e}`).join('<br>');return;}
+  errEl.style.display='none';
+  submitReturn();
+}
+async function submitReturn(){
+  const btn=document.getElementById('ret-submit');btn.disabled=true;btn.innerHTML=`${btnSpin} Submitting…`;
+  const a=S.retAnswers;
+  const ticketId='RET-'+Date.now().toString(36).toUpperCase().slice(-6);
+  const time=new Date().toLocaleString('en-AU',{dateStyle:'medium',timeStyle:'short'});
+  const isFaulty=a.reason?.toLowerCase().includes('faulty');
+  const priority=isFaulty?'Urgent':'Standard';const sla=isFaulty?'4–8 hours':'24–48 hours';
+  const aText=`Condition: ${a.condition}\nReason: ${a.reason}\nOrder #: ${a.orderNumber}\nItem: ${a.itemName}`;
+  const aHtml=buildHtml([['Condition',a.condition],['Reason',a.reason],['Order #',a.orderNumber],['Item',a.itemName]]);
+  const first=a.name.split(' ')[0]||a.name;
+  const shared=mkShared(ticketId,a.name,first,a.email,'Returns & Refunds','Start a Return',priority,sla,time,aText,'Return wizard',{order_number:a.orderNumber,fragrance:a.itemName,damage_type:a.condition,resolution:a.reason,return_reason:a.reason,item_from:a.itemName});
+  const sent=await sendBoth(shared,aHtml,a.email,first);
+  save({name:a.name,email:a.email});
+  S.ticket={id:ticketId,name:a.name,email:a.email,category:'Returns & Refunds',query:'Return request: '+a.itemName,priority,sla,time};
+  renderConfirm(S.ticket,sent);show('confirm');
+}
+
+// ═══ FOLLOW-UP ═══
+function renderFU(){
+  const{cat,topic,fuStep,answers}=S;
+  const fqs=topic.followups||[];const fq=fqs[fuStep];
+  if(!fq){S.phase='contact';renderFlow();return;}
+  const fc=document.getElementById('f-cat');fc.textContent=cat.label;fc.style.color=cat.accent;
+  document.getElementById('f-step').textContent=`Question ${fuStep+1} of ${fqs.length}`;
+  document.getElementById('f-q').textContent=fq.label;
+  document.getElementById('fu-next').textContent=fuStep===fqs.length-1?'Continue →':'Next →';
+  document.getElementById('f-err').style.display='none';
+  const skipBtn=document.getElementById('fu-skip');
+  skipBtn.style.display=fq.required===false?'block':'none';
+  let html='';
+  if(fq.type==='choice'){
+    html=`<div class="chips">${fq.options.map(o=>{const s=answers[fq.key]===o;return`<button class="chip${s?' sel':''}" onclick="chipPick('${fq.key}','${o.replace(/'/g,"\\'")}')">${s?'✓ ':''}${o}</button>`}).join('')}</div>`;
+  } else if(fq.type==='textarea'){
+    html=`<textarea class="ta" placeholder="${fq.placeholder||''}" oninput="setAns('${fq.key}',this.value)">${answers[fq.key]||''}</textarea>`;
+  } else {
+    html=`<input class="inp" placeholder="${fq.placeholder||''}" value="${answers[fq.key]||''}" autocomplete="off" oninput="setAns('${fq.key}',this.value)" onkeydown="if(event.key==='Enter')fuNext()">`;
+  }
+  document.getElementById('f-in').innerHTML=html;
+  updFU();
+}
+function chipPick(k,v){S.answers[k]=S.answers[k]===v?null:v;renderFU();}
+function setAns(k,v){S.answers[k]=v;updFU();}
+function updFU(){
+  const fq=S.topic.followups[S.fuStep];
+  const ok=S.answers[fq.key]&&String(S.answers[fq.key]).trim();
+  const btn=document.getElementById('fu-next');
+  btn.style.opacity=(ok||fq.required===false)?'1':'.28';
+}
+function fuNext(){
+  const fq=S.topic.followups[S.fuStep];
+  if(fq.required!==false&&(!S.answers[fq.key]||!String(S.answers[fq.key]).trim())){
+    const errEl=document.getElementById('f-err');
+    errEl.style.display='block';errEl.textContent='Please answer this question before continuing.';
+    return;
+  }
+  document.getElementById('f-err').style.display='none';
+  const fqs=S.topic.followups||[];
+  if(S.fuStep<fqs.length-1){S.fuStep++;renderFlow();}
+  else{S.phase='contact';renderFlow();}
+}
+function fuSkip(){
+  const fqs=S.topic.followups||[];
+  if(S.fuStep<fqs.length-1){S.fuStep++;renderFlow();}
+  else{S.phase='contact';renderFlow();}
+}
+function fuBack(){if(S.fuStep>0){S.fuStep--;renderFlow();}else{S.phase='res';renderFlow();}}
+
+// ═══ CONTACT ═══
+function renderContact(){
+  const{cat,topic,answers}=S;
+  document.getElementById('cp').textContent=`For: ${topic.q}`;
+  const filled=Object.entries(answers).filter(([,v])=>v);
+  document.getElementById('recap-box').innerHTML=filled.length?`
+    <div class="recap"><p style="font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--mid);margin-bottom:9px">Your answers</p>
+    ${filled.map(([k,v])=>`<div class="recap-row"><div class="rdot"></div><p style="font-size:13.5px;color:var(--ink2);margin:0"><strong style="color:var(--ink)">${LABELS[k]||k}:</strong> ${v}</p></div>`).join('')}</div>`:'';
+  // restore saved
+  const sv=getSaved();
+  let restored=false;
+  if(sv.name){const n=document.getElementById('inp-name');if(n&&!n.value){n.value=sv.name;onName();restored=true;}}
+  if(sv.email){const e=document.getElementById('inp-email');if(e&&!e.value){e.value=sv.email;chkSub();restored=true;}}
+  document.getElementById('autosave-bar').style.display=restored?'flex':'none';
+  chkSub();
+}
+function onName(){
+  const n=document.getElementById('inp-name')?.value?.trim();
+  const first=n?.split(' ')[0];
+  document.getElementById('ch3').textContent=first?`We've got you, ${first} 👌`:"We've got you covered";
+  if(n)save({name:n});
+  chkSub();
+}
+function chkSub(){
+  const n=document.getElementById('inp-name')?.value?.trim();
+  const e=document.getElementById('inp-email')?.value?.trim();
+  if(e&&/^[^@]+@[^@]+[.][^@]+$/.test(e))save({email:e});
+  const ok=n&&e&&/^[^@]+@[^@]+[.][^@]+$/.test(e);
+  const btn=document.getElementById('sub-btn');if(btn){btn.disabled=!ok;btn.style.opacity=ok?'1':'.28';}
+}
+
+// ═══ VALIDATION HELPERS ═══
+function vField(id,type){
+  const el=document.getElementById(id);if(!el)return;
+  const val=el.value.trim();
+  const msgId=id.replace('inp-','v-');
+  const msg=document.getElementById(msgId);
+  if(!val){el.classList.remove('v-ok','v-err');if(msg)msg.classList.remove('show');return;}
+  if(type==='email'){
+    const ok=/^[^@]+@[^@]+[.][^@]+$/.test(val);
+    el.classList.toggle('v-ok',ok);el.classList.toggle('v-err',!ok);
+    if(msg){msg.classList.toggle('show',!ok);}
+  } else {
+    el.classList.add('v-ok');el.classList.remove('v-err');
+    if(msg)msg.classList.remove('show');
+  }
+}
+function emailSuggest(input){
+  const val=input.value;const el=document.getElementById('email-suggest');if(!el)return;
+  const at=val.indexOf('@');if(at<1){el.style.display='none';return;}
+  const typed=val.slice(at+1).toLowerCase();if(!typed){el.style.display='none';return;}
+  const match=['gmail.com','hotmail.com','yahoo.com','outlook.com','icloud.com'].find(d=>d.startsWith(typed)&&d!==typed);
+  if(match){
+    const full=val.slice(0,at+1)+match;
+    el.style.display='block';
+    el.innerHTML=`Did you mean <button onclick="document.getElementById('inp-email').value='${full}';document.getElementById('email-suggest').style.display='none';chkSub()">✉️ ${full}</button>?`;
+  } else {el.style.display='none';}
+}
+function updateCtr(inId,ctId,max){
+  const el=document.getElementById(inId);const ct=document.getElementById(ctId);if(!el||!ct)return;
+  const n=el.value.length;ct.textContent=`${n} / ${max}`;
+  ct.style.color=n>max*.9?'var(--red)':n>max*.7?'var(--amber)':'var(--light)';
+}
+
+// ═══ FEEDBACK ═══
+const RATINGS=[{e:'😤',l:'Very poor',v:1},{e:'😕',l:'Poor',v:2},{e:'😐',l:'Okay',v:3},{e:'😊',l:'Good',v:4},{e:'🤩',l:'Amazing',v:5}];
+function goFeedback(){S.phase='feedback';renderFlow();}
+function renderFeedback(){
+  document.getElementById('rgrid').innerHTML=RATINGS.map(r=>`<button class="rbtn ${S.fbRating===r.v?'sel':''}" onclick="pickRating(${r.v})"><span class="re">${r.e}</span><span class="rl">${r.l}</span></button>`).join('');
+  const hasRating=!!S.fbRating;
+  document.getElementById('fb-fields').style.display=hasRating?'block':'none';
+  document.getElementById('fb-hint').style.display=hasRating?'none':'block';
+}
+function pickRating(v){
+  S.fbRating=v;
+  const h=document.getElementById('fb-h'),p=document.getElementById('fb-p');
+  if(v>=4){h.textContent='Love to hear it! 🎉';p.textContent='Tell us what made the difference — it helps us deliver it every time.';}
+  else if(v===3){h.textContent='Thanks for being honest';p.textContent="There's always room to improve. What could we have done better?";}
+  else{h.textContent="We're sorry to hear that";p.textContent="Your experience matters. Please tell us what went wrong — we take this seriously.";}
+  document.getElementById('rgrid').innerHTML=RATINGS.map(r=>`<button class="rbtn ${v===r.v?'sel':''}" onclick="pickRating(${r.v})"><span class="re">${r.e}</span><span class="rl">${r.l}</span></button>`).join('');
+  document.getElementById('fb-fields').style.display='block';
+  document.getElementById('fb-hint').style.display='none';
+}
+async function submitFeedback(){
+  const name=document.getElementById('fb-name').value.trim();
+  const email=document.getElementById('fb-email').value.trim();
+  const detail=document.getElementById('fb-detail').value.trim();
+  const r=RATINGS.find(r=>r.v===S.fbRating);const rLabel=r?`${r.e} ${r.l} (${r.v}/5)`:'Not rated';
+  const btn=document.getElementById('fb-btn');btn.innerHTML=`${btnSpin} Sending…`;btn.disabled=true;
+  const ticketId='FB-'+Date.now().toString(36).toUpperCase().slice(-5);
+  const time=new Date().toLocaleString('en-AU',{dateStyle:'medium',timeStyle:'short'});
+  const aText=`Rating: ${rLabel}\n\n${detail||'(no detail)'}`;
+  const aHtml=buildHtml([['Rating',rLabel],['Comment',detail||'(no detail provided)']]);
+  const shared=mkShared(ticketId,name||'Anonymous',name.split(' ')[0]||'Friend',email||'(not provided)','General Feedback','Feedback Submission','Standard','N/A',time,aText,'N/A',{});
+  await sendAgent(shared,aHtml);
+  const nameStr=name?` ${name.split(' ')[0]}`:'';
+  document.getElementById('fbsent-emoji').textContent=S.fbRating>=4?'🙌':S.fbRating===3?'🙏':'💙';
+  document.getElementById('fbsent-msg').textContent=`Thank you${nameStr}. Your feedback has been sent to our team and will be read personally${email?` — we'll reply to ${email} within 3 business days`:''}.`;
+  show('fbsent');
+}
+
+// ═══ SUBMIT TICKET ═══
+function detectPriority(t,a){const txt=[t,...Object.values(a)].join(' ').toLowerCase();if(URGENT.some(s=>txt.includes(s)))return'Urgent';if(HIGH.some(s=>txt.includes(s)))return'High';return'Standard';}
+async function submitTicket(){
+  // Full validation before sending
+  const nameEl=document.getElementById('inp-name');
+  const emailEl=document.getElementById('inp-email');
+  const name=nameEl.value.trim();
+  const email=emailEl.value.trim();
+  const errors=[];
+  if(!name){errors.push('Please enter your name.');nameEl.classList.add('v-err');document.getElementById('v-name').classList.add('show');}
+  if(!email){errors.push('Please enter your email.');emailEl.classList.add('v-err');document.getElementById('v-email').classList.add('show');}
+  else if(!/^[^@]+@[^@]+[.][^@]+$/.test(email)){errors.push('Please enter a valid email address.');emailEl.classList.add('v-err');document.getElementById('v-email').classList.add('show');}
+  if(errors.length){nameEl.focus();return;}
+
+  const extra=document.getElementById('inp-extra').value.trim();
+  const{cat,topic,answers}=S;
+  const priority=detectPriority(topic.q,{...answers,extra});
+  const sla=priority==='Urgent'?'4–8 hours':priority==='High'?'12–24 hours':'24–48 hours';
+  const ticketId='ABD-'+Date.now().toString(36).toUpperCase().slice(-6);
+  const time=new Date().toLocaleString('en-AU',{dateStyle:'medium',timeStyle:'short'});
+  S.ticket={id:ticketId,name,email,category:cat.label,query:topic.q,priority,sla,time};
+  const btn=document.getElementById('sub-btn');btn.disabled=true;btn.innerHTML=`${btnSpin} Sending…`;
+  const lines=Object.entries(answers).filter(([,v])=>v).map(([k,v])=>`${LABELS[k]||k}: ${v}`);
+  if(extra)lines.push(`Notes: ${extra}`);
+  const aText=lines.join('\n')||'None provided';
+  const aHtml=buildHtml(Object.entries(answers).filter(([,v])=>v).map(([k,v])=>[LABELS[k]||k,v]).concat(extra?[['Notes',extra]]:[]));
+  const first=name.split(' ')[0]||name;
+  const shared=mkShared(ticketId,name,first,email,cat.label,topic.q,priority,sla,time,aText,extra||'None provided',{order_number:answers.orderNumber||'',order_date:answers.orderDate||'',fragrance:answers.fragranceName||'',damage_type:answers.damageType||'',resolution:answers.resolution||answers.preference||'',return_reason:answers.returnReason||'',item_from:answers.currentItem||'',item_to:answers.newItem||'',business_name:answers.businessName||'',platform:answers.platform||''});
+  const sent=await sendBoth(shared,aHtml,email,first);
+  save({name,email});
+  renderConfirm(S.ticket,sent);show('confirm');
+}
+
+// ═══ EMAIL SENDING ═══
+function buildHtml(rows){
+  return rows.map(([k,v])=>`<tr><td style="padding:8px 14px;color:#888;font-size:13px;font-weight:600;width:34%;border-bottom:1px solid #eee;vertical-align:top">${k}</td><td style="padding:8px 14px;font-size:13px;border-bottom:1px solid #eee">${String(v).replace(/\n/g,'<br>')}</td></tr>`).join('');
+}
+function mkShared(tid,name,first,email,cat,topic,pri,sla,time,aText,extra,more){
+  return{ticket_id:tid,cust_name:name,cust_firstname:first,cust_email:email,category:cat,topic,priority:pri,sla,time,answers_text:aText,extra,device:/Mobi/i.test(navigator.userAgent)?'Mobile':'Desktop',timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,order_number:'',order_date:'',shipping_addr:'',fragrance:'',damage_type:'',resolution:'',return_reason:'',purchase_date:'',item_from:'',item_to:'',business_name:'',platform:'',acct_email:'',gift_to:'',...more};
+}
+async function sendBoth(shared,aHtml,email,first){
+  try{
+    await ejSend(EJS_CUST,{...shared,to_email:email,to_name:first});
+    await ejSend(EJS_AGNT,{...shared,answers_html:aHtml,to_email:AGENT,to_name:'Support Team'});
+    return true;
+  }catch(e){
+    // retry agent only
+    try{await ejSend(EJS_AGNT,{...shared,answers_html:aHtml,to_email:AGENT,to_name:'Support Team'});}catch(e2){}
+    return false;
+  }
+}
+async function sendAgent(shared,aHtml){
+  try{await ejSend(EJS_AGNT,{...shared,answers_html:aHtml,to_email:AGENT,to_name:'Support Team'});}catch(e){console.warn('Feedback send failed',e);}
+}
+async function ejSend(tid,p){
+  const r=await fetch('https://api.emailjs.com/api/v1.0/email/send',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({service_id:EJS_SVC,template_id:tid,user_id:EJS_PUB,template_params:p})
+  });
+  if(!r.ok){const t=await r.text();throw new Error(`EJS ${r.status}: ${t}`);}
+}
+
+// ═══ CONFIRM ═══
+function renderConfirm(t,sent){
+  const pc=t.priority==='Urgent'?'#dc2626':t.priority==='High'?'#d97706':'#1a7f4b';
+  const pb=t.priority==='Urgent'?'#fef2f2':t.priority==='High'?'#fffbeb':'#f0fdf4';
+  const rt=t.priority==='Urgent'?'within 4–8 hours':t.priority==='High'?'within 12–24 hours':'within 24–48 hours';
+  const first=t.name.split(' ')[0]||t.name;
+  document.getElementById('c-h').textContent=`Got it, ${first} 👌`;
+  document.getElementById('c-p').innerHTML=`We'll reply <strong>${rt}</strong>.`;
+  document.getElementById('c-id').textContent=t.id;
+  document.getElementById('c-prio').innerHTML=`<div class="prow" style="background:${pb};border-color:${pc}30"><div style="width:8px;height:8px;background:${pc};border-radius:50%;flex-shrink:0"></div><p style="margin:0;font-size:14px;color:${pc};font-weight:500">${t.priority} priority — response expected ${rt}</p></div>`;
+  document.getElementById('c-details').innerHTML=[['Category',t.category||''],['Topic',t.query||''],['Name',t.name],['Submitted',t.time]].map(([k,v])=>`<div class="drow"><span class="dk">${k}</span><span class="dv">${v}</span></div>`).join('');
+  document.getElementById('c-email').innerHTML=sent
+    ?`<div class="eok"><div class="eico" style="background:#dcfce7">${ico('chk',12,'#16a34a',2.5)}</div><p style="margin:0;font-size:14px;color:#15803d;line-height:1.5">Confirmation sent to <strong>${t.email}</strong>. Our team has been notified.</p></div>`
+    :`<div class="eok" style="background:#f0fdf4;border-color:#bbf7d0"><div class="eico" style="background:#dcfce7">${ico('chk',12,'#16a34a',2.5)}</div><p style="margin:0;font-size:14px;color:#15803d;line-height:1.5">Request recorded. Our team will be in touch at <strong>${t.email}</strong> ${t.priority==='Urgent'?'within 4–8 hours':t.priority==='High'?'within 12–24 hours':'within 24–48 hours'}.</p></div>`;
+}
+
+// ═══ LOCAL STORAGE ═══
+const SK='abd_support_v2';
+function save(d){try{localStorage.setItem(SK,JSON.stringify({...getSaved(),...d}));}catch(e){}}
+function getSaved(){try{return JSON.parse(localStorage.getItem(SK)||'{}');}catch(e){return{};}}
+
+// ═══ INIT ═══
+renderHome();
+</script></body></html>
