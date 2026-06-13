@@ -1,15 +1,22 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { BadgePercent, X, Sparkles } from "lucide-react";
+import { spinShown } from "@/hooks/useDiscount";
 
 const KEY = "abdul.buy2.popup.shown";
+const DISCOUNT_KEY = "ap_discount_v1";
 
 export function PromoPopup() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem(KEY) === "1") return;
-    const t = window.setTimeout(() => setOpen(true), 6000);
+    // Don't compete with the spin wheel or stack on an existing discount.
+    if (localStorage.getItem(DISCOUNT_KEY)) return;
+    const t = window.setTimeout(() => {
+      if (spinShown() || localStorage.getItem(DISCOUNT_KEY)) return;
+      setOpen(true);
+    }, 10000);
     return () => window.clearTimeout(t);
   }, []);
 
