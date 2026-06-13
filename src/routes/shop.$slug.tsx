@@ -25,7 +25,6 @@ function ProductPage() {
   const { add } = useCart();
   const { has, toggle } = useWishlist();
   const [qty, setQty] = useState(1);
-  const [size, setSize] = useState<string>("50ml");
 
   const product = useQuery({
     queryKey: ["product", slug],
@@ -182,16 +181,8 @@ function ProductPage() {
           {/* Size */}
           <div>
             <h3 className="text-sm font-semibold mb-2">Size</h3>
-            <div className="flex gap-2">
-              {["30ml", "50ml", "100ml"].map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setSize(s)}
-                  className={`rounded-full px-4 py-2 text-sm border transition ${size === s ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground/40"}`}
-                >
-                  {s}
-                </button>
-              ))}
+            <div className="inline-flex rounded-full border border-foreground bg-foreground px-4 py-2 text-sm text-background">
+              50ml
             </div>
           </div>
 
@@ -223,7 +214,7 @@ function ProductPage() {
           </div>
 
           <ul className="text-sm text-muted-foreground space-y-1.5 pt-2">
-            <li className="flex gap-2"><Check className="w-4 h-4 text-[var(--amber-deep)]" /> Premium {size} bottle · alcohol-based eau de parfum</li>
+            <li className="flex gap-2"><Check className="w-4 h-4 text-[var(--amber-deep)]" /> Premium 50ml bottle · alcohol-based eau de parfum</li>
             <li className="flex gap-2"><Check className="w-4 h-4 text-[var(--amber-deep)]" /> UAE-blended oils · packed in Sydney, Australia</li>
             <li className="flex gap-2"><Check className="w-4 h-4 text-[var(--amber-deep)]" /> Long-lasting, suitable day & night</li>
             <li className="flex gap-2"><Check className="w-4 h-4 text-[var(--amber-deep)]" /> Cruelty-free</li>
