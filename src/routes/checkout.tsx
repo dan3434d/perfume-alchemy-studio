@@ -16,7 +16,7 @@ export const Route = createFileRoute("/checkout")({
 });
 
 function Checkout() {
-  const { lines, subtotal, clear: clearCart } = useCart();
+  const { lines, subtotal } = useCart();
   const { discount, clear: clearDiscount } = useDiscount();
   const navigate = useNavigate();
   const startStripe = useServerFn(createStripeCheckout);
