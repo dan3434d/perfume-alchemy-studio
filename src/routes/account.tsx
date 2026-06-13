@@ -20,7 +20,8 @@ function Account() {
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth" });
-  }, [loading, user, navigate]);
+    if (!loading && user && isAdmin) navigate({ to: "/admin" });
+  }, [loading, user, isAdmin, navigate]);
 
   if (loading || !user) return <div className="container-px max-w-5xl mx-auto py-20 text-center text-muted-foreground">Loading…</div>;
 

@@ -54,7 +54,7 @@ export function Navbar() {
           <Link to="/shop" aria-label="Search" className="hidden sm:inline-flex p-2 rounded-full hover:bg-secondary">
             <Search className="w-5 h-5" />
           </Link>
-          <Link to={user ? "/account" : "/auth"} aria-label="Account" className="p-2 rounded-full hover:bg-secondary">
+          <Link to={isAdmin ? "/admin" : user ? "/account" : "/auth"} aria-label="Account" className="p-2 rounded-full hover:bg-secondary">
             <User className="w-5 h-5" />
           </Link>
           <Link to="/cart" aria-label="Cart" className="relative p-2 rounded-full hover:bg-secondary">

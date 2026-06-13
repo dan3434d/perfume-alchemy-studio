@@ -61,6 +61,6 @@ export function useAuth(): AuthState {
     };
   }, [authReady, session?.user?.id]);
 
-  const loading = !authReady || roleLoading;
+  const loading = !authReady || roleLoading || (!!session?.user && role === null);
   return { session, user: session?.user ?? null, role, isAdmin: role === "admin", loading };
 }
