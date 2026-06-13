@@ -6,9 +6,12 @@ import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
 import { useCart, useWishlist } from "@/hooks/useCart";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
-import { Heart, ShoppingBag, Truck, RotateCcw, Lock, Minus, Plus, Star, Check, Sparkles } from "lucide-react";
+import { Heart, ShoppingBag, Truck, RotateCcw, Lock, Minus, Plus, Star, Check, Sparkles, Leaf, Droplets, Package, FlaskConical } from "lucide-react";
 import { toast } from "sonner";
 import { trackView } from "@/hooks/useBrowsingHistory";
+import ingredientsImg from "@/assets/craft-ingredients.jpg";
+import blendingImg from "@/assets/craft-blending.jpg";
+import packingImg from "@/assets/craft-packing.jpg";
 
 const SITE = "https://www.abdulrahmanperfumes.com.au";
 
