@@ -232,6 +232,59 @@ function Home() {
         </div>
       </section>
 
+      {/* DETAILS / UAE-MADE */}
+      <section className="section bg-[var(--cream)]/40 border-y border-border">
+        <div className="container-px max-w-5xl mx-auto text-center">
+          <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">The Abdulrahman difference</span>
+          <h2 className="font-display text-3xl sm:text-4xl mt-2">It's the details that count at Abdulrahman Perfumes.</h2>
+          <p className="text-muted-foreground mt-5 text-lg leading-relaxed max-w-2xl mx-auto">
+            We're here for you — always. Our UAE-made fragrances are what set us apart.
+          </p>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="section container-px max-w-3xl mx-auto">
+        <div className="text-center mb-10">
+          <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">FAQ</span>
+          <h2 className="font-display text-3xl sm:text-4xl mt-2">People also asked</h2>
+          <p className="text-muted-foreground mt-3">Here are some common questions about us.</p>
+        </div>
+        <div className="divide-y divide-border border-y border-border">
+          {[
+            {
+              q: "Are these perfumes long-lasting?",
+              a: "Yes — every bottle is composed with premium UAE-blended oils designed for designer-level longevity and projection, typically 8–12 hours on skin.",
+            },
+            {
+              q: "How do you make your perfumes?",
+              a: "Our fragrances are hand-blended by perfumers across the Gulf, including Dubai, using high-grade oud, amber and modern aromatic compounds. Bottles are filled and packed in Sydney before dispatch.",
+            },
+            {
+              q: "Are these knockoffs?",
+              a: "Our perfumes are not knockoffs. We craft inspired fragrances based on original brands, adding our unique touch. These fragrances are not associated or affiliated with the existing brands.",
+            },
+            {
+              q: "Can I get a refund if I don't like it?",
+              a: "Unopened bottles can be returned within 30 days for a full refund. See our Returns Policy for full details.",
+            },
+          ].map((item) => (
+            <details key={item.q} className="group py-5">
+              <summary className="flex justify-between items-center cursor-pointer list-none">
+                <span className="font-semibold text-left">{item.q}</span>
+                <span className="text-[var(--amber-deep)] text-xl transition-transform group-open:rotate-45">+</span>
+              </summary>
+              <p className="text-muted-foreground mt-3 leading-relaxed text-sm">{item.a}</p>
+            </details>
+          ))}
+        </div>
+        <div className="text-center mt-8">
+          <Link to="/contact" className="text-sm font-semibold text-[var(--amber-deep)] hover:underline">
+            Still have a question? Contact us →
+          </Link>
+        </div>
+      </section>
+
       {/* NEWSLETTER */}
       <section className="section container-px max-w-3xl mx-auto text-center">
         <h2 className="font-display text-3xl sm:text-4xl">Join the inner circle</h2>
