@@ -249,6 +249,41 @@ function Checkout() {
               </div>
             )}
 
+            {freeShip ? (
+              <div className="flex items-center justify-between gap-2 rounded-xl bg-[var(--amber-deep)]/10 px-3 py-2 text-xs">
+                <span className="flex items-center gap-2 text-[var(--amber-deep)] font-semibold">
+                  <BadgePercent className="w-4 h-4" /> FREESHIPPING · Free shipping
+                </span>
+                <button
+                  type="button"
+                  onClick={() => { setFreeShip(false); setPromoInput(""); }}
+                  aria-label="Remove promo"
+                  className="p-1 hover:opacity-70"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={promoInput}
+                  onChange={(e) => setPromoInput(e.target.value)}
+                  placeholder="Promo code"
+                  className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-ring"
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyPromo(); } }}
+                />
+                <button
+                  type="button"
+                  onClick={applyPromo}
+                  className="rounded-xl border border-border px-4 py-2 text-sm font-semibold hover:bg-secondary"
+                >
+                  Apply
+                </button>
+              </div>
+            )}
+
+
             <div className="border-t border-border pt-3 space-y-1.5 text-sm">
               <Row label="Subtotal" value={formatAUD(subtotal)} />
               {discountAmount > 0 && <Row label={`Discount (−${discountPercent}%)`} value={`− ${formatAUD(discountAmount)}`} accent />}
