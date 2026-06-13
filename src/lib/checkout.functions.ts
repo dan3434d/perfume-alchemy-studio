@@ -233,13 +233,21 @@ export const confirmStripeCheckout = createServerFn({ method: "POST" })
       .eq("id", data.order_id)
       .single();
 
+    const paymentIntentId =
+      typeof session.payment_intent === "string"
+        ? session.payment_intent
+        : (session.payment_intent as any)?.id ?? null;
+
     await supabaseAdmin
       .from("orders")
       .update({
         payment_status: paid ? "paid" : "unpaid",
         status: paid ? "paid" : "pending",
+        stripe_session_id: session.id,
+        stripe_payment_intent: paymentIntentId,
       })
       .eq("id", data.order_id);
+
 
     const { data: items } = await supabaseAdmin
       .from("order_items")
