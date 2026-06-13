@@ -122,7 +122,7 @@ function ProductPage() {
             )}
           </div>
           {p.inspired_by_brand && (
-            <div className="rounded-2xl border border-border bg-[var(--cream)]/40 p-4 text-sm flex items-center gap-3">
+            <div className="max-w-sm mx-auto lg:mx-0 rounded-2xl border border-border bg-[var(--cream)]/40 p-4 text-sm flex items-center gap-3">
               <Sparkles className="w-4 h-4 text-[var(--amber-deep)] shrink-0" />
               <div>
                 <span className="text-muted-foreground">Inspired by </span>
