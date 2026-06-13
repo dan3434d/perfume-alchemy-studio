@@ -1,0 +1,21 @@
+# Abdulrahman Perfumes
+
+> UAE-blended, designer-inspired fragrances bottled and shipped from Sydney, Australia. Every 50ml eau de parfum is $41.50 — buy 2, save 15%.
+
+Abdulrahman Perfumes crafts long-lasting oud, amber, fresh and floral scents inspired by luxury designer fragrances at a fraction of the price. All perfumes are alcohol-based eau de parfum, blended in the UAE and quality-checked in Sydney. Free metro shipping over $50 AUD.
+
+## Pages
+
+- [Home](/): Featured fragrances, bestsellers, brand story.
+- [Shop all perfumes](/shop): Full collection — filter by designer brand, category and price.
+- [Scent Discovery quiz](/scent-discovery): 4-question quiz that recommends a fragrance based on mood, occasion and projection.
+- [About us](/about): How our perfumes are made — sourcing, blending and packing.
+- [Wholesale enquiries](/wholesale): Bulk-order form for retailers and resellers.
+- [Contact us](/contact): Help with orders, returns and product questions.
+- [Shipping policy](/shipping): Australia-wide tracked shipping, dispatch times, free-shipping thresholds.
+- [Returns policy](/returns): 30-day returns on unopened bottles.
+
+## Optional
+
+- [Privacy policy](/privacy)
+- [Terms & conditions](/terms)
