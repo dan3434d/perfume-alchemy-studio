@@ -34,6 +34,7 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as ApiPublicStripeSyncOrdersRouteImport } from './routes/api/public/stripe/sync-orders'
 
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
   id: '/unsubscribe',
@@ -163,6 +164,12 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicStripeSyncOrdersRoute =
+  ApiPublicStripeSyncOrdersRouteImport.update({
+    id: '/api/public/stripe/sync-orders',
+    path: '/api/public/stripe/sync-orders',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -185,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/shop/': typeof ShopIndexRoute
   '/checkout/success/$orderId': typeof CheckoutSuccessOrderIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/stripe/sync-orders': typeof ApiPublicStripeSyncOrdersRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -212,6 +220,7 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopIndexRoute
   '/checkout/success/$orderId': typeof CheckoutSuccessOrderIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/stripe/sync-orders': typeof ApiPublicStripeSyncOrdersRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -240,6 +249,7 @@ export interface FileRoutesById {
   '/shop/': typeof ShopIndexRoute
   '/checkout/success/$orderId': typeof CheckoutSuccessOrderIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/stripe/sync-orders': typeof ApiPublicStripeSyncOrdersRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -269,6 +279,7 @@ export interface FileRouteTypes {
     | '/shop/'
     | '/checkout/success/$orderId'
     | '/lovable/email/suppression'
+    | '/api/public/stripe/sync-orders'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -296,6 +307,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/checkout/success/$orderId'
     | '/lovable/email/suppression'
+    | '/api/public/stripe/sync-orders'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -323,6 +335,7 @@ export interface FileRouteTypes {
     | '/shop/'
     | '/checkout/success/$orderId'
     | '/lovable/email/suppression'
+    | '/api/public/stripe/sync-orders'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -350,6 +363,7 @@ export interface RootRouteChildren {
   ShopSlugRoute: typeof ShopSlugRoute
   ShopIndexRoute: typeof ShopIndexRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiPublicStripeSyncOrdersRoute: typeof ApiPublicStripeSyncOrdersRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -534,6 +548,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/stripe/sync-orders': {
+      id: '/api/public/stripe/sync-orders'
+      path: '/api/public/stripe/sync-orders'
+      fullPath: '/api/public/stripe/sync-orders'
+      preLoaderRoute: typeof ApiPublicStripeSyncOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -569,6 +590,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShopSlugRoute: ShopSlugRoute,
   ShopIndexRoute: ShopIndexRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiPublicStripeSyncOrdersRoute: ApiPublicStripeSyncOrdersRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
