@@ -1,15 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
 import { productImage } from "@/lib/product-image";
-import { Truck, Lock, Sparkles, MessageCircle, ArrowRight, Star } from "lucide-react";
+import { Truck, Lock, Sparkles, MessageCircle, ArrowRight, Star, MapPin, Droplets, Award } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Abdulrahman Perfumes — Signature scents, made to be remembered" },
-      { name: "description", content: "Premium oud, amber and modern fragrances. Fast Australian shipping." },
+      { title: "Abdulrahman Perfumes — Designer-inspired scents from $31.50" },
+      { name: "description", content: "Premium designer-inspired perfumes blended in the UAE, packed in Sydney. Tom Ford, Dior, Louis Vuitton inspired scents for under $32." },
     ],
   }),
   component: Home,
@@ -17,13 +18,12 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const featured = useQuery({
-    queryKey: ["products", "featured"],
+    queryKey: ["products", "featured-home"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id,name,slug,price,image_url,rating,stock,categories(name)")
+        .select("id,name,slug,price,compare_at_price,image_url,rating,stock,inspired_by_brand,inspired_by_product,categories(name)")
         .eq("is_active", true)
-        .eq("is_featured", true)
         .limit(8);
       if (error) throw error;
       return (data || []).map((p: any) => ({ ...p, category_name: p.categories?.name })) as ProductCardData[];
@@ -39,6 +39,14 @@ function Home() {
     },
   });
 
+  const brands = useMemo(() => {
+    const set = new Map<string, string>();
+    (featured.data ?? []).forEach((p) => p.inspired_by_brand && set.set(p.inspired_by_brand, p.inspired_by_brand));
+    const all = ["Tom Ford", "Dior", "Louis Vuitton", "Creed", "Versace", "YSL", "Gucci", "Hermès", "MFK", "Paco Rabanne", "Arabian Oud", "Montana", "Emarat"];
+    all.forEach((b) => set.set(b, b));
+    return Array.from(set.keys());
+  }, [featured.data]);
+
   return (
     <>
       {/* HERO */}
@@ -47,14 +55,14 @@ function Home() {
         <div className="container-px max-w-7xl mx-auto py-16 sm:py-24 lg:py-32 grid lg:grid-cols-2 gap-10 items-center">
           <div className="space-y-6">
             <span className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">
-              <Sparkles className="w-3.5 h-3.5" /> New season · Oud collection
+              <Sparkles className="w-3.5 h-3.5" /> Designer-inspired · Made to last
             </span>
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl leading-[1.05]">
-              Signature scents,<br />
-              <span className="italic text-[var(--amber-deep)]">made to be remembered.</span>
+              From Souk Madinat Jumeirah,<br />
+              <span className="italic text-[var(--amber-deep)]">to your home.</span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-md">
-              Modern fragrance built around oud, amber and warm woods. Designed in the spirit of Dubai-style perfumery — made for every day.
+              Premium Arabian perfumery, reimagined for the modern wardrobe. Blended with UAE oils, packed in Sydney — every bottle just <span className="font-semibold text-foreground">$31.50</span>.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link to="/shop" className="btn-gold inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold">
@@ -64,7 +72,7 @@ function Home() {
                 Explore Oud Collection
               </Link>
             </div>
-            <div className="flex items-center gap-6 pt-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-6 pt-2 text-xs text-muted-foreground flex-wrap">
               <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5 fill-[var(--gold)] text-[var(--gold)]" /> 4.9 average rating</div>
               <div>Free AU shipping over $80</div>
             </div>
@@ -73,12 +81,35 @@ function Home() {
             <div className="absolute -inset-10 -z-10 rounded-full blur-3xl opacity-50" style={{ background: "var(--gradient-gold)" }} />
             <img
               src={productImage(null)}
-              alt="Signature perfume bottle"
+              alt="Abdulrahman signature perfume bottle"
               className="mx-auto w-full max-w-md rounded-2xl shadow-[var(--shadow-elegant)]"
               width={1024}
               height={1024}
             />
           </div>
+        </div>
+      </section>
+
+      {/* SHOP BY DESIGNER BRAND */}
+      <section className="section container-px max-w-7xl mx-auto">
+        <div className="text-center mb-8">
+          <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Find your match</span>
+          <h2 className="font-display text-3xl sm:text-4xl mt-2">Shop by designer inspiration</h2>
+          <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
+            Love a designer scent? Discover its Abdulrahman counterpart — same character, a fraction of the price.
+          </p>
+        </div>
+        <div className="flex flex-wrap justify-center gap-2">
+          {brands.map((b) => (
+            <Link
+              key={b}
+              to="/shop"
+              search={{ brand: b }}
+              className="text-sm px-4 py-2 rounded-full border border-border bg-background hover:bg-foreground hover:text-background transition"
+            >
+              {b} inspired
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -104,62 +135,93 @@ function Home() {
         )}
       </section>
 
-      {/* CATEGORIES */}
+      {/* ABOUT — Why Abdulrahman */}
       <section className="section bg-[var(--cream)]/40 border-y border-border">
-        <div className="container-px max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Browse</span>
-            <h2 className="font-display text-3xl sm:text-4xl mt-2">Scent families</h2>
+        <div className="container-px max-w-6xl mx-auto">
+          <div className="text-center mb-12 max-w-3xl mx-auto">
+            <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Why Abdulrahman Perfumes</span>
+            <h2 className="font-display text-3xl sm:text-4xl mt-2">The essence of Arabian perfumery, made for you.</h2>
+            <p className="text-muted-foreground mt-5 leading-relaxed">
+              Abdulrahman Perfumes offers an exquisite range of fragrances, blending traditional Arabian scents with modern elegance.
+              Each perfume is crafted with high-quality ingredients, ensuring a long-lasting and captivating aroma — a unique olfactory
+              experience that is both timeless and enchanting.
+            </p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {categories.data?.slice(0, 8).map((c) => (
-              <Link key={c.id} to="/shop" search={{ category: c.slug }} className="card-elevated p-6 text-center">
-                <div className="font-display text-lg">{c.name}</div>
-                <div className="text-xs text-muted-foreground mt-1">Shop now →</div>
-              </Link>
-            ))}
+
+          <div className="grid md:grid-cols-3 gap-6">
+            <AboutCard
+              icon={Award}
+              title="Perfumes, made to last"
+              body="Our fragrance creators use advanced techniques to perfect every inspired blend, with the longevity and projection of a designer fragrance."
+            />
+            <AboutCard
+              icon={Droplets}
+              title="UAE-blended oils"
+              body="Base oils sourced from across the Gulf — including Dubai and the wider UAE — and composed by perfumers steeped in Arabian tradition."
+            />
+            <AboutCard
+              icon={MapPin}
+              title="Packed in Australia"
+              body="Final packaging is completed in Sydney, so every bottle ships fast across Australia and arrives ready to gift."
+            />
           </div>
         </div>
       </section>
 
-      {/* BENEFITS */}
+      {/* CATEGORIES */}
       <section className="section container-px max-w-7xl mx-auto">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[
-            { i: Truck, t: "Fast AU shipping", d: "Dispatched within 24 hours from Australia." },
-            { i: Lock, t: "Secure checkout", d: "Encrypted payments, your data stays private." },
-            { i: Sparkles, t: "Premium blends", d: "Long-lasting oud, amber and modern compositions." },
-            { i: MessageCircle, t: "Support available", d: "Real humans at support@abdulrahman.store." },
-          ].map(({ i: Icon, t, d }) => (
-            <div key={t} className="p-6 rounded-2xl border border-border">
-              <Icon className="w-6 h-6 text-[var(--amber-deep)]" />
-              <h3 className="font-semibold mt-3">{t}</h3>
-              <p className="text-sm text-muted-foreground mt-1">{d}</p>
-            </div>
+        <div className="text-center mb-12">
+          <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Browse</span>
+          <h2 className="font-display text-3xl sm:text-4xl mt-2">Scent families</h2>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {categories.data?.slice(0, 8).map((c) => (
+            <Link key={c.id} to="/shop" search={{ category: c.slug }} className="card-elevated p-6 text-center rounded-2xl border border-border hover:border-[var(--amber-deep)]/40 hover:shadow-[var(--shadow-elegant)] transition">
+              <div className="font-display text-lg">{c.name}</div>
+              <div className="text-xs text-muted-foreground mt-1">Shop now →</div>
+            </Link>
           ))}
         </div>
       </section>
 
-      {/* TESTIMONIALS */}
+      {/* BENEFITS */}
       <section className="section bg-[var(--cream)]/40 border-y border-border">
         <div className="container-px max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Loved by</span>
-            <h2 className="font-display text-3xl sm:text-4xl mt-2">What customers say</h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { n: "Aaliyah K.", c: "Sydney", b: "Midnight Oud is intoxicating. Lasts the whole day on my skin." },
-              { n: "Daniel R.", c: "Melbourne", b: "Eros Elixir gets me compliments every single time I wear it." },
-              { n: "Sara H.", c: "Brisbane", b: "Beautifully packaged and the scent is honestly luxurious." },
-            ].map((r) => (
-              <div key={r.n} className="card-elevated p-6">
-                <div className="flex gap-0.5 mb-3">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className="w-4 h-4 fill-[var(--gold)] text-[var(--gold)]" />)}</div>
-                <p className="text-sm leading-relaxed">"{r.b}"</p>
-                <div className="mt-4 text-xs text-muted-foreground">{r.n} · {r.c}</div>
+              { i: Truck, t: "Fast AU shipping", d: "Dispatched within 24 hours from Sydney." },
+              { i: Lock, t: "Secure checkout", d: "Encrypted payments, your data stays private." },
+              { i: Sparkles, t: "Premium blends", d: "Long-lasting oud, amber and modern compositions." },
+              { i: MessageCircle, t: "Real human support", d: "Email support@abdulrahman.store any time." },
+            ].map(({ i: Icon, t, d }) => (
+              <div key={t} className="p-6 rounded-2xl border border-border bg-background">
+                <Icon className="w-6 h-6 text-[var(--amber-deep)]" />
+                <h3 className="font-semibold mt-3">{t}</h3>
+                <p className="text-sm text-muted-foreground mt-1">{d}</p>
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="section container-px max-w-7xl mx-auto">
+        <div className="text-center mb-12">
+          <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Loved by</span>
+          <h2 className="font-display text-3xl sm:text-4xl mt-2">What customers say</h2>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          {[
+            { n: "Aaliyah K.", c: "Sydney", b: "Midnight Oud is intoxicating. Lasts the whole day on my skin." },
+            { n: "Daniel R.", c: "Melbourne", b: "Eros Elixir gets me compliments every single time I wear it." },
+            { n: "Sara H.", c: "Brisbane", b: "Beautifully packaged and the scent is honestly luxurious." },
+          ].map((r) => (
+            <div key={r.n} className="card-elevated p-6 rounded-2xl border border-border bg-background">
+              <div className="flex gap-0.5 mb-3">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className="w-4 h-4 fill-[var(--gold)] text-[var(--gold)]" />)}</div>
+              <p className="text-sm leading-relaxed">"{r.b}"</p>
+              <div className="mt-4 text-xs text-muted-foreground">{r.n} · {r.c}</div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -173,5 +235,17 @@ function Home() {
         </form>
       </section>
     </>
+  );
+}
+
+function AboutCard({ icon: Icon, title, body }: { icon: any; title: string; body: string }) {
+  return (
+    <div className="p-6 rounded-2xl border border-border bg-background">
+      <div className="w-10 h-10 rounded-full grid place-items-center bg-[var(--amber-deep)]/10 text-[var(--amber-deep)]">
+        <Icon className="w-5 h-5" />
+      </div>
+      <h3 className="font-display text-xl mt-4">{title}</h3>
+      <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{body}</p>
+    </div>
   );
 }

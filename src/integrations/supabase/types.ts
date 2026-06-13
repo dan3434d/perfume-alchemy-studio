@@ -290,6 +290,8 @@ export type Database = {
           description: string
           id: string
           image_url: string | null
+          inspired_by_brand: string | null
+          inspired_by_product: string | null
           is_active: boolean
           is_featured: boolean
           long_description: string | null
@@ -299,6 +301,7 @@ export type Database = {
           notes_top: string[] | null
           price: number
           rating: number | null
+          retail_price: number | null
           review_count: number | null
           size: string | null
           slug: string
@@ -313,6 +316,8 @@ export type Database = {
           description?: string
           id?: string
           image_url?: string | null
+          inspired_by_brand?: string | null
+          inspired_by_product?: string | null
           is_active?: boolean
           is_featured?: boolean
           long_description?: string | null
@@ -322,6 +327,7 @@ export type Database = {
           notes_top?: string[] | null
           price: number
           rating?: number | null
+          retail_price?: number | null
           review_count?: number | null
           size?: string | null
           slug: string
@@ -336,6 +342,8 @@ export type Database = {
           description?: string
           id?: string
           image_url?: string | null
+          inspired_by_brand?: string | null
+          inspired_by_product?: string | null
           is_active?: boolean
           is_featured?: boolean
           long_description?: string | null
@@ -345,6 +353,7 @@ export type Database = {
           notes_top?: string[] | null
           price?: number
           rating?: number | null
+          retail_price?: number | null
           review_count?: number | null
           size?: string | null
           slug?: string

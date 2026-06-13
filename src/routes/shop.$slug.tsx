@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,14 +6,14 @@ import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
 import { useCart, useWishlist } from "@/hooks/useCart";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
-import { Heart, ShoppingBag, Truck, RotateCcw, Lock, Minus, Plus, Star, Check } from "lucide-react";
+import { Heart, ShoppingBag, Truck, RotateCcw, Lock, Minus, Plus, Star, Check, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/shop/$slug")({
   head: ({ params }) => ({
     meta: [
       { title: `${params.slug.replace(/-/g, " ").replace(/\d+$/, "").trim()} — Abdulrahman Perfumes` },
-      { name: "description", content: "Premium perfume from Abdulrahman Perfumes." },
+      { name: "description", content: "Premium inspired perfume from Abdulrahman Perfumes — designer scent for a fraction of the price." },
     ],
   }),
   component: ProductPage,
@@ -37,7 +37,6 @@ function ProductPage() {
         .eq("is_active", true)
         .maybeSingle();
       if (error) throw error;
-      if (!data) throw notFound();
       return data as any;
     },
   });
@@ -48,7 +47,7 @@ function ProductPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("products")
-        .select("id,name,slug,price,image_url,rating,categories(name)")
+        .select("id,name,slug,price,compare_at_price,image_url,rating,inspired_by_brand,inspired_by_product,categories(name)")
         .eq("category_id", product.data.category_id)
         .neq("id", product.data.id)
         .eq("is_active", true)
@@ -57,12 +56,38 @@ function ProductPage() {
     },
   });
 
-  if (product.isLoading) return <div className="container-px max-w-7xl mx-auto py-20 text-center text-muted-foreground">Loading…</div>;
-  if (!product.data) return <div className="container-px max-w-7xl mx-auto py-20 text-center">Product not found.</div>;
+  if (product.isLoading) {
+    return (
+      <div className="container-px max-w-7xl mx-auto py-20">
+        <div className="grid lg:grid-cols-2 gap-10">
+          <div className="aspect-square rounded-2xl bg-muted animate-pulse" />
+          <div className="space-y-4">
+            <div className="h-8 w-2/3 bg-muted animate-pulse rounded" />
+            <div className="h-6 w-1/3 bg-muted animate-pulse rounded" />
+            <div className="h-24 bg-muted animate-pulse rounded" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+  if (!product.data) {
+    return (
+      <div className="container-px max-w-7xl mx-auto py-20 text-center">
+        <h1 className="font-display text-3xl">Product not found</h1>
+        <p className="text-muted-foreground mt-2">It may be out of stock or no longer available.</p>
+        <Link to="/shop" className="inline-block mt-6 btn-gold rounded-full px-6 py-3 text-sm font-semibold">Back to shop</Link>
+      </div>
+    );
+  }
 
   const p = product.data;
   const wished = has(p.id);
   const lowStock = p.stock > 0 && p.stock < 10;
+  const discount =
+    p.compare_at_price && Number(p.compare_at_price) > Number(p.price)
+      ? Math.round(100 - (Number(p.price) / Number(p.compare_at_price)) * 100)
+      : 0;
+  const savings = p.retail_price ? Number(p.retail_price) - Number(p.price) : null;
 
   const doAdd = () => {
     add({ product_id: p.id, slug: p.slug, name: p.name, price: Number(p.price), image_url: p.image_url, stock: p.stock }, qty);
@@ -73,18 +98,43 @@ function ProductPage() {
   return (
     <div className="container-px max-w-7xl mx-auto py-10 sm:py-14">
       {/* Breadcrumb */}
-      <nav className="text-xs text-muted-foreground mb-6 flex gap-1.5">
+      <nav className="text-xs text-muted-foreground mb-6 flex gap-1.5 flex-wrap">
         <Link to="/" className="hover:text-foreground">Home</Link><span>/</span>
         <Link to="/shop" className="hover:text-foreground">Shop</Link><span>/</span>
+        {p.inspired_by_brand && (
+          <>
+            <Link to="/shop" search={{ brand: p.inspired_by_brand }} className="hover:text-foreground">{p.inspired_by_brand}</Link>
+            <span>/</span>
+          </>
+        )}
         <span className="text-foreground">{p.name}</span>
       </nav>
 
       <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
         {/* Image */}
         <div className="space-y-4">
-          <div className="aspect-square rounded-2xl overflow-hidden bg-[var(--cream)] border border-border">
+          <div className="aspect-square rounded-2xl overflow-hidden bg-[var(--cream)] border border-border relative">
             <img src={productImage(p.image_url)} alt={p.name} className="w-full h-full object-cover" width={1024} height={1024} />
+            {discount > 0 && (
+              <span className="absolute top-4 left-4 rounded-full bg-foreground text-background text-xs font-semibold px-3 py-1.5 tracking-wider">
+                −{discount}% OFF
+              </span>
+            )}
           </div>
+          {p.inspired_by_brand && (
+            <div className="rounded-2xl border border-border bg-[var(--cream)]/40 p-4 text-sm flex items-center gap-3">
+              <Sparkles className="w-4 h-4 text-[var(--amber-deep)] shrink-0" />
+              <div>
+                <span className="text-muted-foreground">Inspired by </span>
+                <Link to="/shop" search={{ brand: p.inspired_by_brand }} className="font-semibold hover:text-[var(--amber-deep)] underline-offset-2 hover:underline">
+                  {p.inspired_by_brand} {p.inspired_by_product}
+                </Link>
+                {p.retail_price && (
+                  <span className="text-muted-foreground"> · Designer retail {formatAUD(p.retail_price)}</span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Details */}
@@ -92,16 +142,30 @@ function ProductPage() {
           <div>
             {p.categories?.name && <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">{p.categories.name}</span>}
             <h1 className="font-display text-3xl sm:text-4xl mt-2">{p.name}</h1>
+            {p.inspired_by_brand && (
+              <p className="text-sm text-muted-foreground italic mt-1">
+                Our take on{" "}
+                <span className="not-italic font-medium text-foreground">{p.inspired_by_brand} {p.inspired_by_product}</span>
+              </p>
+            )}
             <div className="flex items-center gap-3 mt-3 text-sm">
               <div className="flex gap-0.5">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className="w-4 h-4 fill-[var(--gold)] text-[var(--gold)]" />)}</div>
-              <span className="text-muted-foreground">({p.rating ?? 4.8}) · {p.review_count ?? 0} reviews</span>
+              <span className="text-muted-foreground">({(p.rating ?? 4.8).toFixed(1)}) · {p.review_count ?? 0} reviews</span>
             </div>
           </div>
 
-          <div className="flex items-baseline gap-3">
+          <div className="flex items-baseline gap-3 flex-wrap">
             <span className="font-display text-3xl">{formatAUD(p.price)}</span>
+            {p.compare_at_price && Number(p.compare_at_price) > Number(p.price) && (
+              <span className="text-lg text-muted-foreground line-through">{formatAUD(p.compare_at_price)}</span>
+            )}
             <span className="text-xs text-muted-foreground">AUD · incl. taxes</span>
           </div>
+          {savings && savings > 0 && (
+            <div className="inline-flex items-center gap-2 text-xs px-3 py-1.5 rounded-full bg-[var(--amber-deep)]/10 text-[var(--amber-deep)] font-semibold">
+              You save {formatAUD(savings)} vs the designer original
+            </div>
+          )}
 
           <p className="text-muted-foreground leading-relaxed">{p.long_description || p.description}</p>
 
@@ -153,15 +217,16 @@ function ProductPage() {
 
           {/* Delivery / Returns */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-border">
-            <Info i={Truck} t="Fast AU shipping" d="Ships within 24h" />
+            <Info i={Truck} t="Fast AU shipping" d="Ships within 24h from Sydney" />
             <Info i={RotateCcw} t="30-day returns" d="Hassle-free" />
             <Info i={Lock} t="Secure checkout" d="Encrypted" />
           </div>
 
           <ul className="text-sm text-muted-foreground space-y-1.5 pt-2">
-            <li className="flex gap-2"><Check className="w-4 h-4 text-[var(--amber-deep)]" /> Premium {size} bottle, alcohol-based perfume</li>
+            <li className="flex gap-2"><Check className="w-4 h-4 text-[var(--amber-deep)]" /> Premium {size} bottle · alcohol-based eau de parfum</li>
+            <li className="flex gap-2"><Check className="w-4 h-4 text-[var(--amber-deep)]" /> UAE-blended oils · packed in Sydney, Australia</li>
             <li className="flex gap-2"><Check className="w-4 h-4 text-[var(--amber-deep)]" /> Long-lasting, suitable day & night</li>
-            <li className="flex gap-2"><Check className="w-4 h-4 text-[var(--amber-deep)]" /> Made for skin · cruelty-free</li>
+            <li className="flex gap-2"><Check className="w-4 h-4 text-[var(--amber-deep)]" /> Cruelty-free</li>
           </ul>
         </div>
       </div>
@@ -184,7 +249,9 @@ function NoteCol({ label, notes }: { label: string; notes?: string[] | null }) {
     <div>
       <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="mt-1 space-y-0.5">
-        {(notes ?? []).map((n) => <div key={n}>{n}</div>)}
+        {(notes ?? []).length > 0
+          ? (notes ?? []).map((n) => <div key={n}>{n}</div>)
+          : <div className="text-muted-foreground/60">—</div>}
       </div>
     </div>
   );
