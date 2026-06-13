@@ -31,7 +31,7 @@ const CheckoutSchema = z.object({
   origin: z.string().url(),
 });
 
-function getStripe() {
+export function getStripe() {
   const key = process.env.STRIPE;
   if (!key) throw new Error("Stripe is not configured");
   return new Stripe(key, {
