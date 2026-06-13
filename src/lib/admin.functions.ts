@@ -214,8 +214,13 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
       patch.refunded_at = new Date().toISOString();
       if (order.stripe_payment_intent) {
         try {
-          const { getStripe } = await import("./checkout.functions");
-          const stripe = (getStripe as any)();
+          const Stripe = (await import("stripe")).default;
+          const key = process.env.STRIPE;
+          if (!key) throw new Error("Stripe is not configured");
+          const stripe = new Stripe(key, {
+            apiVersion: "2024-06-20" as any,
+            httpClient: (Stripe as any).createFetchHttpClient(),
+          });
           const refund = await stripe.refunds.create({
             payment_intent: order.stripe_payment_intent,
             reason: "requested_by_customer",
@@ -223,10 +228,10 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
           });
           refundResult = { refunded: true, amount: refund.amount };
         } catch (e: any) {
-          // Roll back the status change so the admin sees the failure.
           throw new Error(`Stripe refund failed: ${e?.message || "unknown error"}`);
         }
       }
+
     }
 
     const { error: updErr } = await (supabaseAdmin.from("orders") as any).update(patch).eq("id", data.order_id);
