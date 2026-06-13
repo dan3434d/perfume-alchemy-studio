@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 const NAV = [
   { to: "/", label: "Home" },
   { to: "/shop", label: "Shop" },
+  { to: "/scent-discovery", label: "Scent Quiz" },
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
 ];
