@@ -81,6 +81,9 @@ function ProductPage() {
   }
 
   const p = product.data;
+  useEffect(() => {
+    if (p?.id) trackView({ product_id: p.id, slug: p.slug, brand: p.inspired_by_brand ?? null, category_slug: p.categories?.slug ?? null });
+  }, [p?.id, p?.slug, p?.inspired_by_brand, p?.categories?.slug]);
   const wished = has(p.id);
   const lowStock = p.stock > 0 && p.stock < 10;
   const discount =
