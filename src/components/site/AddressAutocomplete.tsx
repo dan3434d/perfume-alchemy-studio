@@ -146,7 +146,7 @@ export function AddressAutocomplete({ value, onChange, onSelect, placeholder, re
           ))}
         </ul>
       )}
-      <p className="mt-1 text-[11px] text-muted-foreground">Australian addresses · powered by OpenStreetMap</p>
+      <p className="mt-1 text-[11px] text-muted-foreground">Australian addresses · powered by Photon</p>
     </div>
   );
 }
