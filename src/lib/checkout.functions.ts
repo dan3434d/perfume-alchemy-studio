@@ -258,6 +258,11 @@ export const confirmStripeCheckout = createServerFn({ method: "POST" })
     if (paid && existing && existing.payment_status !== "paid") {
       const fmt = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" });
       const { sendTransactionalEmail } = await import("@/lib/email/send.server");
+      const itemSummary = (items || []).map((i: any) => ({
+        name: i.product_name,
+        quantity: i.quantity,
+        price: fmt.format(Number(i.line_total)),
+      }));
       await sendTransactionalEmail({
         templateName: "order-confirmation",
         recipientEmail: existing.email,
@@ -266,11 +271,20 @@ export const confirmStripeCheckout = createServerFn({ method: "POST" })
           orderNumber: existing.order_number,
           customerName: existing.full_name,
           total: fmt.format(Number(existing.total)),
-          items: (items || []).map((i: any) => ({
-            name: i.product_name,
-            quantity: i.quantity,
-            price: fmt.format(Number(i.line_total)),
-          })),
+          items: itemSummary,
+        },
+      });
+      // Admin notification
+      await sendTransactionalEmail({
+        templateName: "admin-new-order",
+        recipientEmail: "dbueducation@gmail.com",
+        idempotencyKey: `admin-new-order-${data.order_id}`,
+        templateData: {
+          orderNumber: existing.order_number,
+          customerName: existing.full_name,
+          customerEmail: existing.email,
+          total: fmt.format(Number(existing.total)),
+          items: itemSummary,
         },
       });
     }
@@ -281,5 +295,6 @@ export const confirmStripeCheckout = createServerFn({ method: "POST" })
 
     return { paid, order };
   });
+
 
 
