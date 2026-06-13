@@ -34,11 +34,24 @@ function Checkout() {
   const navigate = useNavigate();
   const startStripe = useServerFn(createStripeCheckout);
   const [submitting, setSubmitting] = useState(false);
+  const [promoInput, setPromoInput] = useState("");
+  const [freeShip, setFreeShip] = useState(false);
   const [form, setForm] = useState({
     email: "", full_name: "", phone: "",
     line1: "", line2: "", city: "", state: "", postcode: "", country: "Australia",
     notes: "",
   });
+
+  const applyPromo = () => {
+    const code = promoInput.trim().toUpperCase();
+    if (!code) return;
+    if (code === "FREESHIPPING") {
+      setFreeShip(true);
+      toast.success("FREESHIPPING applied — shipping is on us");
+    } else {
+      toast.error("Invalid promo code");
+    }
+  };
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -56,10 +69,13 @@ function Checkout() {
   );
   const discountAmount = +(subtotal * discountPercent / 100).toFixed(2);
   const subtotalAfterDiscount = +(subtotal - discountAmount).toFixed(2);
-  const ship = useMemo(
+  const rawShip = useMemo(
     () => computeShipping(subtotalAfterDiscount, { state: form.state, postcode: form.postcode, country: form.country }),
     [subtotalAfterDiscount, form.state, form.postcode, form.country],
   );
+  const ship = freeShip
+    ? { ...rawShip, base: 0, handling: 0, total: 0, freeShipping: true }
+    : rawShip;
   const total = +(subtotalAfterDiscount + ship.total).toFixed(2);
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -83,8 +99,8 @@ function Checkout() {
             product_id: l.product_id, name: l.name, slug: l.slug,
             price: l.price, quantity: l.quantity, image_url: l.image_url ?? null,
           })),
-          discount_code: discount?.code ?? null,
-          discount_percent: discount?.percent ?? 0,
+          discount_code: freeShip ? "FREESHIPPING" : (discount?.code ?? null),
+          discount_percent: freeShip ? 0 : (discount?.percent ?? 0),
           origin: window.location.origin,
         },
       });
@@ -232,6 +248,41 @@ function Checkout() {
                 </button>
               </div>
             )}
+
+            {freeShip ? (
+              <div className="flex items-center justify-between gap-2 rounded-xl bg-[var(--amber-deep)]/10 px-3 py-2 text-xs">
+                <span className="flex items-center gap-2 text-[var(--amber-deep)] font-semibold">
+                  <BadgePercent className="w-4 h-4" /> FREESHIPPING · Free shipping
+                </span>
+                <button
+                  type="button"
+                  onClick={() => { setFreeShip(false); setPromoInput(""); }}
+                  aria-label="Remove promo"
+                  className="p-1 hover:opacity-70"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={promoInput}
+                  onChange={(e) => setPromoInput(e.target.value)}
+                  placeholder="Promo code"
+                  className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-ring"
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyPromo(); } }}
+                />
+                <button
+                  type="button"
+                  onClick={applyPromo}
+                  className="rounded-xl border border-border px-4 py-2 text-sm font-semibold hover:bg-secondary"
+                >
+                  Apply
+                </button>
+              </div>
+            )}
+
 
             <div className="border-t border-border pt-3 space-y-1.5 text-sm">
               <Row label="Subtotal" value={formatAUD(subtotal)} />
