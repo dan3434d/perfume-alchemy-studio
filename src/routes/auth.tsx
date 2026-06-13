@@ -19,6 +19,25 @@ function Auth() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [appleLoading, setAppleLoading] = useState(false);
+
+  const onApple = async () => {
+    setAppleLoading(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth("apple", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) throw result.error instanceof Error ? result.error : new Error(String(result.error));
+      if (result.redirected) return;
+      const account = await ensureAccount({ data: undefined as any });
+      toast.success("Signed in with Apple");
+      navigate({ to: account.role === "admin" ? "/admin" : "/account" });
+    } catch (err: any) {
+      toast.error(err?.message || "Apple sign-in failed");
+    } finally {
+      setAppleLoading(false);
+    }
+  };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
