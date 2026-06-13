@@ -21,14 +21,21 @@ export function Navbar() {
   const [catOpen, setCatOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const categories = useQuery({
-    queryKey: ["categories", "nav"],
+  const brands = useQuery({
+    queryKey: ["brands", "nav"],
     queryFn: async () => {
-      const { data } = await supabase.from("categories").select("name,slug").order("display_order");
-      return data || [];
+      const { data } = await supabase
+        .from("products")
+        .select("inspired_by_brand")
+        .eq("is_active", true)
+        .not("inspired_by_brand", "is", null);
+      const set = new Set<string>();
+      (data || []).forEach((r: any) => r.inspired_by_brand && set.add(r.inspired_by_brand));
+      return Array.from(set).sort();
     },
     staleTime: 5 * 60 * 1000,
   });
+
 
   const signOut = async () => {
     await supabase.auth.signOut();
