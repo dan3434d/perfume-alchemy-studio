@@ -14,7 +14,7 @@ export const Route = createFileRoute("/account")({
 });
 
 function Account() {
-  const { user, loading } = useAuth();
+  const { user, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState<"orders" | "wishlist" | "addresses">("orders");
 
@@ -31,10 +31,17 @@ function Account() {
           <h1 className="font-display text-3xl sm:text-4xl">My account</h1>
           <p className="text-muted-foreground text-sm mt-1">{user.email}</p>
         </div>
-        <button
-          onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/" }); }}
-          className="text-sm rounded-full border border-border px-4 py-2 hover:bg-secondary"
-        >Sign out</button>
+        <div className="flex items-center gap-2">
+          {isAdmin && (
+            <Link to="/admin" className="text-sm rounded-full bg-[var(--amber-deep)] text-white px-4 py-2 hover:opacity-90">
+              Admin dashboard
+            </Link>
+          )}
+          <button
+            onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/" }); }}
+            className="text-sm rounded-full border border-border px-4 py-2 hover:bg-secondary"
+          >Sign out</button>
+        </div>
       </div>
 
       <div className="flex gap-1 border-b border-border mb-6">
