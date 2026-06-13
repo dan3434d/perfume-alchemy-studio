@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
@@ -7,6 +8,8 @@ import { formatAUD } from "@/lib/format";
 import { useWishlist } from "@/hooks/useCart";
 import { productImage } from "@/lib/product-image";
 import { toast } from "sonner";
+import { createComplaint } from "@/lib/complaints.functions";
+
 
 export const Route = createFileRoute("/account")({
   head: () => ({ meta: [{ title: "My account — Abdulrahman Perfumes" }] }),
@@ -70,26 +73,124 @@ function Orders({ userId }: { userId: string }) {
   if (!q.data?.length) return <div className="text-muted-foreground text-sm py-10 text-center border border-dashed border-border rounded-2xl">No orders yet. <Link to="/shop" className="text-[var(--amber-deep)] hover:underline">Start shopping →</Link></div>;
   return (
     <div className="space-y-4">
-      {q.data.map((o: any) => (
-        <div key={o.id} className="card-elevated p-5">
-          <div className="flex justify-between items-start gap-4 flex-wrap">
-            <div>
-              <div className="font-mono text-xs text-muted-foreground">#{o.order_number}</div>
-              <div className="text-sm mt-1">{new Date(o.created_at).toLocaleDateString("en-AU", { dateStyle: "medium" })}</div>
-            </div>
-            <div className="text-right">
-              <div className="font-semibold">{formatAUD(o.total)}</div>
-              <span className="inline-block mt-1 text-xs uppercase tracking-wider px-2 py-0.5 rounded-full bg-secondary">{o.status}</span>
-            </div>
-          </div>
-          <div className="mt-3 text-sm text-muted-foreground">
-            {o.order_items.length} item{o.order_items.length === 1 ? "" : "s"}: {o.order_items.map((i: any) => i.product_name).join(", ")}
-          </div>
-        </div>
-      ))}
+      {q.data.map((o: any) => <OrderCard key={o.id} order={o} onRefresh={q.refetch} />)}
     </div>
   );
 }
+
+const STATUS_STEPS = ["pending", "paid", "processing", "shipped", "delivered"] as const;
+
+function StatusTimeline({ status }: { status: string }) {
+  const idx = STATUS_STEPS.indexOf(status as any);
+  const isCancelled = status === "cancelled" || status === "refunded";
+  return (
+    <div className="flex items-center gap-1 mt-3">
+      {STATUS_STEPS.map((s, i) => {
+        const active = !isCancelled && i <= idx;
+        return (
+          <div key={s} className="flex-1">
+            <div className={`h-1.5 rounded-full ${active ? "bg-[var(--amber-deep)]" : "bg-border"}`} />
+            <div className={`text-[10px] mt-1 capitalize ${i === idx ? "text-foreground font-medium" : "text-muted-foreground"}`}>{s}</div>
+          </div>
+        );
+      })}
+      {isCancelled && (
+        <div className="ml-3 text-xs text-destructive capitalize">{status}</div>
+      )}
+    </div>
+  );
+}
+
+function OrderCard({ order, onRefresh }: { order: any; onRefresh: () => void }) {
+  const [showComplaint, setShowComplaint] = useState(false);
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const createFn = useServerFn(createComplaint);
+
+  const submit = async () => {
+    if (subject.trim().length < 2 || message.trim().length < 5) {
+      toast.error("Please add a subject and message");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await createFn({ data: { order_id: order.id, subject, message } });
+      toast.success("Complaint submitted — we'll be in touch");
+      setShowComplaint(false);
+      setSubject("");
+      setMessage("");
+      onRefresh();
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to submit");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="card-elevated p-5">
+      <div className="flex justify-between items-start gap-4 flex-wrap">
+        <div>
+          <div className="font-mono text-xs text-muted-foreground">#{order.order_number}</div>
+          <div className="text-sm mt-1">{new Date(order.created_at).toLocaleDateString("en-AU", { dateStyle: "medium" })}</div>
+        </div>
+        <div className="text-right">
+          <div className="font-semibold">{formatAUD(order.total)}</div>
+          <span className="inline-block mt-1 text-xs uppercase tracking-wider px-2 py-0.5 rounded-full bg-secondary capitalize">{order.status}</span>
+        </div>
+      </div>
+
+      <StatusTimeline status={order.status} />
+
+      <div className="mt-4 text-sm text-muted-foreground">
+        {order.order_items.length} item{order.order_items.length === 1 ? "" : "s"}: {order.order_items.map((i: any) => i.product_name).join(", ")}
+      </div>
+
+      {order.tracking_number && (
+        <div className="mt-3 rounded-lg bg-secondary/60 px-3 py-2 text-sm">
+          <span className="text-muted-foreground">Tracking ({order.tracking_carrier || "carrier"}): </span>
+          <span className="font-mono">{order.tracking_number}</span>
+        </div>
+      )}
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        <button
+          onClick={() => setShowComplaint((v) => !v)}
+          className="text-xs rounded-full border border-border px-3 py-1.5 hover:bg-secondary"
+        >
+          {showComplaint ? "Cancel" : "Raise a complaint"}
+        </button>
+      </div>
+
+      {showComplaint && (
+        <div className="mt-3 space-y-2">
+          <input
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            placeholder="Subject (e.g. Damaged bottle)"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+          />
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Describe the issue…"
+            rows={4}
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+          />
+          <button
+            disabled={submitting}
+            onClick={submit}
+            className="rounded-full bg-[var(--amber-deep)] text-white px-4 py-2 text-sm font-medium disabled:opacity-50"
+          >
+            {submitting ? "Submitting…" : "Send complaint"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 function Wishlist() {
   const { ids, toggle } = useWishlist();
