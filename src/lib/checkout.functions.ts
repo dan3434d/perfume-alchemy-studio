@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import Stripe from "stripe";
+import { computeBulkDiscountPercent, computeShipping } from "./pricing";
+
 
 const LineSchema = z.object({
   product_id: z.string(),
@@ -67,10 +69,24 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
     });
 
     const subtotal = +orderLines.reduce((sum, line) => sum + line.price * line.quantity, 0).toFixed(2);
-    const shipping = subtotal >= 80 ? 0 : 9.95;
-    const discountPercent = data.discount_code === "WELCOME5" ? 5 : 0;
+    const totalQty = orderLines.reduce((sum, line) => sum + line.quantity, 0);
+    const codePercent = data.discount_code === "WELCOME5" ? 5 : data.discount_percent || 0;
+    const discountPercent = computeBulkDiscountPercent(totalQty, codePercent);
     const discountAmount = +(subtotal * discountPercent / 100).toFixed(2);
-    const total = +(subtotal - discountAmount + shipping).toFixed(2);
+    const subtotalAfterDiscount = +(subtotal - discountAmount).toFixed(2);
+    const ship = computeShipping(subtotalAfterDiscount, {
+      state: data.shipping_state,
+      postcode: data.shipping_postcode,
+      country: data.shipping_country,
+    });
+    const shipping = ship.total;
+    const total = +(subtotalAfterDiscount + shipping).toFixed(2);
+
+    const discountCode = discountPercent > 0
+      ? (data.discount_code && data.discount_code === "WELCOME5" && discountPercent === codePercent
+          ? "WELCOME5"
+          : totalQty >= 2 ? "BUY2-15" : null)
+      : null;
 
     const { data: order, error: orderError } = await supabaseAdmin
       .from("orders")
@@ -88,7 +104,7 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
         subtotal,
         shipping,
         total,
-        discount_code: discountPercent ? "WELCOME5" : null,
+        discount_code: discountCode,
         discount_percent: discountPercent,
         discount_amount: discountAmount,
         notes: data.notes || null,
@@ -135,10 +151,11 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
         price_data: {
           currency: "aud",
           unit_amount: Math.round(shipping * 100),
-          product_data: { name: "Shipping" },
+          product_data: { name: ship.handling > 0 ? "Shipping & remote handling" : "Shipping" },
         },
       });
     }
+
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
