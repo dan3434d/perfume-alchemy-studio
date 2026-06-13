@@ -112,17 +112,17 @@ function ProductPage() {
 
       <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
         {/* Image */}
-        <div className="space-y-4">
-          <div className="aspect-square rounded-2xl overflow-hidden bg-[var(--cream)] border border-border relative">
-            <img src={productImage(p.image_url)} alt={p.name} className="w-full h-full object-cover" width={1024} height={1024} />
+        <div className="space-y-4 lg:sticky lg:top-24 self-start">
+          <div className="max-w-sm mx-auto lg:mx-0 aspect-square rounded-2xl overflow-hidden bg-[var(--cream)] border border-border relative">
+            <img src={productImage(p.image_url)} alt={p.name} className="w-full h-full object-cover" width={800} height={800} />
             {discount > 0 && (
-              <span className="absolute top-4 left-4 rounded-full bg-foreground text-background text-xs font-semibold px-3 py-1.5 tracking-wider">
+              <span className="absolute top-3 left-3 rounded-full bg-foreground text-background text-xs font-semibold px-3 py-1.5 tracking-wider">
                 −{discount}% OFF
               </span>
             )}
           </div>
           {p.inspired_by_brand && (
-            <div className="rounded-2xl border border-border bg-[var(--cream)]/40 p-4 text-sm flex items-center gap-3">
+            <div className="max-w-sm mx-auto lg:mx-0 rounded-2xl border border-border bg-[var(--cream)]/40 p-4 text-sm flex items-center gap-3">
               <Sparkles className="w-4 h-4 text-[var(--amber-deep)] shrink-0" />
               <div>
                 <span className="text-muted-foreground">Inspired by </span>
