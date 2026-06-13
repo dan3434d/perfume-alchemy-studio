@@ -74,6 +74,16 @@ export function Navbar() {
               </span>
             )}
           </Link>
+          {user && (
+            <button
+              onClick={signOut}
+              aria-label="Sign out"
+              title="Sign out"
+              className="hidden sm:inline-flex p-2 rounded-full hover:bg-secondary"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
+          )}
           <button
             className="md:hidden p-2 rounded-full hover:bg-secondary"
             onClick={() => setOpen((o) => !o)}
@@ -81,6 +91,7 @@ export function Navbar() {
           >
             {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
+
         </div>
       </div>
 
@@ -93,9 +104,15 @@ export function Navbar() {
               </Link>
             ))}
             {isAdmin && <Link to="/admin" onClick={() => setOpen(false)} className="py-2.5 text-sm font-medium text-[var(--amber-deep)]">Admin Dashboard</Link>}
+            {user && (
+              <button onClick={signOut} className="py-2.5 text-left text-sm font-medium text-destructive">
+                Sign out
+              </button>
+            )}
           </nav>
         </div>
       )}
+
     </header>
   );
 }
