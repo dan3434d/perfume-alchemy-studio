@@ -138,7 +138,7 @@ function Orders() {
               <td className="p-3">{o.full_name}<div className="text-xs text-muted-foreground">{o.email}</div></td>
               <td className="p-3">{formatAUD(o.total)}</td>
               <td className="p-3">
-                <select defaultValue={o.status} onChange={(e) => setStatus(o.id, e.target.value)} className="rounded-md border border-border bg-background px-2 py-1 text-xs">
+                <select defaultValue={o.status} onChange={(e) => setStatus(o.id, e.target.value as any)} className="rounded-md border border-border bg-background px-2 py-1 text-xs">
                   {["pending", "paid", "processing", "shipped", "delivered", "cancelled", "refunded"].map((s) => <option key={s}>{s}</option>)}
                 </select>
               </td>
