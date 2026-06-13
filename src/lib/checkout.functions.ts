@@ -283,6 +283,11 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
       billing_address_collection: "auto",
     });
 
+    await supabaseAdmin
+      .from("orders")
+      .update({ stripe_session_id: session.id })
+      .eq("id", order.id);
+
     return { url: session.url };
   });
 
@@ -294,81 +299,7 @@ const ConfirmSchema = z.object({
 export const confirmStripeCheckout = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => ConfirmSchema.parse(input))
   .handler(async ({ data }) => {
-    const stripe = getStripe();
-    const session = await stripe.checkout.sessions.retrieve(data.session_id);
-    if (session.metadata?.order_id !== data.order_id) {
-      throw new Error("Order mismatch");
-    }
-    const paid = session.payment_status === "paid";
-
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: existing } = await supabaseAdmin
-      .from("orders")
-      .select("*")
-      .eq("id", data.order_id)
-      .single();
-
-    const paymentIntentId =
-      typeof session.payment_intent === "string"
-        ? session.payment_intent
-        : (session.payment_intent as any)?.id ?? null;
-
-    await supabaseAdmin
-      .from("orders")
-      .update({
-        payment_status: paid ? "paid" : "unpaid",
-        status: paid ? "paid" : "pending",
-        stripe_session_id: session.id,
-        stripe_payment_intent: paymentIntentId,
-      })
-      .eq("id", data.order_id);
-
-
-    const { data: items } = await supabaseAdmin
-      .from("order_items")
-      .select("*")
-      .eq("order_id", data.order_id);
-
-    // Send confirmation only on first transition to paid
-    if (paid && existing && existing.payment_status !== "paid") {
-      const fmt = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" });
-      const { sendTransactionalEmail } = await import("@/lib/email/send.server");
-      const itemSummary = (items || []).map((i: any) => ({
-        name: i.product_name,
-        quantity: i.quantity,
-        price: fmt.format(Number(i.line_total)),
-      }));
-      await sendTransactionalEmail({
-        templateName: "order-confirmation",
-        recipientEmail: existing.email,
-        idempotencyKey: `order-confirm-${data.order_id}`,
-        templateData: {
-          orderNumber: existing.order_number,
-          customerName: existing.full_name,
-          total: fmt.format(Number(existing.total)),
-          items: itemSummary,
-        },
-      });
-      // Admin notification
-      await sendTransactionalEmail({
-        templateName: "admin-new-order",
-        recipientEmail: "dbueducation@gmail.com",
-        idempotencyKey: `admin-new-order-${data.order_id}`,
-        templateData: {
-          orderNumber: existing.order_number,
-          customerName: existing.full_name,
-          customerEmail: existing.email,
-          total: fmt.format(Number(existing.total)),
-          items: itemSummary,
-        },
-      });
-    }
-
-    const order = existing
-      ? { ...existing, payment_status: paid ? "paid" : existing.payment_status, status: paid ? "paid" : existing.status, order_items: items || [] }
-      : null;
-
-    return { paid, order };
+    return syncPaidStripeOrder(data.order_id, data.session_id);
   });
 
 
