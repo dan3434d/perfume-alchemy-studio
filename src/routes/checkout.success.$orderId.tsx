@@ -1,8 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { supabase } from "@/integrations/supabase/client";
 import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
 import { useCart } from "@/hooks/useCart";
@@ -22,31 +20,24 @@ function Success() {
   const { clear: clearDiscount } = useDiscount();
   const confirm = useServerFn(confirmStripeCheckout);
   const [confirming, setConfirming] = useState(true);
+  const [o, setOrder] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const sid = params.get("session_id");
-    if (!sid) { setConfirming(false); return; }
+    if (!sid) { setConfirming(false); setError("Missing session reference."); return; }
     confirm({ data: { order_id: orderId, session_id: sid } })
-      .then(({ paid }) => {
+      .then(({ paid, order }) => {
+        if (order) setOrder(order);
         if (paid) {
           clearCart();
           clearDiscount();
         }
       })
-      .catch(() => {})
+      .catch((e: any) => setError(e?.message || "Could not confirm payment"))
       .finally(() => setConfirming(false));
   }, [orderId]);
-
-  const order = useQuery({
-    queryKey: ["order", orderId, confirming],
-    queryFn: async () => {
-      const { data } = await supabase.from("orders").select("*, order_items(*)").eq("id", orderId).maybeSingle();
-      return data as any;
-    },
-    enabled: !confirming,
-    refetchInterval: (q) => (q.state.data?.payment_status === "paid" ? false : 2000),
-  });
 
   const eta = useMemo(() => {
     const start = new Date();
@@ -56,6 +47,8 @@ function Success() {
     const fmt = (d: Date) => d.toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short" });
     return `${fmt(start)} – ${fmt(end)}`;
   }, []);
+
+
 
   const o = order.data;
 
