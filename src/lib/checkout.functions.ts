@@ -99,7 +99,7 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
     const { data: order, error: orderError } = await supabaseAdmin
       .from("orders")
       .insert({
-        user_id: null,
+        user_id: data.user_id ?? null,
         email: data.email,
         full_name: data.full_name,
         phone: data.phone || null,
