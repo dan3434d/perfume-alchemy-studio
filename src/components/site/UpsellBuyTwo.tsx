@@ -3,16 +3,30 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/hooks/useCart";
 import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
-import { BadgePercent, Plus } from "lucide-react";
+import { BadgePercent, Plus, Sparkles } from "lucide-react";
 import { BULK_DISCOUNT_PERCENT } from "@/lib/pricing";
+import { topBrands, viewedIds } from "@/hooks/useBrowsingHistory";
 
 export function UpsellBuyTwo() {
   const { lines, count, add } = useCart();
   const inCart = new Set(lines.map((l) => l.product_id));
+  const brands = topBrands(3);
+  const viewed = viewedIds();
 
   const suggestions = useQuery({
-    queryKey: ["upsell-products"],
+    queryKey: ["upsell-products", brands.join(","), viewed.slice(0, 5).join(",")],
     queryFn: async () => {
+      // Prefer products from brands the shopper has actually browsed.
+      if (brands.length > 0) {
+        const { data } = await supabase
+          .from("products")
+          .select("id,name,slug,price,image_url,stock,inspired_by_brand")
+          .eq("is_active", true)
+          .in("inspired_by_brand", brands)
+          .order("rating", { ascending: false })
+          .limit(12);
+        if (data && data.length > 0) return data;
+      }
       const { data } = await supabase
         .from("products")
         .select("id,name,slug,price,image_url,stock,inspired_by_brand")
