@@ -211,24 +211,23 @@ function Home() {
         </div>
       </section>
 
-      {/* TESTIMONIALS */}
+      {/* SLIDING TESTIMONIALS */}
+      <ReviewsCarousel />
+
+      {/* SOCIAL FEED */}
+      <SocialFeed />
+
+      {/* SCENT DISCOVERY CTA */}
       <section className="section container-px max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Loved by</span>
-          <h2 className="font-display text-3xl sm:text-4xl mt-2">What customers say</h2>
-        </div>
-        <div className="grid md:grid-cols-3 gap-6">
-          {[
-            { n: "Aaliyah K.", c: "Sydney", b: "Midnight Oud is intoxicating. Lasts the whole day on my skin." },
-            { n: "Daniel R.", c: "Melbourne", b: "Eros Elixir gets me compliments every single time I wear it." },
-            { n: "Sara H.", c: "Brisbane", b: "Beautifully packaged and the scent is honestly luxurious." },
-          ].map((r) => (
-            <div key={r.n} className="card-elevated p-6 rounded-2xl border border-border bg-background">
-              <div className="flex gap-0.5 mb-3">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className="w-4 h-4 fill-[var(--gold)] text-[var(--gold)]" />)}</div>
-              <p className="text-sm leading-relaxed">"{r.b}"</p>
-              <div className="mt-4 text-xs text-muted-foreground">{r.n} · {r.c}</div>
-            </div>
-          ))}
+        <div className="rounded-3xl p-10 md:p-14 text-center relative overflow-hidden" style={{ background: "var(--gradient-warm)" }}>
+          <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">New</span>
+          <h2 className="font-display text-3xl sm:text-4xl mt-2">Not sure where to start?</h2>
+          <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
+            Take our 4-question scent quiz and we'll match you with your perfect fragrance from over 40 UAE-blended scents.
+          </p>
+          <Link to="/scent-discovery" className="btn-gold inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold mt-6">
+            Take the scent quiz <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </section>
 
