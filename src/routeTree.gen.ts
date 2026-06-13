@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WholesaleRouteImport } from './routes/wholesale'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ShippingRouteImport } from './routes/shipping'
@@ -36,6 +37,11 @@ import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/em
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as ApiPublicStripeSyncOrdersRouteImport } from './routes/api/public/stripe/sync-orders'
 
+const WholesaleRoute = WholesaleRouteImport.update({
+  id: '/wholesale',
+  path: '/wholesale',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
   id: '/unsubscribe',
   path: '/unsubscribe',
@@ -186,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/shipping': typeof ShippingRoute
   '/terms': typeof TermsRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/wholesale': typeof WholesaleRoute
   '/api/chat': typeof ApiChatRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/shop/$slug': typeof ShopSlugRoute
@@ -214,6 +221,7 @@ export interface FileRoutesByTo {
   '/shipping': typeof ShippingRoute
   '/terms': typeof TermsRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/wholesale': typeof WholesaleRoute
   '/api/chat': typeof ApiChatRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/shop/$slug': typeof ShopSlugRoute
@@ -243,6 +251,7 @@ export interface FileRoutesById {
   '/shipping': typeof ShippingRoute
   '/terms': typeof TermsRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/wholesale': typeof WholesaleRoute
   '/api/chat': typeof ApiChatRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/shop/$slug': typeof ShopSlugRoute
@@ -273,6 +282,7 @@ export interface FileRouteTypes {
     | '/shipping'
     | '/terms'
     | '/unsubscribe'
+    | '/wholesale'
     | '/api/chat'
     | '/email/unsubscribe'
     | '/shop/$slug'
@@ -301,6 +311,7 @@ export interface FileRouteTypes {
     | '/shipping'
     | '/terms'
     | '/unsubscribe'
+    | '/wholesale'
     | '/api/chat'
     | '/email/unsubscribe'
     | '/shop/$slug'
@@ -329,6 +340,7 @@ export interface FileRouteTypes {
     | '/shipping'
     | '/terms'
     | '/unsubscribe'
+    | '/wholesale'
     | '/api/chat'
     | '/email/unsubscribe'
     | '/shop/$slug'
@@ -358,6 +370,7 @@ export interface RootRouteChildren {
   ShippingRoute: typeof ShippingRoute
   TermsRoute: typeof TermsRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
+  WholesaleRoute: typeof WholesaleRoute
   ApiChatRoute: typeof ApiChatRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ShopSlugRoute: typeof ShopSlugRoute
@@ -373,6 +386,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wholesale': {
+      id: '/wholesale'
+      path: '/wholesale'
+      fullPath: '/wholesale'
+      preLoaderRoute: typeof WholesaleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/unsubscribe': {
       id: '/unsubscribe'
       path: '/unsubscribe'
@@ -585,6 +605,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShippingRoute: ShippingRoute,
   TermsRoute: TermsRoute,
   UnsubscribeRoute: UnsubscribeRoute,
+  WholesaleRoute: WholesaleRoute,
   ApiChatRoute: ApiChatRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ShopSlugRoute: ShopSlugRoute,
@@ -600,3 +621,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
