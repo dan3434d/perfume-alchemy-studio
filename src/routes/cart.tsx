@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { useCart } from "@/hooks/useCart";
 import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
@@ -11,8 +12,15 @@ export const Route = createFileRoute("/cart")({
 
 function CartPage() {
   const { lines, updateQty, remove, subtotal } = useCart();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const shipping = subtotal === 0 ? 0 : subtotal >= 80 ? 0 : 9.95;
   const total = subtotal + shipping;
+
+  if (!mounted) {
+    return <div className="container-px max-w-6xl mx-auto py-20 text-center text-muted-foreground">Loading cart…</div>;
+  }
+
 
   return (
     <div className="container-px max-w-6xl mx-auto py-10 sm:py-14">
