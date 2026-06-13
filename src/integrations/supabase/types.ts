@@ -357,6 +357,7 @@ export type Database = {
           order_number: string
           payment_status: Database["public"]["Enums"]["payment_status"]
           phone: string | null
+          refunded_at: string | null
           shipped_at: string | null
           shipping: number
           shipping_city: string
@@ -366,6 +367,8 @@ export type Database = {
           shipping_postcode: string
           shipping_state: string
           status: Database["public"]["Enums"]["order_status"]
+          stripe_payment_intent: string | null
+          stripe_session_id: string | null
           subtotal: number
           total: number
           tracking_carrier: string | null
@@ -386,6 +389,7 @@ export type Database = {
           order_number?: string
           payment_status?: Database["public"]["Enums"]["payment_status"]
           phone?: string | null
+          refunded_at?: string | null
           shipped_at?: string | null
           shipping?: number
           shipping_city: string
@@ -395,6 +399,8 @@ export type Database = {
           shipping_postcode: string
           shipping_state: string
           status?: Database["public"]["Enums"]["order_status"]
+          stripe_payment_intent?: string | null
+          stripe_session_id?: string | null
           subtotal: number
           total: number
           tracking_carrier?: string | null
@@ -415,6 +421,7 @@ export type Database = {
           order_number?: string
           payment_status?: Database["public"]["Enums"]["payment_status"]
           phone?: string | null
+          refunded_at?: string | null
           shipped_at?: string | null
           shipping?: number
           shipping_city?: string
@@ -424,6 +431,8 @@ export type Database = {
           shipping_postcode?: string
           shipping_state?: string
           status?: Database["public"]["Enums"]["order_status"]
+          stripe_payment_intent?: string | null
+          stripe_session_id?: string | null
           subtotal?: number
           total?: number
           tracking_carrier?: string | null

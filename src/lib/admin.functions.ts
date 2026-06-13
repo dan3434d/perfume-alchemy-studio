@@ -190,7 +190,7 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
 
     const { data: order, error: getErr } = await supabaseAdmin
       .from("orders")
-      .select("id,order_number,email,full_name,status,tracking_number,tracking_carrier,shipped_at")
+      .select("id,order_number,email,full_name,status,payment_status,tracking_number,tracking_carrier,shipped_at,refunded_at,stripe_payment_intent,total")
       .eq("id", data.order_id)
       .single<any>();
     if (getErr) throw getErr;
@@ -200,13 +200,47 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
     if (data.tracking_carrier !== undefined) patch.tracking_carrier = data.tracking_carrier || null;
     if (data.status === "shipped" && !order.shipped_at) patch.shipped_at = new Date().toISOString();
 
+    // Keep payment_status in sync with order status.
+    if (["paid", "processing", "shipped", "delivered"].includes(data.status)) {
+      patch.payment_status = "paid";
+    } else if (data.status === "pending") {
+      patch.payment_status = "unpaid";
+    }
+
+    // Refund flow — issue a Stripe refund the first time an order is marked refunded.
+    let refundResult: { refunded: boolean; amount?: number; error?: string } = { refunded: false };
+    if (data.status === "refunded" && order.status !== "refunded") {
+      patch.payment_status = "refunded";
+      patch.refunded_at = new Date().toISOString();
+      if (order.stripe_payment_intent) {
+        try {
+          const Stripe = (await import("stripe")).default;
+          const key = process.env.STRIPE;
+          if (!key) throw new Error("Stripe is not configured");
+          const stripe = new Stripe(key, {
+            apiVersion: "2024-06-20" as any,
+            httpClient: (Stripe as any).createFetchHttpClient(),
+          });
+          const refund = await stripe.refunds.create({
+            payment_intent: order.stripe_payment_intent,
+            reason: "requested_by_customer",
+            metadata: { order_id: order.id, order_number: order.order_number },
+          });
+          refundResult = { refunded: true, amount: refund.amount };
+        } catch (e: any) {
+          throw new Error(`Stripe refund failed: ${e?.message || "unknown error"}`);
+        }
+      }
+
+    }
+
     const { error: updErr } = await (supabaseAdmin.from("orders") as any).update(patch).eq("id", data.order_id);
     if (updErr) throw updErr;
-
 
     const { sendTransactionalEmail } = await import("@/lib/email/send.server");
     const carrier = data.tracking_carrier ?? order.tracking_carrier ?? "";
     const tracking = data.tracking_number ?? order.tracking_number ?? "";
+    const fmt = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" });
 
     if (data.status === "shipped" && tracking) {
       await sendTransactionalEmail({
@@ -218,6 +252,17 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
           customerName: order.full_name,
           carrier: carrier || "your carrier",
           trackingNumber: tracking,
+        },
+      });
+    } else if (data.status === "refunded" && order.status !== "refunded") {
+      await sendTransactionalEmail({
+        templateName: "order-status",
+        recipientEmail: order.email,
+        idempotencyKey: `order-refunded-${order.id}`,
+        templateData: {
+          orderNumber: order.order_number,
+          customerName: order.full_name,
+          status: `refunded — ${fmt.format(Number(order.total))} has been returned to your card`,
         },
       });
     } else if (data.status !== order.status) {
@@ -233,6 +278,7 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
       });
     }
 
-    return { ok: true };
+    return { ok: true, refund: refundResult };
   });
+
 
