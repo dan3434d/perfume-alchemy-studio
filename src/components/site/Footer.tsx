@@ -23,6 +23,7 @@ export function Footer() {
           <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Help</h4>
           <ul className="mt-3 space-y-2 text-sm">
             <li><Link to="/contact" className="hover:text-[var(--amber-deep)]">Contact</Link></li>
+            <li><Link to="/wholesale" className="hover:text-[var(--amber-deep)]">Wholesale enquiries</Link></li>
             <li><Link to="/shipping" className="hover:text-[var(--amber-deep)]">Shipping</Link></li>
             <li><Link to="/returns" className="hover:text-[var(--amber-deep)]">Returns</Link></li>
             <li><Link to="/privacy" className="hover:text-[var(--amber-deep)]">Privacy</Link></li>
