@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
@@ -8,6 +8,7 @@ import { useCart, useWishlist } from "@/hooks/useCart";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
 import { Heart, ShoppingBag, Truck, RotateCcw, Lock, Minus, Plus, Star, Check, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { trackView } from "@/hooks/useBrowsingHistory";
 
 export const Route = createFileRoute("/shop/$slug")({
   head: ({ params }) => ({
