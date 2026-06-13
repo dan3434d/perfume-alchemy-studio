@@ -99,8 +99,8 @@ function Checkout() {
             product_id: l.product_id, name: l.name, slug: l.slug,
             price: l.price, quantity: l.quantity, image_url: l.image_url ?? null,
           })),
-          discount_code: discount?.code ?? null,
-          discount_percent: discount?.percent ?? 0,
+          discount_code: freeShip ? "FREESHIPPING" : (discount?.code ?? null),
+          discount_percent: freeShip ? 0 : (discount?.percent ?? 0),
           origin: window.location.origin,
         },
       });
