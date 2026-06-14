@@ -459,7 +459,7 @@ export const createEmbeddedStripeCheckout = createServerFn({ method: "POST" })
     });
 
     const session = await stripe.checkout.sessions.create({
-      ui_mode: "embedded",
+      ui_mode: "embedded" as any,
       mode: "payment",
       payment_method_types: ["card"],
       customer: customer.id,
