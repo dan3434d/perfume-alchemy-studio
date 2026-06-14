@@ -339,6 +339,148 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
     return { url: session.url };
   });
 
+// ---------- Embedded checkout (no redirect) ----------
+export const createEmbeddedStripeCheckout = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => CheckoutSchema.parse(input))
+  .handler(async ({ data }) => {
+    const stripe = getStripe();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const productIds = [...new Set(data.lines.map((l) => l.product_id))];
+    const { data: products, error: productsError } = await supabaseAdmin
+      .from("products")
+      .select("id,name,slug,price,image_url,stock,is_active")
+      .in("id", productIds)
+      .eq("is_active", true);
+    if (productsError) throw productsError;
+
+    const productMap = new Map((products ?? []).map((p) => [p.id, p]));
+    const orderLines = data.lines.map((l) => {
+      const p = productMap.get(l.product_id);
+      if (!p) throw new Error("One or more products are unavailable");
+      if (typeof p.stock === "number" && p.stock < l.quantity) throw new Error(`${p.name} is out of stock`);
+      return {
+        product_id: p.id, name: p.name, slug: p.slug,
+        price: Number(p.price), quantity: l.quantity, image_url: p.image_url,
+      };
+    });
+
+    const subtotal = +orderLines.reduce((s, l) => s + l.price * l.quantity, 0).toFixed(2);
+    const totalQty = orderLines.reduce((s, l) => s + l.quantity, 0);
+    const submittedCode = (data.discount_code || "").toUpperCase();
+    const isFreeShipping = submittedCode === "FREESHIPPING";
+    const codePercent = submittedCode === "WELCOME5" ? 5 : (isFreeShipping ? 0 : (data.discount_percent || 0));
+    const discountPercent = computeBulkDiscountPercent(totalQty, codePercent);
+    const discountAmount = +(subtotal * discountPercent / 100).toFixed(2);
+    const subtotalAfterDiscount = +(subtotal - discountAmount).toFixed(2);
+    const rawShip = computeShipping(subtotalAfterDiscount, {
+      state: data.shipping_state, postcode: data.shipping_postcode, country: data.shipping_country,
+    });
+    const ship = isFreeShipping ? { ...rawShip, base: 0, handling: 0, total: 0, freeShipping: true } : rawShip;
+    const shipping = ship.total;
+    const total = +(subtotalAfterDiscount + shipping).toFixed(2);
+
+    const discountCode = isFreeShipping
+      ? "FREESHIPPING"
+      : discountPercent > 0
+        ? (submittedCode === "WELCOME5" && discountPercent === codePercent
+            ? "WELCOME5"
+            : totalQty >= 2 ? "BUY2-15" : null)
+        : null;
+
+    const { data: order, error: orderError } = await supabaseAdmin
+      .from("orders")
+      .insert({
+        user_id: data.user_id ?? null,
+        email: data.email, full_name: data.full_name, phone: data.phone || null,
+        shipping_line1: data.shipping_line1,
+        shipping_line2: data.shipping_line2 || null,
+        shipping_city: data.shipping_city, shipping_state: data.shipping_state,
+        shipping_postcode: data.shipping_postcode, shipping_country: data.shipping_country,
+        subtotal, shipping, total,
+        discount_code: discountCode, discount_percent: discountPercent, discount_amount: discountAmount,
+        notes: data.notes || null, status: "pending", payment_status: "unpaid",
+      })
+      .select("id")
+      .single();
+    if (orderError) throw orderError;
+
+    const { error: itemsError } = await supabaseAdmin.from("order_items").insert(orderLines.map((l) => ({
+      order_id: order.id, product_id: l.product_id, product_name: l.name,
+      product_slug: l.slug, unit_price: l.price, quantity: l.quantity,
+      line_total: +(l.price * l.quantity).toFixed(2), image_url: l.image_url,
+    })));
+    if (itemsError) throw itemsError;
+
+    const discountFactor = (100 - discountPercent) / 100;
+    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = orderLines.map((l) => {
+      const imageUrl = l.image_url ? new URL(l.image_url, data.origin).toString() : undefined;
+      return {
+        quantity: l.quantity,
+        price_data: {
+          currency: "aud",
+          unit_amount: Math.round(l.price * discountFactor * 100),
+          product_data: {
+            name: discountPercent > 0 ? `${l.name} (-${discountPercent}%)` : l.name,
+            images: imageUrl ? [imageUrl] : undefined,
+            metadata: { product_id: l.product_id, slug: l.slug },
+          },
+        },
+      };
+    });
+    if (shipping > 0) {
+      line_items.push({
+        quantity: 1,
+        price_data: {
+          currency: "aud",
+          unit_amount: Math.round(shipping * 100),
+          product_data: { name: ship.handling > 0 ? "Shipping & remote handling" : "Shipping" },
+        },
+      });
+    }
+
+    const countryCode = ((): string => {
+      const c = (data.shipping_country || "").trim().toUpperCase();
+      if (c === "AUSTRALIA" || c === "AU" || c === "AUS") return "AU";
+      if (c === "NEW ZEALAND" || c === "NZ") return "NZ";
+      if (c.length === 2) return c;
+      return "AU";
+    })();
+    const address = {
+      line1: data.shipping_line1, line2: data.shipping_line2 || undefined,
+      city: data.shipping_city, state: data.shipping_state,
+      postal_code: data.shipping_postcode, country: countryCode,
+    };
+
+    const customer = await stripe.customers.create({
+      email: data.email, name: data.full_name, phone: data.phone || undefined,
+      address, shipping: { name: data.full_name, phone: data.phone || undefined, address },
+      metadata: { order_id: order.id },
+    });
+
+    const session = await stripe.checkout.sessions.create({
+      ui_mode: "embedded",
+      mode: "payment",
+      payment_method_types: ["card"],
+      customer: customer.id,
+      customer_update: { name: "auto", address: "auto", shipping: "auto" },
+      line_items,
+      metadata: { order_id: order.id, discount_percent: String(discountPercent) },
+      payment_intent_data: {
+        shipping: { name: data.full_name, phone: data.phone || undefined, address },
+      },
+      return_url: `${data.origin}/checkout/success/${order.id}?session_id={CHECKOUT_SESSION_ID}`,
+      billing_address_collection: "auto",
+    });
+
+    await supabaseAdmin
+      .from("orders")
+      .update({ stripe_session_id: session.id })
+      .eq("id", order.id);
+
+    return { client_secret: session.client_secret, order_id: order.id };
+  });
+
 const ConfirmSchema = z.object({
   order_id: z.string().uuid(),
   session_id: z.string().min(1),
