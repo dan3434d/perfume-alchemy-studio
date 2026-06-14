@@ -1,12 +1,14 @@
 import { createFileRoute, useNavigate, Link, Outlet, useChildMatches } from "@tanstack/react-router";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
+import { getStripePromise } from "@/lib/stripe-client";
 import { useCart } from "@/hooks/useCart";
 import { useDiscount } from "@/hooks/useDiscount";
 import { supabase } from "@/integrations/supabase/client";
 import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
-import { createStripeCheckout } from "@/lib/checkout.functions";
+import { createEmbeddedStripeCheckout } from "@/lib/checkout.functions";
 import { AddressAutocomplete } from "@/components/site/AddressAutocomplete";
 import { UpsellBuyTwo } from "@/components/site/UpsellBuyTwo";
 import {
@@ -19,7 +21,7 @@ import {
   RURAL_HANDLING_WAIVED_OVER,
 } from "@/lib/pricing";
 import { toast } from "sonner";
-import { Lock, Truck, ShieldCheck, BadgePercent, X } from "lucide-react";
+import { Lock, Truck, ShieldCheck, BadgePercent, X, ArrowLeft, CreditCard } from "lucide-react";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Checkout — Abdulrahman Perfumes" }] }),
@@ -33,8 +35,9 @@ function Checkout() {
   const { lines, subtotal, count } = useCart();
   const { discount, clear: clearDiscount } = useDiscount();
   const navigate = useNavigate();
-  const startStripe = useServerFn(createStripeCheckout);
+  const startStripe = useServerFn(createEmbeddedStripeCheckout);
   const [submitting, setSubmitting] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [promoInput, setPromoInput] = useState("");
   const [freeShip, setFreeShip] = useState(false);
   const [form, setForm] = useState({
@@ -85,10 +88,10 @@ function Checkout() {
     setSubmitting(true);
     try {
       const { data: userData } = await supabase.auth.getUser();
-      const { url } = await startStripe({
+      const { client_secret } = await startStripe({
         data: {
-        email: form.email,
-        full_name: form.full_name,
+          email: form.email,
+          full_name: form.full_name,
           phone: form.phone || null,
           shipping_line1: form.line1,
           shipping_line2: form.line2 || null,
@@ -107,13 +110,20 @@ function Checkout() {
           origin: window.location.origin,
         },
       });
-      if (!url) throw new Error("Could not start payment");
-      window.location.href = url;
+      if (!client_secret) throw new Error("Could not start payment");
+      setClientSecret(client_secret);
+      // smooth scroll to the embedded panel
+      setTimeout(() => {
+        document.getElementById("stripe-embed")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 80);
     } catch (err: any) {
       toast.error(err.message || "Failed to start checkout");
+    } finally {
       setSubmitting(false);
     }
   };
+
+  const fetchClientSecret = useCallback(() => Promise.resolve(clientSecret ?? ""), [clientSecret]);
 
   if (childMatches.length > 0) {
     return <Outlet />;
@@ -129,16 +139,17 @@ function Checkout() {
   }
 
   return (
-    <div className="container-px max-w-6xl mx-auto py-10 sm:py-14">
+    <div className="container-px max-w-6xl mx-auto py-8 sm:py-14 pb-32 lg:pb-14">
       {/* Steps */}
-      <div className="flex items-center justify-center gap-3 sm:gap-6 mb-8 text-xs sm:text-sm">
+      <div className="flex items-center justify-center gap-2 sm:gap-6 mb-8 text-[11px] sm:text-sm overflow-x-auto">
         {["Cart", "Details", "Payment", "Done"].map((s, i) => {
-          const active = i === 1;
-          const done = i === 0;
+          const stepIdx = clientSecret ? 2 : 1;
+          const active = i === stepIdx;
+          const done = i < stepIdx;
           return (
-            <div key={s} className="flex items-center gap-2">
-              <span className={`w-6 h-6 rounded-full grid place-items-center text-[10px] font-bold ${active ? "bg-foreground text-background" : done ? "bg-[var(--amber-deep)] text-white" : "bg-secondary text-muted-foreground"}`}>
-                {i + 1}
+            <div key={s} className="flex items-center gap-2 shrink-0">
+              <span className={`w-6 h-6 rounded-full grid place-items-center text-[10px] font-bold transition-colors ${active ? "bg-foreground text-background" : done ? "bg-[var(--amber-deep)] text-white" : "bg-secondary text-muted-foreground"}`}>
+                {done ? "✓" : i + 1}
               </span>
               <span className={active ? "font-semibold" : "text-muted-foreground"}>{s}</span>
               {i < 3 && <span className="w-6 sm:w-10 h-px bg-border" />}
@@ -148,93 +159,136 @@ function Checkout() {
       </div>
 
       <h1 className="font-display text-3xl sm:text-4xl mb-2">Checkout</h1>
-      <p className="text-sm text-muted-foreground mb-8 flex items-center gap-2"><Lock className="w-3.5 h-3.5" /> Secure payment by Stripe · AUD</p>
+      <p className="text-sm text-muted-foreground mb-8 flex items-center gap-2">
+        <Lock className="w-3.5 h-3.5" /> Secure on-site payment by Stripe · AUD
+      </p>
 
-      <form onSubmit={onSubmit} className="grid lg:grid-cols-3 gap-10">
+      <div className="grid lg:grid-cols-3 gap-8 lg:gap-10">
         <div className="lg:col-span-2 space-y-6">
-          <UpsellBuyTwo />
-          <Section title="Contact" subtitle="We'll email your order confirmation here.">
-
-            <Field label="Email" required value={form.email} onChange={(v) => setForm({ ...form, email: v })} type="email" />
-          </Section>
-          <Section title="Shipping address" subtitle="Start typing — we'll auto-complete your Australian address.">
-            <div className="grid sm:grid-cols-2 gap-4">
-              <Field label="Full name" required value={form.full_name} onChange={(v) => setForm({ ...form, full_name: v })} />
-              <Field label="Phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
-            </div>
-            <label className="block">
-              <span className="text-xs font-medium text-muted-foreground">Address line 1 *</span>
-              <div className="mt-1">
-                <AddressAutocomplete
-                  value={form.line1}
-                  onChange={(v) => setForm((f) => ({ ...f, line1: v }))}
-                  onSelect={(s) => setForm((f) => ({
-                    ...f,
-                    line1: s.line1,
-                    city: s.city || f.city,
-                    state: s.state || f.state,
-                    postcode: s.postcode || f.postcode,
-                    country: s.country,
-                  }))}
-                  required
+          {!clientSecret && (
+            <form onSubmit={onSubmit} className="space-y-6" id="checkout-details">
+              <UpsellBuyTwo />
+              <Section title="Contact" subtitle="We'll email your order confirmation here.">
+                <Field label="Email" required value={form.email} onChange={(v) => setForm({ ...form, email: v })} type="email" />
+              </Section>
+              <Section title="Shipping address" subtitle="Start typing — we'll auto-complete your Australian address.">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <Field label="Full name" required value={form.full_name} onChange={(v) => setForm({ ...form, full_name: v })} />
+                  <Field label="Phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
+                </div>
+                <label className="block">
+                  <span className="text-xs font-medium text-muted-foreground">Address line 1 *</span>
+                  <div className="mt-1">
+                    <AddressAutocomplete
+                      value={form.line1}
+                      onChange={(v) => setForm((f) => ({ ...f, line1: v }))}
+                      onSelect={(s) => setForm((f) => ({
+                        ...f,
+                        line1: s.line1,
+                        city: s.city || f.city,
+                        state: s.state || f.state,
+                        postcode: s.postcode || f.postcode,
+                        country: s.country,
+                      }))}
+                      required
+                    />
+                  </div>
+                </label>
+                <Field label="Apt/Suite (optional)" value={form.line2} onChange={(v) => setForm({ ...form, line2: v })} />
+                <div className="grid sm:grid-cols-3 gap-4">
+                  <Field label="City / Suburb" required value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
+                  <label className="block">
+                    <span className="text-xs font-medium text-muted-foreground">State *</span>
+                    <select
+                      required
+                      value={form.state}
+                      onChange={(e) => setForm({ ...form, state: e.target.value })}
+                      className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
+                    >
+                      <option value="">Select…</option>
+                      {AU_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </label>
+                  <Field label="Postcode" required value={form.postcode} onChange={(v) => setForm({ ...form, postcode: v })} />
+                </div>
+                <Field label="Country" value={form.country} onChange={(v) => setForm({ ...form, country: v })} />
+              </Section>
+              <Section title="Order notes" subtitle="Optional">
+                <textarea
+                  value={form.notes}
+                  onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                  rows={3}
+                  className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
+                  placeholder="Anything we should know?"
                 />
-              </div>
-            </label>
-            <Field label="Apt/Suite (optional)" value={form.line2} onChange={(v) => setForm({ ...form, line2: v })} />
-            <div className="grid sm:grid-cols-3 gap-4">
-              <Field label="City / Suburb" required value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
-              <label className="block">
-                <span className="text-xs font-medium text-muted-foreground">State *</span>
-                <select
-                  required
-                  value={form.state}
-                  onChange={(e) => setForm({ ...form, state: e.target.value })}
-                  className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                >
-                  <option value="">Select…</option>
-                  {AU_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </label>
-              <Field label="Postcode" required value={form.postcode} onChange={(v) => setForm({ ...form, postcode: v })} />
-            </div>
-            <Field label="Country" value={form.country} onChange={(v) => setForm({ ...form, country: v })} />
-          </Section>
-          <Section title="Order notes" subtitle="Optional">
-            <textarea
-              value={form.notes}
-              onChange={(e) => setForm({ ...form, notes: e.target.value })}
-              rows={3}
-              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              placeholder="Anything we should know?"
-            />
-          </Section>
+              </Section>
 
-          <div className="grid sm:grid-cols-3 gap-3">
-            {[
-              { i: Lock, t: "256-bit SSL", d: "Encrypted checkout" },
-              { i: ShieldCheck, t: "Buyer protection", d: "Stripe-powered" },
-              { i: Truck, t: "Ships in 24h", d: "From Sydney" },
-            ].map(({ i: Icon, t, d }) => (
-              <div key={t} className="rounded-xl border border-border p-3 flex items-start gap-2">
-                <Icon className="w-4 h-4 mt-0.5 text-[var(--amber-deep)] shrink-0" />
-                <div className="text-xs"><div className="font-semibold">{t}</div><div className="text-muted-foreground">{d}</div></div>
+              <div className="grid sm:grid-cols-3 gap-3">
+                {[
+                  { i: Lock, t: "256-bit SSL", d: "Encrypted checkout" },
+                  { i: ShieldCheck, t: "Buyer protection", d: "Stripe-powered" },
+                  { i: Truck, t: "Ships in 24h", d: "From Sydney" },
+                ].map(({ i: Icon, t, d }) => (
+                  <div key={t} className="rounded-xl border border-border bg-card p-3 flex items-start gap-2">
+                    <Icon className="w-4 h-4 mt-0.5 text-[var(--amber-deep)] shrink-0" />
+                    <div className="text-xs"><div className="font-semibold">{t}</div><div className="text-muted-foreground">{d}</div></div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+
+              {/* Desktop submit (in-form). Mobile uses sticky bar below. */}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="hidden lg:inline-flex btn-gold w-full rounded-full py-3.5 font-semibold disabled:opacity-60 items-center justify-center gap-2"
+              >
+                <CreditCard className="w-4 h-4" />
+                {submitting ? "Preparing secure payment…" : `Continue to payment · ${formatAUD(total)}`}
+              </button>
+            </form>
+          )}
+
+          {clientSecret && (
+            <div id="stripe-embed" className="card-elevated p-3 sm:p-5">
+              <div className="flex items-center justify-between mb-3 px-1">
+                <h2 className="font-display text-xl flex items-center gap-2">
+                  <Lock className="w-4 h-4 text-[var(--amber-deep)]" /> Secure payment
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => setClientSecret(null)}
+                  className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" /> Edit details
+                </button>
+              </div>
+              <div className="rounded-xl overflow-hidden bg-background">
+                <EmbeddedCheckoutProvider
+                  stripe={getStripePromise()}
+                  options={{ fetchClientSecret }}
+                >
+                  <EmbeddedCheckout />
+                </EmbeddedCheckoutProvider>
+              </div>
+              <p className="text-[11px] text-center text-muted-foreground mt-3">
+                Powered by Stripe · Your card details never touch our servers.
+              </p>
+            </div>
+          )}
         </div>
 
         <aside className="lg:sticky lg:top-24 h-fit space-y-4">
-          <div className="card-elevated p-6 space-y-4">
+          <div className="card-elevated p-5 sm:p-6 space-y-4">
             <h2 className="font-display text-xl">Your order</h2>
-            <div className="space-y-3 max-h-64 overflow-auto">
+            <div className="space-y-3 max-h-64 overflow-auto pr-1 -mr-1">
               {lines.map((l) => (
                 <div key={l.product_id} className="flex gap-3 items-center">
-                  <img src={productImage(l.image_url)} alt={l.name} className="w-12 h-12 rounded-lg object-cover" />
+                  <img src={productImage(l.image_url)} alt={l.name} className="w-12 h-12 rounded-lg object-cover ring-1 ring-border" />
                   <div className="flex-1 text-sm min-w-0">
                     <div className="font-medium truncate">{l.name}</div>
                     <div className="text-xs text-muted-foreground">Qty {l.quantity}</div>
                   </div>
-                  <div className="text-sm whitespace-nowrap">{formatAUD(l.price * l.quantity)}</div>
+                  <div className="text-sm whitespace-nowrap font-medium">{formatAUD(l.price * l.quantity)}</div>
                 </div>
               ))}
             </div>
@@ -290,7 +344,6 @@ function Checkout() {
               </div>
             )}
 
-
             <div className="border-t border-border pt-3 space-y-1.5 text-sm">
               <Row label="Subtotal" value={formatAUD(subtotal)} />
               {discountAmount > 0 && <Row label={`Discount (−${discountPercent}%)`} value={`− ${formatAUD(discountAmount)}`} accent />}
@@ -299,26 +352,37 @@ function Checkout() {
                 <Row label="Remote area handling" value={formatAUD(ship.handling)} />
               )}
               <div className="flex justify-between font-semibold text-base pt-2 border-t border-border">
-                <span>Total</span><span>{formatAUD(total)}</span>
+                <span>Total</span><span className="font-display text-lg">{formatAUD(total)}</span>
               </div>
             </div>
-            <button type="submit" disabled={submitting} className="btn-gold w-full rounded-full py-3 font-semibold disabled:opacity-60 inline-flex items-center justify-center gap-2">
-              <Lock className="w-4 h-4" />
-              {submitting ? "Redirecting…" : `Pay ${formatAUD(total)} securely`}
-            </button>
             <p className="text-[11px] text-center text-muted-foreground leading-relaxed">
               Free metro shipping over {formatAUD(FREE_SHIPPING_THRESHOLD)}. Remote (WA, NT, TAS, Far North QLD) adds {formatAUD(RURAL_HANDLING_FEE)} handling — waived over {formatAUD(RURAL_HANDLING_WAIVED_OVER)}.
             </p>
           </div>
         </aside>
-      </form>
+      </div>
+
+      {/* Mobile sticky pay bar */}
+      {!clientSecret && (
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-background/95 backdrop-blur border-t border-border p-3 pb-[calc(env(safe-area-inset-bottom)+12px)]">
+          <button
+            type="submit"
+            form="checkout-details"
+            disabled={submitting}
+            className="btn-gold w-full rounded-full py-3.5 font-semibold disabled:opacity-60 inline-flex items-center justify-center gap-2"
+          >
+            <CreditCard className="w-4 h-4" />
+            {submitting ? "Preparing…" : `Continue · ${formatAUD(total)}`}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
 function Section({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
-    <div className="card-elevated p-6 space-y-4">
+    <div className="card-elevated p-5 sm:p-6 space-y-4">
       <div>
         <h2 className="font-display text-xl">{title}</h2>
         {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
@@ -346,10 +410,8 @@ function Field({ label, value, onChange, required, type = "text" }: { label: str
         required={required}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
       />
     </label>
   );
 }
-
-
