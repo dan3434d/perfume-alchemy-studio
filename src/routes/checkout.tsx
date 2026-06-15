@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
 import { createEmbeddedStripeCheckout } from "@/lib/checkout.functions";
+import { createPurchaseOrder } from "@/lib/purchase-order.functions";
 import { AddressAutocomplete } from "@/components/site/AddressAutocomplete";
 import { UpsellBuyTwo } from "@/components/site/UpsellBuyTwo";
 import {
