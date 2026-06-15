@@ -271,6 +271,49 @@ function Checkout() {
                 />
               </Section>
 
+              <Section title="Payment method" subtitle="Pay securely by card, or submit a purchase order.">
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("card")}
+                    className={`text-left rounded-xl border p-4 transition-all ${paymentMethod === "card" ? "border-[var(--amber-deep)] bg-[var(--amber-deep)]/5 ring-2 ring-[var(--amber-deep)]/30" : "border-border hover:border-foreground/30"}`}
+                  >
+                    <div className="flex items-center gap-2 font-semibold text-sm">
+                      <CreditCard className="w-4 h-4 text-[var(--amber-deep)]" /> Pay by card
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">Secure Stripe checkout · instant.</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("po")}
+                    className={`text-left rounded-xl border p-4 transition-all ${paymentMethod === "po" ? "border-[var(--amber-deep)] bg-[var(--amber-deep)]/5 ring-2 ring-[var(--amber-deep)]/30" : "border-border hover:border-foreground/30"}`}
+                  >
+                    <div className="flex items-center gap-2 font-semibold text-sm">
+                      <FileText className="w-4 h-4 text-[var(--amber-deep)]" /> Purchase order
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">Net 14 days · invoice emailed (requires code).</div>
+                  </button>
+                </div>
+                {paymentMethod === "po" && (
+                  <div className="space-y-3 pt-2">
+                    <Field
+                      label="Purchase order code"
+                      required
+                      value={poCode}
+                      onChange={(v) => setPoCode(v.toUpperCase())}
+                    />
+                    <Field
+                      label="Your PO reference (optional)"
+                      value={poReference}
+                      onChange={setPoReference}
+                    />
+                    <p className="text-[11px] text-muted-foreground">
+                      A PDF invoice will be emailed to you and copied to our accounts team.
+                    </p>
+                  </div>
+                )}
+              </Section>
+
               <div className="grid sm:grid-cols-3 gap-3">
                 {[
                   { i: Lock, t: "256-bit SSL", d: "Encrypted checkout" },
@@ -290,8 +333,13 @@ function Checkout() {
                 disabled={submitting}
                 className="hidden lg:inline-flex btn-gold w-full rounded-full py-3.5 font-semibold disabled:opacity-60 items-center justify-center gap-2"
               >
-                <CreditCard className="w-4 h-4" />
-                {submitting ? "Preparing secure payment…" : `Continue to payment · ${formatAUD(total)}`}
+                {submitting ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> {paymentMethod === "po" ? "Generating invoice…" : "Preparing secure payment…"}</>
+                ) : paymentMethod === "po" ? (
+                  <><FileText className="w-4 h-4" /> Submit purchase order · {formatAUD(total)}</>
+                ) : (
+                  <><CreditCard className="w-4 h-4" /> Continue to payment · {formatAUD(total)}</>
+                )}
               </button>
             </form>
           )}
