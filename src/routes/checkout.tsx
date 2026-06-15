@@ -467,8 +467,13 @@ function Checkout() {
             disabled={submitting}
             className="btn-gold w-full rounded-full py-3.5 font-semibold disabled:opacity-60 inline-flex items-center justify-center gap-2"
           >
-            <CreditCard className="w-4 h-4" />
-            {submitting ? "Preparing…" : `Continue · ${formatAUD(total)}`}
+            {submitting ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Working…</>
+            ) : paymentMethod === "po" ? (
+              <><FileText className="w-4 h-4" /> Submit PO · {formatAUD(total)}</>
+            ) : (
+              <><CreditCard className="w-4 h-4" /> Continue · {formatAUD(total)}</>
+            )}
           </button>
         </div>
       )}
