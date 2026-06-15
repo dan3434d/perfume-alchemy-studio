@@ -22,7 +22,7 @@ import {
   RURAL_HANDLING_WAIVED_OVER,
 } from "@/lib/pricing";
 import { toast } from "sonner";
-import { Lock, Truck, ShieldCheck, BadgePercent, X, ArrowLeft, CreditCard } from "lucide-react";
+import { Lock, Truck, ShieldCheck, BadgePercent, X, ArrowLeft, CreditCard, FileText, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Checkout — Abdulrahman Perfumes" }] }),
