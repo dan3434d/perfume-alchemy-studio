@@ -21,5 +21,6 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'order-status': orderStatus,
   'complaint-received': complaintReceived,
   'admin-new-order': adminNewOrder,
+  'purchase-order-invoice': purchaseOrderInvoice,
 }
 
