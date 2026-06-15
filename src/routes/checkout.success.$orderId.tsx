@@ -22,10 +22,22 @@ function Success() {
   const [confirming, setConfirming] = useState(true);
   const [o, setOrder] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isPO, setIsPO] = useState(false);
+  const [invoiceUrl, setInvoiceUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const sid = params.get("session_id");
+    const po = params.get("po");
+    const inv = params.get("invoice");
+    if (po === "1") {
+      setIsPO(true);
+      setInvoiceUrl(inv);
+      clearCart();
+      clearDiscount();
+      setConfirming(false);
+      return;
+    }
     if (!sid) { setConfirming(false); setError("Missing session reference."); return; }
     confirm({ data: { order_id: orderId, session_id: sid } })
       .then(({ paid, order }) => {
@@ -68,15 +80,32 @@ function Success() {
             <Check className="w-10 h-10 text-white" strokeWidth={3} />
           </div>
           <span className="inline-flex items-center gap-1.5 mt-6 text-[11px] uppercase tracking-[0.22em] text-[var(--amber-deep)]">
-            <Sparkles className="w-3 h-3" /> Order confirmed
+            <Sparkles className="w-3 h-3" /> {isPO ? "Purchase order received" : "Order confirmed"}
           </span>
           <h1 className="font-display text-3xl sm:text-5xl mt-3 leading-tight">Thank you{o?.full_name ? `, ${o.full_name.split(" ")[0]}` : ""}.</h1>
           <p className="text-muted-foreground mt-3 max-w-md mx-auto">
             {confirming
               ? "Confirming your payment with Stripe…"
-              : "Your fragrance is being prepared with care. A confirmation has been sent to your email."}
+              : isPO
+                ? "Your invoice has been emailed to you and a copy sent to our team. Payment terms: Net 14 days."
+                : "Your fragrance is being prepared with care. A confirmation has been sent to your email."}
           </p>
           {confirming && <Loader2 className="w-5 h-5 animate-spin text-[var(--amber-deep)] mx-auto mt-4" />}
+          {error && !confirming && (
+            <div className="mt-6 mx-auto max-w-md rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+              {error}
+            </div>
+          )}
+          {isPO && invoiceUrl && (
+            <a
+              href={invoiceUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-gold inline-flex items-center gap-2 rounded-full px-6 py-3 mt-6 text-sm font-semibold"
+            >
+              Download invoice PDF <ArrowRight className="w-4 h-4" />
+            </a>
+          )}
         </div>
 
         {o && (

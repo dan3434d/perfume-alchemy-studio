@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
 import { createEmbeddedStripeCheckout } from "@/lib/checkout.functions";
+import { createPurchaseOrder } from "@/lib/purchase-order.functions";
 import { AddressAutocomplete } from "@/components/site/AddressAutocomplete";
 import { UpsellBuyTwo } from "@/components/site/UpsellBuyTwo";
 import {
@@ -21,7 +22,7 @@ import {
   RURAL_HANDLING_WAIVED_OVER,
 } from "@/lib/pricing";
 import { toast } from "sonner";
-import { Lock, Truck, ShieldCheck, BadgePercent, X, ArrowLeft, CreditCard } from "lucide-react";
+import { Lock, Truck, ShieldCheck, BadgePercent, X, ArrowLeft, CreditCard, FileText, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Checkout — Abdulrahman Perfumes" }] }),
@@ -36,10 +37,14 @@ function Checkout() {
   const { discount, clear: clearDiscount } = useDiscount();
   const navigate = useNavigate();
   const startStripe = useServerFn(createEmbeddedStripeCheckout);
+  const startPO = useServerFn(createPurchaseOrder);
   const [submitting, setSubmitting] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [promoInput, setPromoInput] = useState("");
   const [freeShip, setFreeShip] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "po">("card");
+  const [poCode, setPoCode] = useState("");
+  const [poReference, setPoReference] = useState("");
   const [form, setForm] = useState({
     email: "", full_name: "", phone: "",
     line1: "", line2: "", city: "", state: "", postcode: "", country: "Australia",
@@ -85,6 +90,49 @@ function Checkout() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (lines.length === 0) { toast.error("Your cart is empty"); return; }
+
+    if (paymentMethod === "po") {
+      const code = poCode.trim().toUpperCase();
+      if (!code) { toast.error("Enter your purchase order code"); return; }
+      setSubmitting(true);
+      try {
+        const { data: userData } = await supabase.auth.getUser();
+        const result = await startPO({
+          data: {
+            code,
+            po_reference: poReference.trim() || null,
+            email: form.email,
+            full_name: form.full_name,
+            phone: form.phone || null,
+            shipping_line1: form.line1,
+            shipping_line2: form.line2 || null,
+            shipping_city: form.city,
+            shipping_state: form.state,
+            shipping_postcode: form.postcode,
+            shipping_country: form.country,
+            notes: form.notes || null,
+            lines: lines.map((l) => ({
+              product_id: l.product_id, name: l.name, slug: l.slug,
+              price: l.price, quantity: l.quantity, image_url: l.image_url ?? null,
+            })),
+            discount_code: freeShip ? "FREESHIPPING" : (discount?.code ?? null),
+            discount_percent: freeShip ? 0 : (discount?.percent ?? 0),
+            user_id: userData.user?.id ?? null,
+            origin: window.location.origin,
+          },
+        });
+        toast.success("Purchase order created — invoice emailed");
+        const url = `/checkout/success/${result.order_id}?po=1&invoice=${encodeURIComponent(result.invoice_url)}`;
+        navigate({ to: url });
+      } catch (err: any) {
+        const msg = err?.message || "Could not create purchase order";
+        toast.error(msg.includes("Invalid purchase order code") ? "Invalid purchase order code" : msg);
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
+
     setSubmitting(true);
     try {
       const { data: userData } = await supabase.auth.getUser();
@@ -223,6 +271,49 @@ function Checkout() {
                 />
               </Section>
 
+              <Section title="Payment method" subtitle="Pay securely by card, or submit a purchase order.">
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("card")}
+                    className={`text-left rounded-xl border p-4 transition-all ${paymentMethod === "card" ? "border-[var(--amber-deep)] bg-[var(--amber-deep)]/5 ring-2 ring-[var(--amber-deep)]/30" : "border-border hover:border-foreground/30"}`}
+                  >
+                    <div className="flex items-center gap-2 font-semibold text-sm">
+                      <CreditCard className="w-4 h-4 text-[var(--amber-deep)]" /> Pay by card
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">Secure Stripe checkout · instant.</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("po")}
+                    className={`text-left rounded-xl border p-4 transition-all ${paymentMethod === "po" ? "border-[var(--amber-deep)] bg-[var(--amber-deep)]/5 ring-2 ring-[var(--amber-deep)]/30" : "border-border hover:border-foreground/30"}`}
+                  >
+                    <div className="flex items-center gap-2 font-semibold text-sm">
+                      <FileText className="w-4 h-4 text-[var(--amber-deep)]" /> Purchase order
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">Net 14 days · invoice emailed (requires code).</div>
+                  </button>
+                </div>
+                {paymentMethod === "po" && (
+                  <div className="space-y-3 pt-2">
+                    <Field
+                      label="Purchase order code"
+                      required
+                      value={poCode}
+                      onChange={(v) => setPoCode(v.toUpperCase())}
+                    />
+                    <Field
+                      label="Your PO reference (optional)"
+                      value={poReference}
+                      onChange={setPoReference}
+                    />
+                    <p className="text-[11px] text-muted-foreground">
+                      A PDF invoice will be emailed to you and copied to our accounts team.
+                    </p>
+                  </div>
+                )}
+              </Section>
+
               <div className="grid sm:grid-cols-3 gap-3">
                 {[
                   { i: Lock, t: "256-bit SSL", d: "Encrypted checkout" },
@@ -242,8 +333,13 @@ function Checkout() {
                 disabled={submitting}
                 className="hidden lg:inline-flex btn-gold w-full rounded-full py-3.5 font-semibold disabled:opacity-60 items-center justify-center gap-2"
               >
-                <CreditCard className="w-4 h-4" />
-                {submitting ? "Preparing secure payment…" : `Continue to payment · ${formatAUD(total)}`}
+                {submitting ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> {paymentMethod === "po" ? "Generating invoice…" : "Preparing secure payment…"}</>
+                ) : paymentMethod === "po" ? (
+                  <><FileText className="w-4 h-4" /> Submit purchase order · {formatAUD(total)}</>
+                ) : (
+                  <><CreditCard className="w-4 h-4" /> Continue to payment · {formatAUD(total)}</>
+                )}
               </button>
             </form>
           )}
@@ -371,8 +467,13 @@ function Checkout() {
             disabled={submitting}
             className="btn-gold w-full rounded-full py-3.5 font-semibold disabled:opacity-60 inline-flex items-center justify-center gap-2"
           >
-            <CreditCard className="w-4 h-4" />
-            {submitting ? "Preparing…" : `Continue · ${formatAUD(total)}`}
+            {submitting ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Working…</>
+            ) : paymentMethod === "po" ? (
+              <><FileText className="w-4 h-4" /> Submit PO · {formatAUD(total)}</>
+            ) : (
+              <><CreditCard className="w-4 h-4" /> Continue · {formatAUD(total)}</>
+            )}
           </button>
         </div>
       )}
