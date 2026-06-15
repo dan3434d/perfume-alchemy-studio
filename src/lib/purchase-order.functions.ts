@@ -258,7 +258,7 @@ export const createPurchaseOrder = createServerFn({ method: "POST" })
           ? `[PO: ${data.po_reference}] ${data.notes ?? ""}`.trim()
           : data.notes || null,
         status: "processing",
-        payment_status: "purchase_order",
+        payment_status: "unpaid",
       })
       .select("*")
       .single();
