@@ -37,10 +37,14 @@ function Checkout() {
   const { discount, clear: clearDiscount } = useDiscount();
   const navigate = useNavigate();
   const startStripe = useServerFn(createEmbeddedStripeCheckout);
+  const startPO = useServerFn(createPurchaseOrder);
   const [submitting, setSubmitting] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [promoInput, setPromoInput] = useState("");
   const [freeShip, setFreeShip] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "po">("card");
+  const [poCode, setPoCode] = useState("");
+  const [poReference, setPoReference] = useState("");
   const [form, setForm] = useState({
     email: "", full_name: "", phone: "",
     line1: "", line2: "", city: "", state: "", postcode: "", country: "Australia",
