@@ -90,6 +90,49 @@ function Checkout() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (lines.length === 0) { toast.error("Your cart is empty"); return; }
+
+    if (paymentMethod === "po") {
+      const code = poCode.trim().toUpperCase();
+      if (!code) { toast.error("Enter your purchase order code"); return; }
+      setSubmitting(true);
+      try {
+        const { data: userData } = await supabase.auth.getUser();
+        const result = await startPO({
+          data: {
+            code,
+            po_reference: poReference.trim() || null,
+            email: form.email,
+            full_name: form.full_name,
+            phone: form.phone || null,
+            shipping_line1: form.line1,
+            shipping_line2: form.line2 || null,
+            shipping_city: form.city,
+            shipping_state: form.state,
+            shipping_postcode: form.postcode,
+            shipping_country: form.country,
+            notes: form.notes || null,
+            lines: lines.map((l) => ({
+              product_id: l.product_id, name: l.name, slug: l.slug,
+              price: l.price, quantity: l.quantity, image_url: l.image_url ?? null,
+            })),
+            discount_code: freeShip ? "FREESHIPPING" : (discount?.code ?? null),
+            discount_percent: freeShip ? 0 : (discount?.percent ?? 0),
+            user_id: userData.user?.id ?? null,
+            origin: window.location.origin,
+          },
+        });
+        toast.success("Purchase order created — invoice emailed");
+        const url = `/checkout/success/${result.order_id}?po=1&invoice=${encodeURIComponent(result.invoice_url)}`;
+        navigate({ to: url });
+      } catch (err: any) {
+        const msg = err?.message || "Could not create purchase order";
+        toast.error(msg.includes("Invalid purchase order code") ? "Invalid purchase order code" : msg);
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
+
     setSubmitting(true);
     try {
       const { data: userData } = await supabase.auth.getUser();
