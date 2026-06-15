@@ -22,10 +22,22 @@ function Success() {
   const [confirming, setConfirming] = useState(true);
   const [o, setOrder] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isPO, setIsPO] = useState(false);
+  const [invoiceUrl, setInvoiceUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const sid = params.get("session_id");
+    const po = params.get("po");
+    const inv = params.get("invoice");
+    if (po === "1") {
+      setIsPO(true);
+      setInvoiceUrl(inv);
+      clearCart();
+      clearDiscount();
+      setConfirming(false);
+      return;
+    }
     if (!sid) { setConfirming(false); setError("Missing session reference."); return; }
     confirm({ data: { order_id: orderId, session_id: sid } })
       .then(({ paid, order }) => {
