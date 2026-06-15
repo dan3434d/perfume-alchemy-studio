@@ -4,6 +4,7 @@ import { template as orderShipped } from './order-shipped'
 import { template as orderStatus } from './order-status'
 import { template as complaintReceived } from './complaint-received'
 import { template as adminNewOrder } from './admin-new-order'
+import { template as purchaseOrderInvoice } from './purchase-order-invoice'
 
 
 export interface TemplateEntry {
