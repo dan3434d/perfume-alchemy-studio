@@ -207,7 +207,8 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
       state: data.shipping_state,
       postcode: data.shipping_postcode,
       country: data.shipping_country,
-    });
+    }, data.shipping_method);
+
     const ship = isFreeShipping
       ? { ...rawShip, base: 0, handling: 0, total: 0, freeShipping: true }
       : rawShip;
