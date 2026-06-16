@@ -88,12 +88,13 @@ function Checkout() {
   const discountAmount = +(subtotal * discountPercent / 100).toFixed(2);
   const subtotalAfterDiscount = +(subtotal - discountAmount).toFixed(2);
   const rawShip = useMemo(
-    () => computeShipping(subtotalAfterDiscount, { state: form.state, postcode: form.postcode, country: form.country }),
-    [subtotalAfterDiscount, form.state, form.postcode, form.country],
+    () => computeShipping(subtotalAfterDiscount, { state: form.state, postcode: form.postcode, country: form.country }, shippingMethod),
+    [subtotalAfterDiscount, form.state, form.postcode, form.country, shippingMethod],
   );
-  const ship = freeShip
+  const ship = freeShip && !intl
     ? { ...rawShip, base: 0, handling: 0, total: 0, freeShipping: true }
     : rawShip;
+
   const total = +(subtotalAfterDiscount + ship.total).toFixed(2);
 
   const onSubmit = async (e: React.FormEvent) => {
