@@ -20,9 +20,15 @@ import {
   FREE_SHIPPING_THRESHOLD,
   RURAL_HANDLING_FEE,
   RURAL_HANDLING_WAIVED_OVER,
+  EXPRESS_SHIPPING_SURCHARGE,
+  WORLDWIDE_SHIPPING_FEE,
+  COUNTRIES,
+  isAustralia,
+  type ShippingMethod,
 } from "@/lib/pricing";
 import { toast } from "sonner";
-import { Lock, Truck, ShieldCheck, BadgePercent, X, ArrowLeft, CreditCard, FileText, Loader2 } from "lucide-react";
+import { Lock, Truck, ShieldCheck, BadgePercent, X, ArrowLeft, CreditCard, FileText, Loader2, Zap, Globe2 } from "lucide-react";
+
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Checkout — Abdulrahman Perfumes" }] }),
