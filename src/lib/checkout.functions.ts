@@ -281,24 +281,25 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
     });
 
     if (shipping > 0) {
+      const shipLabel =
+        ship.method === "worldwide"
+          ? "International shipping"
+          : ship.method === "express"
+            ? (ship.handling > 0 ? "Express shipping & remote handling" : "Express shipping")
+            : (ship.handling > 0 ? "Shipping & remote handling" : "Shipping");
       line_items.push({
         quantity: 1,
         price_data: {
           currency: "aud",
           unit_amount: Math.round(shipping * 100),
-          product_data: { name: ship.handling > 0 ? "Shipping & remote handling" : "Shipping" },
+          product_data: { name: shipLabel },
         },
       });
     }
 
 
-    const countryCode = ((): string => {
-      const c = (data.shipping_country || "").trim().toUpperCase();
-      if (c === "AUSTRALIA" || c === "AU" || c === "AUS") return "AU";
-      if (c === "NEW ZEALAND" || c === "NZ") return "NZ";
-      if (c.length === 2) return c;
-      return "AU";
-    })();
+    const countryCode = countryNameToCode(data.shipping_country);
+
 
     const address = {
       line1: data.shipping_line1,
