@@ -1,7 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import Stripe from "stripe";
-import { computeBulkDiscountPercent, computeShipping } from "./pricing";
+import { computeBulkDiscountPercent, computeShipping, countryNameToCode } from "./pricing";
+
 
 
 const LineSchema = z.object({
@@ -27,9 +28,11 @@ const CheckoutSchema = z.object({
   lines: z.array(LineSchema).min(1),
   discount_code: z.string().nullable().optional(),
   discount_percent: z.number().min(0).max(100).default(0),
+  shipping_method: z.enum(["standard", "express", "worldwide"]).default("standard"),
   user_id: z.string().uuid().nullable().optional(),
   origin: z.string().url(),
 });
+
 
 export function getStripe() {
   const key = process.env.STRIPE;
@@ -204,7 +207,8 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
       state: data.shipping_state,
       postcode: data.shipping_postcode,
       country: data.shipping_country,
-    });
+    }, data.shipping_method);
+
     const ship = isFreeShipping
       ? { ...rawShip, base: 0, handling: 0, total: 0, freeShipping: true }
       : rawShip;
@@ -277,24 +281,25 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
     });
 
     if (shipping > 0) {
+      const shipLabel =
+        ship.method === "worldwide"
+          ? "International shipping"
+          : ship.method === "express"
+            ? (ship.handling > 0 ? "Express shipping & remote handling" : "Express shipping")
+            : (ship.handling > 0 ? "Shipping & remote handling" : "Shipping");
       line_items.push({
         quantity: 1,
         price_data: {
           currency: "aud",
           unit_amount: Math.round(shipping * 100),
-          product_data: { name: ship.handling > 0 ? "Shipping & remote handling" : "Shipping" },
+          product_data: { name: shipLabel },
         },
       });
     }
 
 
-    const countryCode = ((): string => {
-      const c = (data.shipping_country || "").trim().toUpperCase();
-      if (c === "AUSTRALIA" || c === "AU" || c === "AUS") return "AU";
-      if (c === "NEW ZEALAND" || c === "NZ") return "NZ";
-      if (c.length === 2) return c;
-      return "AU";
-    })();
+    const countryCode = countryNameToCode(data.shipping_country);
+
 
     const address = {
       line1: data.shipping_line1,
@@ -375,7 +380,8 @@ export const createEmbeddedStripeCheckout = createServerFn({ method: "POST" })
     const subtotalAfterDiscount = +(subtotal - discountAmount).toFixed(2);
     const rawShip = computeShipping(subtotalAfterDiscount, {
       state: data.shipping_state, postcode: data.shipping_postcode, country: data.shipping_country,
-    });
+    }, data.shipping_method);
+
     const ship = isFreeShipping ? { ...rawShip, base: 0, handling: 0, total: 0, freeShipping: true } : rawShip;
     const shipping = ship.total;
     const total = +(subtotalAfterDiscount + shipping).toFixed(2);
@@ -429,23 +435,24 @@ export const createEmbeddedStripeCheckout = createServerFn({ method: "POST" })
       };
     });
     if (shipping > 0) {
+      const shipLabel =
+        ship.method === "worldwide"
+          ? "International shipping"
+          : ship.method === "express"
+            ? (ship.handling > 0 ? "Express shipping & remote handling" : "Express shipping")
+            : (ship.handling > 0 ? "Shipping & remote handling" : "Shipping");
       line_items.push({
         quantity: 1,
         price_data: {
           currency: "aud",
           unit_amount: Math.round(shipping * 100),
-          product_data: { name: ship.handling > 0 ? "Shipping & remote handling" : "Shipping" },
+          product_data: { name: shipLabel },
         },
       });
     }
 
-    const countryCode = ((): string => {
-      const c = (data.shipping_country || "").trim().toUpperCase();
-      if (c === "AUSTRALIA" || c === "AU" || c === "AUS") return "AU";
-      if (c === "NEW ZEALAND" || c === "NZ") return "NZ";
-      if (c.length === 2) return c;
-      return "AU";
-    })();
+    const countryCode = countryNameToCode(data.shipping_country);
+
     const address = {
       line1: data.shipping_line1, line2: data.shipping_line2 || undefined,
       city: data.shipping_city, state: data.shipping_state,

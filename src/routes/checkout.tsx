@@ -20,9 +20,15 @@ import {
   FREE_SHIPPING_THRESHOLD,
   RURAL_HANDLING_FEE,
   RURAL_HANDLING_WAIVED_OVER,
+  EXPRESS_SHIPPING_SURCHARGE,
+  WORLDWIDE_SHIPPING_FEE,
+  COUNTRIES,
+  isAustralia,
+  type ShippingMethod,
 } from "@/lib/pricing";
 import { toast } from "sonner";
-import { Lock, Truck, ShieldCheck, BadgePercent, X, ArrowLeft, CreditCard, FileText, Loader2 } from "lucide-react";
+import { Lock, Truck, ShieldCheck, BadgePercent, X, ArrowLeft, CreditCard, FileText, Loader2, Zap, Globe2 } from "lucide-react";
+
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Checkout — Abdulrahman Perfumes" }] }),
@@ -45,11 +51,14 @@ function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState<"card" | "po">("card");
   const [poCode, setPoCode] = useState("");
   const [poReference, setPoReference] = useState("");
+  const [shippingMethod, setShippingMethod] = useState<ShippingMethod>("standard");
   const [form, setForm] = useState({
     email: "", full_name: "", phone: "",
     line1: "", line2: "", city: "", state: "", postcode: "", country: "Australia",
     notes: "",
   });
+  const intl = !isAustralia(form.country);
+
 
   const applyPromo = () => {
     const code = promoInput.trim().toUpperCase();
@@ -79,12 +88,13 @@ function Checkout() {
   const discountAmount = +(subtotal * discountPercent / 100).toFixed(2);
   const subtotalAfterDiscount = +(subtotal - discountAmount).toFixed(2);
   const rawShip = useMemo(
-    () => computeShipping(subtotalAfterDiscount, { state: form.state, postcode: form.postcode, country: form.country }),
-    [subtotalAfterDiscount, form.state, form.postcode, form.country],
+    () => computeShipping(subtotalAfterDiscount, { state: form.state, postcode: form.postcode, country: form.country }, shippingMethod),
+    [subtotalAfterDiscount, form.state, form.postcode, form.country, shippingMethod],
   );
-  const ship = freeShip
+  const ship = freeShip && !intl
     ? { ...rawShip, base: 0, handling: 0, total: 0, freeShipping: true }
     : rawShip;
+
   const total = +(subtotalAfterDiscount + ship.total).toFixed(2);
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -115,8 +125,9 @@ function Checkout() {
               product_id: l.product_id, name: l.name, slug: l.slug,
               price: l.price, quantity: l.quantity, image_url: l.image_url ?? null,
             })),
-            discount_code: freeShip ? "FREESHIPPING" : (discount?.code ?? null),
-            discount_percent: freeShip ? 0 : (discount?.percent ?? 0),
+            discount_code: freeShip && !intl ? "FREESHIPPING" : (discount?.code ?? null),
+            discount_percent: freeShip && !intl ? 0 : (discount?.percent ?? 0),
+
             user_id: userData.user?.id ?? null,
             origin: window.location.origin,
           },
@@ -152,10 +163,12 @@ function Checkout() {
             product_id: l.product_id, name: l.name, slug: l.slug,
             price: l.price, quantity: l.quantity, image_url: l.image_url ?? null,
           })),
-          discount_code: freeShip ? "FREESHIPPING" : (discount?.code ?? null),
-          discount_percent: freeShip ? 0 : (discount?.percent ?? 0),
+          discount_code: freeShip && !intl ? "FREESHIPPING" : (discount?.code ?? null),
+          discount_percent: freeShip && !intl ? 0 : (discount?.percent ?? 0),
+          shipping_method: intl ? "worldwide" : shippingMethod,
           user_id: userData.user?.id ?? null,
           origin: window.location.origin,
+
         },
       });
       if (!client_secret) throw new Error("Could not start payment");
@@ -245,22 +258,73 @@ function Checkout() {
                 <Field label="Apt/Suite (optional)" value={form.line2} onChange={(v) => setForm({ ...form, line2: v })} />
                 <div className="grid sm:grid-cols-3 gap-4">
                   <Field label="City / Suburb" required value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
-                  <label className="block">
-                    <span className="text-xs font-medium text-muted-foreground">State *</span>
-                    <select
-                      required
-                      value={form.state}
-                      onChange={(e) => setForm({ ...form, state: e.target.value })}
-                      className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
-                    >
-                      <option value="">Select…</option>
-                      {AU_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
-                    </select>
-                  </label>
-                  <Field label="Postcode" required value={form.postcode} onChange={(v) => setForm({ ...form, postcode: v })} />
+                  {intl ? (
+                    <Field label="State / Region" value={form.state} onChange={(v) => setForm({ ...form, state: v })} />
+                  ) : (
+                    <label className="block">
+                      <span className="text-xs font-medium text-muted-foreground">State *</span>
+                      <select
+                        required
+                        value={form.state}
+                        onChange={(e) => setForm({ ...form, state: e.target.value })}
+                        className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
+                      >
+                        <option value="">Select…</option>
+                        {AU_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </label>
+                  )}
+                  <Field label={intl ? "Postal code" : "Postcode"} required value={form.postcode} onChange={(v) => setForm({ ...form, postcode: v })} />
                 </div>
-                <Field label="Country" value={form.country} onChange={(v) => setForm({ ...form, country: v })} />
+                <label className="block">
+                  <span className="text-xs font-medium text-muted-foreground">Country *</span>
+                  <select
+                    required
+                    value={form.country}
+                    onChange={(e) => setForm({ ...form, country: e.target.value })}
+                    className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
+                  >
+                    {COUNTRIES.map((c) => <option key={c.code} value={c.name}>{c.name}</option>)}
+                  </select>
+                </label>
               </Section>
+
+              <Section title="Shipping method" subtitle={intl ? "International orders ship worldwide via tracked air." : "Choose how fast you'd like it."}>
+                {intl ? (
+                  <div className="rounded-xl border border-[var(--amber-deep)]/40 bg-[var(--amber-deep)]/5 p-4 flex items-start gap-3">
+                    <Globe2 className="w-5 h-5 text-[var(--amber-deep)] mt-0.5" />
+                    <div className="text-sm">
+                      <div className="font-semibold">Worldwide tracked</div>
+                      <div className="text-xs text-muted-foreground mt-0.5">Flat {formatAUD(WORLDWIDE_SHIPPING_FEE)} · 7–14 business days to {form.country}.</div>
+                    </div>
+                    <div className="ml-auto font-semibold text-sm">{formatAUD(WORLDWIDE_SHIPPING_FEE)}</div>
+                  </div>
+                ) : (
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setShippingMethod("standard")}
+                      className={`text-left rounded-xl border p-4 transition-all ${shippingMethod === "standard" ? "border-[var(--amber-deep)] bg-[var(--amber-deep)]/5 ring-2 ring-[var(--amber-deep)]/30" : "border-border hover:border-foreground/30"}`}
+                    >
+                      <div className="flex items-center gap-2 font-semibold text-sm">
+                        <Truck className="w-4 h-4 text-[var(--amber-deep)]" /> Standard
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">3–5 business days · Free over {formatAUD(FREE_SHIPPING_THRESHOLD)}.</div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShippingMethod("express")}
+                      className={`text-left rounded-xl border p-4 transition-all ${shippingMethod === "express" ? "border-[var(--amber-deep)] bg-[var(--amber-deep)]/5 ring-2 ring-[var(--amber-deep)]/30" : "border-border hover:border-foreground/30"}`}
+                    >
+                      <div className="flex items-center gap-2 font-semibold text-sm">
+                        <Zap className="w-4 h-4 text-[var(--amber-deep)]" /> Express
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">1–2 business days · +{formatAUD(EXPRESS_SHIPPING_SURCHARGE)} on top.</div>
+                    </button>
+                  </div>
+                )}
+              </Section>
+
               <Section title="Order notes" subtitle="Optional">
                 <textarea
                   value={form.notes}
@@ -443,7 +507,16 @@ function Checkout() {
             <div className="border-t border-border pt-3 space-y-1.5 text-sm">
               <Row label="Subtotal" value={formatAUD(subtotal)} />
               {discountAmount > 0 && <Row label={`Discount (−${discountPercent}%)`} value={`− ${formatAUD(discountAmount)}`} accent />}
-              <Row label={ship.freeShipping ? "Shipping" : "Shipping (metro)"} value={ship.base === 0 ? "Free" : formatAUD(ship.base)} />
+              <Row
+                label={
+                  ship.method === "worldwide"
+                    ? "Shipping (worldwide)"
+                    : ship.method === "express"
+                      ? "Shipping (express)"
+                      : ship.freeShipping ? "Shipping" : "Shipping (standard)"
+                }
+                value={ship.base === 0 ? "Free" : formatAUD(ship.base)}
+              />
               {ship.handling > 0 && (
                 <Row label="Remote area handling" value={formatAUD(ship.handling)} />
               )}
@@ -452,8 +525,9 @@ function Checkout() {
               </div>
             </div>
             <p className="text-[11px] text-center text-muted-foreground leading-relaxed">
-              Free metro shipping over {formatAUD(FREE_SHIPPING_THRESHOLD)}. Remote (WA, NT, TAS, Far North QLD) adds {formatAUD(RURAL_HANDLING_FEE)} handling — waived over {formatAUD(RURAL_HANDLING_WAIVED_OVER)}.
+              Free standard shipping in AU over {formatAUD(FREE_SHIPPING_THRESHOLD)}. Express +{formatAUD(EXPRESS_SHIPPING_SURCHARGE)}. Worldwide flat {formatAUD(WORLDWIDE_SHIPPING_FEE)}. Remote AU (WA, NT, TAS, Far North QLD) adds {formatAUD(RURAL_HANDLING_FEE)} — waived over {formatAUD(RURAL_HANDLING_WAIVED_OVER)}.
             </p>
+
           </div>
         </aside>
       </div>
