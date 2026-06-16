@@ -162,10 +162,12 @@ function Checkout() {
             product_id: l.product_id, name: l.name, slug: l.slug,
             price: l.price, quantity: l.quantity, image_url: l.image_url ?? null,
           })),
-          discount_code: freeShip ? "FREESHIPPING" : (discount?.code ?? null),
-          discount_percent: freeShip ? 0 : (discount?.percent ?? 0),
+          discount_code: freeShip && !intl ? "FREESHIPPING" : (discount?.code ?? null),
+          discount_percent: freeShip && !intl ? 0 : (discount?.percent ?? 0),
+          shipping_method: intl ? "worldwide" : shippingMethod,
           user_id: userData.user?.id ?? null,
           origin: window.location.origin,
+
         },
       });
       if (!client_secret) throw new Error("Could not start payment");
