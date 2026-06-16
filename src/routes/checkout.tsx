@@ -506,7 +506,16 @@ function Checkout() {
             <div className="border-t border-border pt-3 space-y-1.5 text-sm">
               <Row label="Subtotal" value={formatAUD(subtotal)} />
               {discountAmount > 0 && <Row label={`Discount (−${discountPercent}%)`} value={`− ${formatAUD(discountAmount)}`} accent />}
-              <Row label={ship.freeShipping ? "Shipping" : "Shipping (metro)"} value={ship.base === 0 ? "Free" : formatAUD(ship.base)} />
+              <Row
+                label={
+                  ship.method === "worldwide"
+                    ? "Shipping (worldwide)"
+                    : ship.method === "express"
+                      ? "Shipping (express)"
+                      : ship.freeShipping ? "Shipping" : "Shipping (standard)"
+                }
+                value={ship.base === 0 ? "Free" : formatAUD(ship.base)}
+              />
               {ship.handling > 0 && (
                 <Row label="Remote area handling" value={formatAUD(ship.handling)} />
               )}
@@ -515,8 +524,9 @@ function Checkout() {
               </div>
             </div>
             <p className="text-[11px] text-center text-muted-foreground leading-relaxed">
-              Free metro shipping over {formatAUD(FREE_SHIPPING_THRESHOLD)}. Remote (WA, NT, TAS, Far North QLD) adds {formatAUD(RURAL_HANDLING_FEE)} handling — waived over {formatAUD(RURAL_HANDLING_WAIVED_OVER)}.
+              Free standard shipping in AU over {formatAUD(FREE_SHIPPING_THRESHOLD)}. Express +{formatAUD(EXPRESS_SHIPPING_SURCHARGE)}. Worldwide flat {formatAUD(WORLDWIDE_SHIPPING_FEE)}. Remote AU (WA, NT, TAS, Far North QLD) adds {formatAUD(RURAL_HANDLING_FEE)} — waived over {formatAUD(RURAL_HANDLING_WAIVED_OVER)}.
             </p>
+
           </div>
         </aside>
       </div>
