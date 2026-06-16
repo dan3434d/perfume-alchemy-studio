@@ -1,11 +1,40 @@
 import { Heart, MessageCircle, Send, Bookmark, ThumbsUp, Share2 } from "lucide-react";
 
 const IG_POSTS = [
-  { u: "aaliyah.scents", a: "AS", img: "linear-gradient(135deg,#3d2817,#8b5a2b)", c: "Obsessed with Midnight Oud 🖤 lasts all day at uni #abdulrahmanperfumes", l: 1240, m: 38 },
-  { u: "danielr_au", a: "DR", img: "linear-gradient(135deg,#1a1a2e,#c89a4a)", c: "My new signature. Eros Elixir hits different 🔥", l: 892, m: 24 },
-  { u: "sara.fragrance", a: "SH", img: "linear-gradient(135deg,#fce7f3,#be185d)", c: "Velvet Rose unboxing — packaging is luxury level ✨", l: 2100, m: 67 },
-  { u: "perthperfumes", a: "JP", img: "linear-gradient(135deg,#fef3c7,#92400e)", c: "Buy 2 deal = no brainer. Amber Wood + Tobacco Noir 👌", l: 654, m: 19 },
+  {
+    u: "aaliyah.scents",
+    a: "AS",
+    img: "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=800&q=80",
+    c: "Obsessed with Midnight Oud 🖤 lasts all day at uni #abdulrahmanperfumes",
+    l: 1240,
+    m: 38,
+  },
+  {
+    u: "danielr_au",
+    a: "DR",
+    img: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80",
+    c: "My new signature. Eros Elixir hits different 🔥",
+    l: 892,
+    m: 24,
+  },
+  {
+    u: "sara.fragrance",
+    a: "SH",
+    img: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=800&q=80",
+    c: "Velvet Rose unboxing — packaging is luxury level ✨",
+    l: 2100,
+    m: 67,
+  },
+  {
+    u: "perthperfumes",
+    a: "JP",
+    img: "https://images.unsplash.com/photo-1588405748880-12d1d2a59d75?auto=format&fit=crop&w=800&q=80",
+    c: "Buy 2 deal = no brainer. Amber Wood + Tobacco Noir 👌",
+    l: 654,
+    m: 19,
+  },
 ];
+
 
 const FB_POSTS = [
   { u: "Layla Mahmoud", a: "LM", t: "3h", c: "Just got my Oud Royal in the mail from Abdulrahman Perfumes — Sydney to Adelaide in 2 days. The scent is INSANE, way better than I expected. Already planning my next order. 10/10 recommend.", l: 312, m: 28, s: 14 },
