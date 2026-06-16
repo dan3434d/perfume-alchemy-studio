@@ -60,12 +60,20 @@ export function SocialFeed() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {IG_POSTS.map((p) => (
               <div key={p.u} className="rounded-2xl overflow-hidden border border-border bg-background hover:shadow-[var(--shadow-elegant)] transition">
-                <div className="aspect-square relative" style={{ background: p.img }}>
+                <div className="aspect-square relative overflow-hidden bg-secondary">
+                  <img
+                    src={p.img}
+                    alt={`${p.u} on Instagram`}
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                  />
+                  <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/45 to-transparent pointer-events-none" />
                   <div className="absolute top-2 left-2 flex items-center gap-1.5">
                     <div className="w-7 h-7 rounded-full bg-white/90 grid place-items-center text-[10px] font-bold">{p.a}</div>
                     <span className="text-[11px] font-semibold text-white drop-shadow">{p.u}</span>
                   </div>
                 </div>
+
                 <div className="p-3">
                   <div className="flex items-center gap-3 text-foreground">
                     <Heart className="w-4 h-4" />
