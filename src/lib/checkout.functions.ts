@@ -380,7 +380,8 @@ export const createEmbeddedStripeCheckout = createServerFn({ method: "POST" })
     const subtotalAfterDiscount = +(subtotal - discountAmount).toFixed(2);
     const rawShip = computeShipping(subtotalAfterDiscount, {
       state: data.shipping_state, postcode: data.shipping_postcode, country: data.shipping_country,
-    });
+    }, data.shipping_method);
+
     const ship = isFreeShipping ? { ...rawShip, base: 0, handling: 0, total: 0, freeShipping: true } : rawShip;
     const shipping = ship.total;
     const total = +(subtotalAfterDiscount + shipping).toFixed(2);
