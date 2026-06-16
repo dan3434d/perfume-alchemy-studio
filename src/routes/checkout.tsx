@@ -51,11 +51,14 @@ function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState<"card" | "po">("card");
   const [poCode, setPoCode] = useState("");
   const [poReference, setPoReference] = useState("");
+  const [shippingMethod, setShippingMethod] = useState<ShippingMethod>("standard");
   const [form, setForm] = useState({
     email: "", full_name: "", phone: "",
     line1: "", line2: "", city: "", state: "", postcode: "", country: "Australia",
     notes: "",
   });
+  const intl = !isAustralia(form.country);
+
 
   const applyPromo = () => {
     const code = promoInput.trim().toUpperCase();
