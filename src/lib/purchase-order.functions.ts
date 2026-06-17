@@ -121,15 +121,19 @@ async function buildInvoicePdf(opts: {
   y -= 24;
 
   for (const it of opts.items) {
-    if (y < 140) {
-      // simple overflow guard
-      break;
-    }
-    const name = it.name.length > 50 ? it.name.slice(0, 48) + "…" : it.name;
-    page.drawText(name, { x: 50, y, size: 10, font, color: ink });
+    if (y < 140) break;
+    const [mainName, ...rest] = it.name.split(" — inspired by ");
+    const inspired = rest.length ? rest.join(" — inspired by ") : "";
+    const safeMain = mainName.length > 50 ? mainName.slice(0, 48) + "…" : mainName;
+    page.drawText(safeMain, { x: 50, y, size: 10, font: bold, color: ink });
     page.drawText(String(it.quantity), { x: 360, y, size: 10, font, color: ink });
     page.drawText(fmtAUD(it.unit_price), { x: 410, y, size: 10, font, color: ink });
     page.drawText(fmtAUD(it.line_total), { x: 500, y, size: 10, font, color: ink });
+    if (inspired) {
+      y -= 12;
+      const safeIns = `Inspired by ${inspired}`;
+      page.drawText(safeIns.length > 70 ? safeIns.slice(0, 68) + "…" : safeIns, { x: 50, y, size: 8.5, font, color: gold });
+    }
     y -= 18;
   }
 
