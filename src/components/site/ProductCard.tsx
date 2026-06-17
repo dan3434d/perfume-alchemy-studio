@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, ShoppingBag, Star } from "lucide-react";
+import { Heart, ShoppingBag, Star, Sparkles } from "lucide-react";
 import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
 import { useCart, useWishlist } from "@/hooks/useCart";
@@ -17,6 +17,13 @@ export type ProductCardData = {
   stock?: number;
   inspired_by_brand?: string | null;
   inspired_by_product?: string | null;
+  gender?: "mens" | "womens" | "unisex" | null;
+};
+
+const GENDER_LABEL: Record<string, string> = {
+  mens: "Men",
+  womens: "Women",
+  unisex: "Unisex",
 };
 
 export function ProductCard({ p }: { p: ProductCardData }) {
@@ -27,9 +34,19 @@ export function ProductCard({ p }: { p: ProductCardData }) {
     p.compare_at_price && p.compare_at_price > p.price
       ? Math.round(100 - (Number(p.price) / Number(p.compare_at_price)) * 100)
       : 0;
+  const inspiredFull = p.inspired_by_brand
+    ? `${p.inspired_by_brand}${p.inspired_by_product ? ` ${p.inspired_by_product}` : ""}`
+    : null;
 
   return (
-    <div className="group card-elevated overflow-hidden flex flex-col rounded-2xl border border-border bg-background transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-elegant)]">
+    <div className="group card-elevated relative overflow-hidden flex flex-col rounded-2xl border border-border bg-background transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-elegant)]">
+      {/* Highlight ribbon */}
+      {inspiredFull && (
+        <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-r from-[var(--amber-deep)] to-[var(--gold)] text-background px-3 py-1.5 text-[10px] sm:text-[11px] font-semibold tracking-wider uppercase flex items-center gap-1.5 shadow-sm">
+          <Sparkles className="w-3 h-3 shrink-0" />
+          <span className="truncate">Inspired by {inspiredFull}</span>
+        </div>
+      )}
       <Link
         to="/shop/$slug"
         params={{ slug: p.slug }}
@@ -42,15 +59,20 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
         {discount > 0 && (
-          <span className="absolute top-3 left-3 rounded-full bg-foreground text-background text-[10px] font-semibold px-2.5 py-1 tracking-wider">
+          <span className="absolute top-9 left-3 rounded-full bg-foreground text-background text-[10px] font-semibold px-2.5 py-1 tracking-wider">
             −{discount}%
+          </span>
+        )}
+        {p.gender && (
+          <span className="absolute bottom-3 left-3 rounded-full bg-background/90 backdrop-blur text-foreground text-[10px] font-semibold px-2.5 py-1 tracking-wider border border-border">
+            {GENDER_LABEL[p.gender] ?? "Unisex"}
           </span>
         )}
         <button
           type="button"
           onClick={(e) => { e.preventDefault(); toggle(p.id); }}
           aria-label="Toggle wishlist"
-          className="absolute top-3 right-3 grid place-items-center w-9 h-9 rounded-full bg-background/90 backdrop-blur shadow-sm hover:bg-background"
+          className="absolute top-9 right-3 grid place-items-center w-9 h-9 rounded-full bg-background/90 backdrop-blur shadow-sm hover:bg-background"
         >
           <Heart className={`w-4 h-4 ${wished ? "fill-[var(--amber-deep)] text-[var(--amber-deep)]" : "text-foreground/70"}`} />
         </button>
@@ -62,13 +84,10 @@ export function ProductCard({ p }: { p: ProductCardData }) {
         <Link to="/shop/$slug" params={{ slug: p.slug }} className="font-display text-base sm:text-lg leading-tight hover:text-[var(--amber-deep)] line-clamp-2">
           {p.name}
         </Link>
-        {p.inspired_by_brand && (
-          <div className="text-[11px] sm:text-xs text-muted-foreground italic truncate">
-            Inspired by{" "}
-            <span className="not-italic font-medium text-foreground/80">
-              {p.inspired_by_brand}
-              {p.inspired_by_product ? ` ${p.inspired_by_product}` : ""}
-            </span>
+        {inspiredFull && (
+          <div className="inline-flex items-center gap-1 text-[11px] sm:text-xs rounded-md bg-[var(--cream)] border border-[var(--gold)]/40 px-2 py-1 text-foreground/85 w-fit">
+            <Sparkles className="w-3 h-3 text-[var(--amber-deep)] shrink-0" />
+            <span className="truncate"><span className="text-muted-foreground">Inspired by</span> <span className="font-semibold">{inspiredFull}</span></span>
           </div>
         )}
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -84,7 +103,16 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           </div>
           <button
             onClick={() => {
-              add({ product_id: p.id, slug: p.slug, name: p.name, price: p.price, image_url: p.image_url, stock: p.stock });
+              add({
+                product_id: p.id,
+                slug: p.slug,
+                name: p.name,
+                price: p.price,
+                image_url: p.image_url,
+                stock: p.stock,
+                inspired_by_brand: p.inspired_by_brand ?? null,
+                inspired_by_product: p.inspired_by_product ?? null,
+              });
               toast.success(`${p.name} added to cart`);
             }}
             aria-label={`Add ${p.name} to cart`}
