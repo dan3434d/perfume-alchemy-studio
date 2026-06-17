@@ -182,7 +182,7 @@ export const createPurchaseOrder = createServerFn({ method: "POST" })
     const productIds = [...new Set(data.lines.map((l) => l.product_id))];
     const { data: products, error: productsError } = await supabaseAdmin
       .from("products")
-      .select("id,name,slug,price,image_url,stock,is_active")
+      .select("id,name,slug,price,image_url,stock,is_active,inspired_by_brand,inspired_by_product")
       .in("id", productIds)
       .eq("is_active", true);
     if (productsError) throw productsError;
@@ -194,9 +194,12 @@ export const createPurchaseOrder = createServerFn({ method: "POST" })
       if (typeof p.stock === "number" && p.stock < l.quantity) {
         throw new Error(`${p.name} is out of stock`);
       }
+      const inspiredSuffix = p.inspired_by_brand
+        ? ` — inspired by ${p.inspired_by_brand}${p.inspired_by_product ? ` ${p.inspired_by_product}` : ""}`
+        : "";
       return {
         product_id: p.id,
-        name: p.name,
+        name: `${p.name}${inspiredSuffix}`,
         slug: p.slug,
         price: Number(p.price),
         quantity: l.quantity,

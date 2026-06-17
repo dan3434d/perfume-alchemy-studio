@@ -175,7 +175,7 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
     const productIds = [...new Set(data.lines.map((line) => line.product_id))];
     const { data: products, error: productsError } = await supabaseAdmin
       .from("products")
-      .select("id,name,slug,price,image_url,stock,is_active")
+      .select("id,name,slug,price,image_url,stock,is_active,inspired_by_brand,inspired_by_product")
       .in("id", productIds)
       .eq("is_active", true);
     if (productsError) throw productsError;
@@ -185,9 +185,13 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
       const product = productMap.get(line.product_id);
       if (!product) throw new Error("One or more products are unavailable");
       if (typeof product.stock === "number" && product.stock < line.quantity) throw new Error(`${product.name} is out of stock`);
+      const inspiredSuffix = product.inspired_by_brand
+        ? ` — inspired by ${product.inspired_by_brand}${product.inspired_by_product ? ` ${product.inspired_by_product}` : ""}`
+        : "";
       return {
         product_id: product.id,
         name: product.name,
+        display_name: `${product.name}${inspiredSuffix}`,
         slug: product.slug,
         price: Number(product.price),
         quantity: line.quantity,
@@ -253,7 +257,7 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
     const { error: itemsError } = await supabaseAdmin.from("order_items").insert(orderLines.map((line) => ({
       order_id: order.id,
       product_id: line.product_id,
-      product_name: line.name,
+      product_name: line.display_name,
       product_slug: line.slug,
       unit_price: line.price,
       quantity: line.quantity,
@@ -272,7 +276,7 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
           currency: "aud",
           unit_amount: Math.round(l.price * discountFactor * 100),
           product_data: {
-            name: discountPercent > 0 ? `${l.name} (-${discountPercent}%)` : l.name,
+            name: discountPercent > 0 ? `${l.display_name} (-${discountPercent}%)` : l.display_name,
             images: imageUrl ? [imageUrl] : undefined,
             metadata: { product_id: l.product_id, slug: l.slug },
           },
@@ -354,7 +358,7 @@ export const createEmbeddedStripeCheckout = createServerFn({ method: "POST" })
     const productIds = [...new Set(data.lines.map((l) => l.product_id))];
     const { data: products, error: productsError } = await supabaseAdmin
       .from("products")
-      .select("id,name,slug,price,image_url,stock,is_active")
+      .select("id,name,slug,price,image_url,stock,is_active,inspired_by_brand,inspired_by_product")
       .in("id", productIds)
       .eq("is_active", true);
     if (productsError) throw productsError;
@@ -364,8 +368,11 @@ export const createEmbeddedStripeCheckout = createServerFn({ method: "POST" })
       const p = productMap.get(l.product_id);
       if (!p) throw new Error("One or more products are unavailable");
       if (typeof p.stock === "number" && p.stock < l.quantity) throw new Error(`${p.name} is out of stock`);
+      const inspiredSuffix = p.inspired_by_brand
+        ? ` — inspired by ${p.inspired_by_brand}${p.inspired_by_product ? ` ${p.inspired_by_product}` : ""}`
+        : "";
       return {
-        product_id: p.id, name: p.name, slug: p.slug,
+        product_id: p.id, name: p.name, display_name: `${p.name}${inspiredSuffix}`, slug: p.slug,
         price: Number(p.price), quantity: l.quantity, image_url: p.image_url,
       };
     });
@@ -412,7 +419,7 @@ export const createEmbeddedStripeCheckout = createServerFn({ method: "POST" })
     if (orderError) throw orderError;
 
     const { error: itemsError } = await supabaseAdmin.from("order_items").insert(orderLines.map((l) => ({
-      order_id: order.id, product_id: l.product_id, product_name: l.name,
+      order_id: order.id, product_id: l.product_id, product_name: l.display_name,
       product_slug: l.slug, unit_price: l.price, quantity: l.quantity,
       line_total: +(l.price * l.quantity).toFixed(2), image_url: l.image_url,
     })));
@@ -427,7 +434,7 @@ export const createEmbeddedStripeCheckout = createServerFn({ method: "POST" })
           currency: "aud",
           unit_amount: Math.round(l.price * discountFactor * 100),
           product_data: {
-            name: discountPercent > 0 ? `${l.name} (-${discountPercent}%)` : l.name,
+            name: discountPercent > 0 ? `${l.display_name} (-${discountPercent}%)` : l.display_name,
             images: imageUrl ? [imageUrl] : undefined,
             metadata: { product_id: l.product_id, slug: l.slug },
           },
