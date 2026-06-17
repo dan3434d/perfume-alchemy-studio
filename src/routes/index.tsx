@@ -26,7 +26,7 @@ function Home() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id,name,slug,price,compare_at_price,image_url,rating,stock,inspired_by_brand,inspired_by_product,categories(name)")
+        .select("id,name,slug,price,compare_at_price,image_url,rating,stock,gender,inspired_by_brand,inspired_by_product,categories(name)")
         .eq("is_active", true)
         .limit(8);
       if (error) throw error;
@@ -92,6 +92,31 @@ function Home() {
               fetchPriority="high"
             />
           </div>
+        </div>
+      </section>
+
+      {/* SHOP BY GENDER */}
+      <section className="section container-px max-w-7xl mx-auto">
+        <div className="text-center mb-8">
+          <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Shop by</span>
+          <h2 className="font-display text-3xl sm:text-4xl mt-2">Who's it for?</h2>
+        </div>
+        <div className="grid grid-cols-3 gap-3 sm:gap-5 max-w-3xl mx-auto">
+          {[
+            { v: "mens", l: "For Men", d: "Bold, woody, intense" },
+            { v: "womens", l: "For Women", d: "Floral, sweet, elegant" },
+            { v: "unisex", l: "Unisex", d: "Versatile, modern" },
+          ].map((g) => (
+            <Link
+              key={g.v}
+              to="/shop"
+              search={{ gender: g.v }}
+              className="card-elevated rounded-2xl border border-border p-5 sm:p-6 text-center hover:border-[var(--amber-deep)]/50 transition group"
+            >
+              <div className="font-display text-lg sm:text-xl group-hover:text-[var(--amber-deep)] transition">{g.l}</div>
+              <div className="text-[11px] sm:text-xs text-muted-foreground mt-1">{g.d}</div>
+            </Link>
+          ))}
         </div>
       </section>
 
