@@ -449,6 +449,7 @@ export type Database = {
           created_at: string
           currency: string
           description: string
+          gender: string
           id: string
           image_url: string | null
           inspired_by_brand: string | null
@@ -475,6 +476,7 @@ export type Database = {
           created_at?: string
           currency?: string
           description?: string
+          gender?: string
           id?: string
           image_url?: string | null
           inspired_by_brand?: string | null
@@ -501,6 +503,7 @@ export type Database = {
           created_at?: string
           currency?: string
           description?: string
+          gender?: string
           id?: string
           image_url?: string | null
           inspired_by_brand?: string | null

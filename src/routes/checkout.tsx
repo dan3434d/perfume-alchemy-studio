@@ -442,10 +442,15 @@ function Checkout() {
             <h2 className="font-display text-xl">Your order</h2>
             <div className="space-y-3 max-h-64 overflow-auto pr-1 -mr-1">
               {lines.map((l) => (
-                <div key={l.product_id} className="flex gap-3 items-center">
+                <div key={l.product_id} className="flex gap-3 items-start">
                   <img src={productImage(l.image_url)} alt={l.name} className="w-12 h-12 rounded-lg object-cover ring-1 ring-border" />
                   <div className="flex-1 text-sm min-w-0">
                     <div className="font-medium truncate">{l.name}</div>
+                    {l.inspired_by_brand && (
+                      <div className="text-[11px] text-[var(--amber-deep)] font-semibold truncate">
+                        Inspired by {l.inspired_by_brand}{l.inspired_by_product ? ` ${l.inspired_by_product}` : ""}
+                      </div>
+                    )}
                     <div className="text-xs text-muted-foreground">Qty {l.quantity}</div>
                   </div>
                   <div className="text-sm whitespace-nowrap font-medium">{formatAUD(l.price * l.quantity)}</div>

@@ -121,15 +121,19 @@ async function buildInvoicePdf(opts: {
   y -= 24;
 
   for (const it of opts.items) {
-    if (y < 140) {
-      // simple overflow guard
-      break;
-    }
-    const name = it.name.length > 50 ? it.name.slice(0, 48) + "…" : it.name;
-    page.drawText(name, { x: 50, y, size: 10, font, color: ink });
+    if (y < 140) break;
+    const [mainName, ...rest] = it.name.split(" — inspired by ");
+    const inspired = rest.length ? rest.join(" — inspired by ") : "";
+    const safeMain = mainName.length > 50 ? mainName.slice(0, 48) + "…" : mainName;
+    page.drawText(safeMain, { x: 50, y, size: 10, font: bold, color: ink });
     page.drawText(String(it.quantity), { x: 360, y, size: 10, font, color: ink });
     page.drawText(fmtAUD(it.unit_price), { x: 410, y, size: 10, font, color: ink });
     page.drawText(fmtAUD(it.line_total), { x: 500, y, size: 10, font, color: ink });
+    if (inspired) {
+      y -= 12;
+      const safeIns = `Inspired by ${inspired}`;
+      page.drawText(safeIns.length > 70 ? safeIns.slice(0, 68) + "…" : safeIns, { x: 50, y, size: 8.5, font, color: gold });
+    }
     y -= 18;
   }
 
@@ -182,7 +186,7 @@ export const createPurchaseOrder = createServerFn({ method: "POST" })
     const productIds = [...new Set(data.lines.map((l) => l.product_id))];
     const { data: products, error: productsError } = await supabaseAdmin
       .from("products")
-      .select("id,name,slug,price,image_url,stock,is_active")
+      .select("id,name,slug,price,image_url,stock,is_active,inspired_by_brand,inspired_by_product")
       .in("id", productIds)
       .eq("is_active", true);
     if (productsError) throw productsError;
@@ -194,9 +198,12 @@ export const createPurchaseOrder = createServerFn({ method: "POST" })
       if (typeof p.stock === "number" && p.stock < l.quantity) {
         throw new Error(`${p.name} is out of stock`);
       }
+      const inspiredSuffix = p.inspired_by_brand
+        ? ` — inspired by ${p.inspired_by_brand}${p.inspired_by_product ? ` ${p.inspired_by_product}` : ""}`
+        : "";
       return {
         product_id: p.id,
-        name: p.name,
+        name: `${p.name}${inspiredSuffix}`,
         slug: p.slug,
         price: Number(p.price),
         quantity: l.quantity,

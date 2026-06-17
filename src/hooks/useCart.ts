@@ -11,6 +11,8 @@ export type CartLine = {
   image_url: string | null;
   quantity: number;
   stock?: number;
+  inspired_by_brand?: string | null;
+  inspired_by_product?: string | null;
 };
 
 type Listener = (lines: CartLine[]) => void;

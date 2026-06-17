@@ -54,6 +54,12 @@ function CartPage() {
                 <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-3">
                   <div className="flex-1">
                     <Link to="/shop/$slug" params={{ slug: l.slug }} className="font-display text-lg hover:text-[var(--amber-deep)]">{l.name}</Link>
+                    {l.inspired_by_brand && (
+                      <div className="mt-1 inline-flex items-center gap-1 text-[11px] rounded-md bg-[var(--cream)] border border-[var(--gold)]/40 px-2 py-0.5 text-foreground/85">
+                        <span className="text-muted-foreground">Inspired by</span>
+                        <span className="font-semibold">{l.inspired_by_brand}{l.inspired_by_product ? ` ${l.inspired_by_product}` : ""}</span>
+                      </div>
+                    )}
                     <div className="text-sm text-muted-foreground mt-1">{formatAUD(l.price)}</div>
                   </div>
                   <div className="flex items-center gap-3">
