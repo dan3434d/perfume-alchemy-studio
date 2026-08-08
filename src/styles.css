@@ -38,50 +38,52 @@
   --color-amber-deep: var(--amber-deep);
   --color-cream: var(--cream);
 
-  --shadow-soft: 0 1px 2px oklch(0.2 0.05 60 / 0.05), 0 8px 24px -10px oklch(0.2 0.05 60 / 0.10);
-  --shadow-elegant: 0 18px 50px -18px oklch(0.45 0.13 55 / 0.28), 0 4px 12px -6px oklch(0.2 0.05 60 / 0.10);
-  --shadow-card: 0 1px 2px oklch(0.2 0.05 60 / 0.04), 0 6px 20px -8px oklch(0.2 0.05 60 / 0.10);
-  --shadow-ring: 0 0 0 1px oklch(0.62 0.14 65 / 0.18), 0 8px 24px -10px oklch(0.62 0.14 65 / 0.25);
+  /* Shopify-Dawn-like: flat, quiet shadows */
+  --shadow-soft: 0 1px 2px oklch(0.2 0.01 60 / 0.04);
+  --shadow-elegant: 0 2px 8px oklch(0.2 0.01 60 / 0.08);
+  --shadow-card: 0 1px 2px oklch(0.2 0.01 60 / 0.04);
+  --shadow-ring: 0 0 0 1px var(--border);
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 0.25rem;
 
-  --background: oklch(0.99 0.005 80);
-  --foreground: oklch(0.22 0.02 60);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.19 0.005 60);
 
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.02 60);
+  --card-foreground: oklch(0.19 0.005 60);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.02 60);
+  --popover-foreground: oklch(0.19 0.005 60);
 
-  /* Warm amber/gold primary */
-  --primary: oklch(0.62 0.14 65);
-  --primary-foreground: oklch(0.99 0.005 80);
+  /* Dawn-style: ink primary, colour used sparingly */
+  --primary: oklch(0.19 0.005 60);
+  --primary-foreground: oklch(1 0 0);
 
-  --secondary: oklch(0.96 0.02 75);
-  --secondary-foreground: oklch(0.3 0.03 60);
+  --secondary: oklch(0.965 0.003 80);
+  --secondary-foreground: oklch(0.28 0.006 60);
 
-  --muted: oklch(0.965 0.012 75);
-  --muted-foreground: oklch(0.5 0.02 60);
+  --muted: oklch(0.97 0.003 80);
+  --muted-foreground: oklch(0.52 0.008 60);
 
-  --accent: oklch(0.93 0.05 75);
-  --accent-foreground: oklch(0.3 0.05 60);
+  --accent: oklch(0.955 0.008 80);
+  --accent-foreground: oklch(0.28 0.008 60);
 
-  --destructive: oklch(0.58 0.22 25);
-  --destructive-foreground: oklch(0.99 0.005 80);
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(1 0 0);
 
-  --border: oklch(0.92 0.012 75);
-  --input: oklch(0.92 0.012 75);
-  --ring: oklch(0.62 0.14 65);
+  --border: oklch(0.9 0.004 80);
+  --input: oklch(0.9 0.004 80);
+  --ring: oklch(0.19 0.005 60);
 
-  --gold: oklch(0.72 0.13 75);
-  --amber-deep: oklch(0.5 0.13 55);
-  --cream: oklch(0.97 0.02 85);
+  --gold: oklch(0.66 0.11 70);
+  --amber-deep: oklch(0.45 0.1 55);
+  --cream: oklch(0.975 0.006 85);
 
-  --gradient-warm: linear-gradient(135deg, oklch(0.97 0.02 85), oklch(0.93 0.05 75));
-  --gradient-gold: linear-gradient(135deg, oklch(0.72 0.13 75), oklch(0.55 0.13 60));
+  --gradient-warm: linear-gradient(180deg, oklch(0.985 0.004 85), oklch(0.97 0.006 80));
+  --gradient-gold: linear-gradient(180deg, oklch(0.24 0.005 60), oklch(0.17 0.005 60));
 }
+
 
 .dark {
   --background: oklch(0.18 0.02 60);
