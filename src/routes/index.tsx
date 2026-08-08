@@ -135,6 +135,8 @@ function Home() {
         </div>
       </section>
 
+      {/* SHOP BY GENDER */}
+      <section className="section container-px max-w-7xl mx-auto">
 
         <div className="text-center mb-8">
           <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Shop by</span>
