@@ -1,0 +1,1 @@
+UPDATE public.products SET image_url = '/__l5e/assets-v1/e951c0bc-9f93-4cc2-a7fa-a239e4b1f7d6/Imagination_Storm.jpeg';
