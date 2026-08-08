@@ -48,10 +48,13 @@ function CartPage() {
         </div>
       ) : (
         <div className="grid lg:grid-cols-3 gap-10">
-          <div className="lg:col-span-2 divide-y divide-border border-y border-border">
+          <div className="lg:col-span-2">
+            <FreeShipMeter amount={subtotalAfterDiscount} count={count} />
+            <div className="divide-y divide-border border-y border-border mt-6">
             {lines.map((l) => (
               <div key={l.product_id} className="py-5 flex gap-4">
                 <Link to="/shop/$slug" params={{ slug: l.slug }} className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden bg-[var(--cream)] flex-shrink-0">
+
                   <img src={productImage(l.image_url)} alt={l.name} className="w-full h-full object-cover" />
                 </Link>
                 <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-3">
