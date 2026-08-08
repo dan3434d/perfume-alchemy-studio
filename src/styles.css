@@ -150,37 +150,38 @@
 }
 
 @layer components {
-  .container-px { @apply px-4 sm:px-6 lg:px-8; }
+  .container-px { @apply px-5 sm:px-8 lg:px-12; }
   .section { @apply py-14 sm:py-20 lg:py-24; }
 
+  /* Dawn-style solid button */
   .btn-gold {
-    background: var(--gradient-gold);
+    background: var(--primary);
     color: var(--primary-foreground);
     font-weight: 600;
-    letter-spacing: 0.01em;
-    box-shadow: 0 1px 0 oklch(1 0 0 / 0.3) inset, 0 8px 22px -10px oklch(0.55 0.13 60 / 0.45);
-    transition: transform .2s ease, box-shadow .25s ease, filter .2s ease;
+    letter-spacing: 0.02em;
+    border: 1px solid var(--primary);
+    box-shadow: none;
+    transition: background-color .18s ease, color .18s ease, opacity .18s ease;
   }
-  .btn-gold:hover { filter: brightness(1.06); box-shadow: var(--shadow-elegant); transform: translateY(-1px); }
-  .btn-gold:active { transform: translateY(0); filter: brightness(0.98); }
+  .btn-gold:hover { background: transparent; color: var(--primary); }
+  .btn-gold:active { opacity: 0.85; }
 
   .card-elevated {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: calc(var(--radius) + 4px);
-    box-shadow: var(--shadow-card);
-    transition: transform .3s cubic-bezier(.2,.7,.2,1), box-shadow .3s ease, border-color .25s ease;
+    border-radius: var(--radius);
+    box-shadow: none;
+    transition: border-color .2s ease;
   }
   .card-elevated:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-elegant);
-    border-color: color-mix(in oklab, var(--gold) 35%, var(--border));
+    border-color: color-mix(in oklab, var(--foreground) 35%, var(--border));
   }
 
   .surface-warm {
     background: var(--gradient-warm);
-    border: 1px solid color-mix(in oklab, var(--gold) 18%, var(--border));
+    border: 1px solid var(--border);
   }
+
 
   .text-balance { text-wrap: balance; }
   .text-pretty { text-wrap: pretty; }
