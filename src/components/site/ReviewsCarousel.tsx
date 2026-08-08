@@ -109,9 +109,11 @@ export function ReviewsCarousel() {
 
           {/* Review rail */}
           <div
+            className="min-w-0"
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
           >
+
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-display text-2xl sm:text-3xl">What customers say</h2>
               <div className="hidden sm:flex gap-2">
