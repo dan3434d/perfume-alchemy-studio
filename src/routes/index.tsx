@@ -258,25 +258,8 @@ function Home() {
         </div>
       </section>
 
-      {/* BENEFITS */}
-      <section className="section bg-[var(--cream)]/40 border-y border-border">
-        <div className="container-px max-w-7xl mx-auto">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { i: Truck, t: "Fast AU shipping", d: "Dispatched within 24 hours from Sydney." },
-              { i: Lock, t: "Secure checkout", d: "Encrypted payments, your data stays private." },
-              { i: Sparkles, t: "Premium blends", d: "Long-lasting oud, amber and modern compositions." },
-              { i: MessageCircle, t: "Real human support", d: "Email support@abdulrahman.store any time." },
-            ].map(({ i: Icon, t, d }) => (
-              <div key={t} className="p-6 rounded-sm border border-border bg-background">
-                <Icon className="w-6 h-6 text-[var(--amber-deep)]" />
-                <h3 className="font-semibold mt-3">{t}</h3>
-                <p className="text-sm text-muted-foreground mt-1">{d}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
+
 
       {/* SLIDING TESTIMONIALS */}
       <ReviewsCarousel />
