@@ -68,7 +68,7 @@ export function ReviewsCarousel() {
       <div className="section container-px max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-[320px_1fr] gap-10 lg:gap-14 items-start">
           {/* Rating summary — the proof */}
-          <div className="lg:sticky lg:top-24">
+          <div className="lg:sticky lg:top-24 min-w-0">
             <span className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Customer reviews</span>
             <div className="flex items-end gap-3 mt-3">
               <span className="font-display text-5xl leading-none">4.9</span>
@@ -109,9 +109,11 @@ export function ReviewsCarousel() {
 
           {/* Review rail */}
           <div
+            className="min-w-0"
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
           >
+
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-display text-2xl sm:text-3xl">What customers say</h2>
               <div className="hidden sm:flex gap-2">
