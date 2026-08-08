@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
 import { ReviewsCarousel } from "@/components/site/ReviewsCarousel";
 import { SocialFeed } from "@/components/site/SocialFeed";
-import { Truck, Lock, Sparkles, MessageCircle, ArrowRight, Star, MapPin, Droplets, Award } from "lucide-react";
+import { Sparkles, ArrowRight, Star, MapPin, Droplets, Award } from "lucide-react";
 import { TrustBar } from "@/components/site/TrustBar";
 import heroImg from "@/assets/hero-perfume.jpg";
 import blendingImg from "@/assets/craft-blending.jpg";
@@ -70,10 +70,10 @@ function Home() {
               Premium Arabian perfumery, reimagined for the modern wardrobe. Blended with UAE oils, packed in Sydney — every 50ml bottle just <span className="font-semibold text-foreground">$41.50</span>. <span className="text-[var(--amber-deep)] font-semibold">Buy 2, save 15%</span> — applied automatically.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link to="/shop" className="btn-gold inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold">
+              <Link to="/shop" className="btn-gold inline-flex items-center gap-2 rounded-sm px-6 py-3 text-sm font-semibold">
                 Shop Now <ArrowRight className="w-4 h-4" />
               </Link>
-              <Link to="/shop" search={{ category: "oud-perfumes" }} className="inline-flex items-center gap-2 rounded-full border border-foreground/20 px-6 py-3 text-sm font-semibold hover:bg-background/60">
+              <Link to="/shop" search={{ category: "oud-perfumes" }} className="inline-flex items-center gap-2 rounded-sm border border-foreground/20 px-6 py-3 text-sm font-semibold hover:bg-background/60">
                 Explore Oud Collection
               </Link>
             </div>
@@ -83,11 +83,10 @@ function Home() {
             </div>
           </div>
           <div className="relative">
-            <div className="absolute -inset-10 -z-10 rounded-full blur-3xl opacity-50" style={{ background: "var(--gradient-gold)" }} />
             <img
               src={heroImg}
               alt="Abdulrahman signature perfume bottle on dark marble with oud wood and rose petals"
-              className="mx-auto w-full max-w-md rounded-2xl shadow-[var(--shadow-elegant)] aspect-square object-cover"
+              className="mx-auto w-full max-w-md rounded-sm border border-border aspect-square object-cover"
               width={1024}
               height={1024}
               fetchPriority="high"
@@ -111,7 +110,7 @@ function Home() {
           </p>
         </div>
         <div className="grid sm:grid-cols-2 gap-5">
-          <div className="rounded-2xl border border-border p-7 bg-background">
+          <div className="rounded-sm border border-border p-7 bg-background">
             <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Designer boutique</div>
             <div className="font-display text-4xl mt-3 text-muted-foreground line-through">$99 – $380</div>
             <ul className="mt-5 space-y-2 text-sm text-muted-foreground">
@@ -120,7 +119,7 @@ function Home() {
               <li>Wait for a sale, or pay full price</li>
             </ul>
           </div>
-          <div className="rounded-2xl p-7 border border-[var(--gold)]/50" style={{ background: "var(--gradient-warm)" }}>
+          <div className="rounded-sm p-7 border border-[var(--gold)]/50" style={{ background: "var(--gradient-warm)" }}>
             <div className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Abdulrahman Perfumes</div>
             <div className="font-display text-4xl mt-3">$41.50 <span className="text-base font-normal text-muted-foreground">/ 50ml</span></div>
             <ul className="mt-5 space-y-2 text-sm">
@@ -128,7 +127,7 @@ function Home() {
               <li>Buy 2, save 15% — every day, applied automatically</li>
               <li>Free metro AU shipping over $50, dispatched in 24h</li>
             </ul>
-            <Link to="/shop" className="btn-gold inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold mt-6">
+            <Link to="/shop" className="btn-gold inline-flex items-center gap-2 rounded-sm px-5 py-2.5 text-sm font-semibold mt-6">
               Shop the collection <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -152,7 +151,7 @@ function Home() {
               key={g.v}
               to="/shop"
               search={{ gender: g.v }}
-              className="card-elevated rounded-2xl border border-border p-5 sm:p-6 text-center hover:border-[var(--amber-deep)]/50 transition group"
+              className="card-elevated rounded-sm border border-border p-5 sm:p-6 text-center hover:border-[var(--amber-deep)]/50 transition group"
             >
               <div className="font-display text-lg sm:text-xl group-hover:text-[var(--amber-deep)] transition">{g.l}</div>
               <div className="text-[11px] sm:text-xs text-muted-foreground mt-1">{g.d}</div>
@@ -176,7 +175,7 @@ function Home() {
               key={b}
               to="/shop"
               search={{ brand: b }}
-              className="text-sm px-4 py-2 rounded-full border border-border bg-background hover:bg-foreground hover:text-background transition"
+              className="text-sm px-4 py-2 rounded-sm border border-border bg-background hover:bg-foreground hover:text-background transition"
             >
               {b} inspired
             </Link>
@@ -197,7 +196,7 @@ function Home() {
         </div>
         {featured.isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-            {Array.from({ length: 4 }).map((_, i) => <div key={i} className="aspect-[3/4] rounded-2xl bg-muted animate-pulse" />)}
+            {Array.from({ length: 4 }).map((_, i) => <div key={i} className="aspect-[3/4] rounded-sm bg-muted animate-pulse" />)}
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
@@ -211,8 +210,8 @@ function Home() {
         <div className="container-px max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="grid grid-cols-2 gap-4">
-              <img src={ingredientsImg} alt="Oud wood, dried roses and vanilla" loading="lazy" width={1024} height={1024} className="rounded-2xl shadow-[var(--shadow-elegant)] aspect-square object-cover" />
-              <img src={blendingImg} alt="Perfumer hand-blending fragrance oils" loading="lazy" width={1024} height={1024} className="rounded-2xl shadow-[var(--shadow-elegant)] aspect-square object-cover mt-8" />
+              <img src={ingredientsImg} alt="Oud wood, dried roses and vanilla" loading="lazy" width={1024} height={1024} className="rounded-sm border border-border aspect-square object-cover" />
+              <img src={blendingImg} alt="Perfumer hand-blending fragrance oils" loading="lazy" width={1024} height={1024} className="rounded-sm border border-border aspect-square object-cover mt-8" />
             </div>
             <div>
               <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Why Abdulrahman Perfumes</span>
@@ -227,7 +226,7 @@ function Home() {
                   { i: MapPin, t: "Packed in Sydney", d: "Dispatched within 24 hours, free metro AU shipping over $50." },
                 ].map(({ i: Icon, t, d }) => (
                   <div key={t} className="flex gap-4">
-                    <div className="w-10 h-10 shrink-0 rounded-full grid place-items-center bg-[var(--amber-deep)]/10 text-[var(--amber-deep)]"><Icon className="w-5 h-5" /></div>
+                    <div className="w-10 h-10 shrink-0 rounded-sm grid place-items-center bg-[var(--amber-deep)]/10 text-[var(--amber-deep)]"><Icon className="w-5 h-5" /></div>
                     <div>
                       <h3 className="font-semibold">{t}</h3>
                       <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{d}</p>
@@ -251,7 +250,7 @@ function Home() {
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {categories.data?.slice(0, 8).map((c) => (
-            <Link key={c.id} to="/shop" search={{ category: c.slug }} className="card-elevated p-6 text-center rounded-2xl border border-border hover:border-[var(--amber-deep)]/40 hover:shadow-[var(--shadow-elegant)] transition">
+            <Link key={c.id} to="/shop" search={{ category: c.slug }} className="card-elevated p-6 text-center rounded-sm border border-border hover:border-[var(--amber-deep)]/40 hover:shadow-[var(--shadow-elegant)] transition">
               <div className="font-display text-lg">{c.name}</div>
               <div className="text-xs text-muted-foreground mt-1">Shop now →</div>
             </Link>
@@ -259,25 +258,8 @@ function Home() {
         </div>
       </section>
 
-      {/* BENEFITS */}
-      <section className="section bg-[var(--cream)]/40 border-y border-border">
-        <div className="container-px max-w-7xl mx-auto">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { i: Truck, t: "Fast AU shipping", d: "Dispatched within 24 hours from Sydney." },
-              { i: Lock, t: "Secure checkout", d: "Encrypted payments, your data stays private." },
-              { i: Sparkles, t: "Premium blends", d: "Long-lasting oud, amber and modern compositions." },
-              { i: MessageCircle, t: "Real human support", d: "Email support@abdulrahman.store any time." },
-            ].map(({ i: Icon, t, d }) => (
-              <div key={t} className="p-6 rounded-2xl border border-border bg-background">
-                <Icon className="w-6 h-6 text-[var(--amber-deep)]" />
-                <h3 className="font-semibold mt-3">{t}</h3>
-                <p className="text-sm text-muted-foreground mt-1">{d}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
+
 
       {/* SLIDING TESTIMONIALS */}
       <ReviewsCarousel />
@@ -287,13 +269,13 @@ function Home() {
 
       {/* SCENT DISCOVERY CTA */}
       <section className="section container-px max-w-7xl mx-auto">
-        <div className="rounded-3xl p-10 md:p-14 text-center relative overflow-hidden" style={{ background: "var(--gradient-warm)" }}>
+        <div className="rounded-sm p-10 md:p-14 text-center relative overflow-hidden" style={{ background: "var(--gradient-warm)" }}>
           <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">New</span>
           <h2 className="font-display text-3xl sm:text-4xl mt-2">Not sure where to start?</h2>
           <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
             Take our 4-question scent quiz and we'll match you with your perfect fragrance from over 40 UAE-blended scents.
           </p>
-          <Link to="/scent-discovery" className="btn-gold inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold mt-6">
+          <Link to="/scent-discovery" className="btn-gold inline-flex items-center gap-2 rounded-sm px-6 py-3 text-sm font-semibold mt-6">
             Take the scent quiz <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -355,7 +337,7 @@ function Home() {
       {/* HANDPICKED FRAGRANCE */}
       {featured.data && featured.data[0] && (
         <section className="section container-px max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-10 items-center card-elevated rounded-3xl border border-border overflow-hidden bg-background">
+          <div className="grid lg:grid-cols-2 gap-10 items-center card-elevated rounded-sm border border-border overflow-hidden bg-background">
             <div className="aspect-square lg:aspect-auto lg:h-full bg-[var(--cream)]/40 relative">
               <img
                 src={featured.data[0].image_url || ""}
@@ -363,7 +345,7 @@ function Home() {
                 loading="lazy"
                 className="w-full h-full object-cover"
               />
-              <span className="absolute top-4 left-4 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] bg-[var(--amber-deep)] text-background px-3 py-1.5 rounded-full font-semibold">
+              <span className="absolute top-4 left-4 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] bg-[var(--amber-deep)] text-background px-3 py-1.5 rounded-sm font-semibold">
                 <Sparkles className="w-3 h-3" /> Handpicked
               </span>
             </div>
@@ -388,7 +370,7 @@ function Home() {
               <Link
                 to="/shop/$slug"
                 params={{ slug: featured.data[0].slug }}
-                className="btn-gold inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold mt-6"
+                className="btn-gold inline-flex items-center gap-2 rounded-sm px-6 py-3 text-sm font-semibold mt-6"
               >
                 Shop this scent <ArrowRight className="w-4 h-4" />
               </Link>
@@ -403,8 +385,8 @@ function Home() {
         <p className="text-muted-foreground mt-3">Early access to new fragrances and members-only offers.</p>
         <form className="mt-6 flex flex-col sm:flex-row gap-2 max-w-md mx-auto" onSubmit={(e) => { e.preventDefault(); }}>
           <label htmlFor="newsletter-email" className="sr-only">Email address</label>
-          <input id="newsletter-email" name="email" type="email" required placeholder="your@email.com" aria-label="Email address for newsletter" autoComplete="email" className="flex-1 rounded-full px-5 py-3 bg-secondary border border-border focus:outline-none focus:ring-2 focus:ring-ring text-sm" />
-          <button type="submit" aria-label="Subscribe to newsletter" className="btn-gold rounded-full px-6 py-3 text-sm font-semibold">Subscribe</button>
+          <input id="newsletter-email" name="email" type="email" required placeholder="your@email.com" aria-label="Email address for newsletter" autoComplete="email" className="flex-1 rounded-sm px-5 py-3 bg-secondary border border-border focus:outline-none focus:ring-2 focus:ring-ring text-sm" />
+          <button type="submit" aria-label="Subscribe to newsletter" className="btn-gold rounded-sm px-6 py-3 text-sm font-semibold">Subscribe</button>
         </form>
       </section>
     </>
