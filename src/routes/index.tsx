@@ -210,8 +210,8 @@ function Home() {
         <div className="container-px max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="grid grid-cols-2 gap-4">
-              <img src={ingredientsImg} alt="Oud wood, dried roses and vanilla" loading="lazy" width={1024} height={1024} className="rounded-sm shadow-[var(--shadow-elegant)] aspect-square object-cover" />
-              <img src={blendingImg} alt="Perfumer hand-blending fragrance oils" loading="lazy" width={1024} height={1024} className="rounded-sm shadow-[var(--shadow-elegant)] aspect-square object-cover mt-8" />
+              <img src={ingredientsImg} alt="Oud wood, dried roses and vanilla" loading="lazy" width={1024} height={1024} className="rounded-sm border border-border aspect-square object-cover" />
+              <img src={blendingImg} alt="Perfumer hand-blending fragrance oils" loading="lazy" width={1024} height={1024} className="rounded-sm border border-border aspect-square object-cover mt-8" />
             </div>
             <div>
               <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Why Abdulrahman Perfumes</span>
