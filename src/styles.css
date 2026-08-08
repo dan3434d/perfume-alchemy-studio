@@ -163,6 +163,10 @@
     border: 1px solid var(--primary);
     box-shadow: none;
     transition: background-color .18s ease, color .18s ease, opacity .18s ease;
+    border-radius: var(--radius);
+    text-transform: uppercase;
+    font-size: 0.8125rem;
+
   }
   .btn-gold:hover { background: transparent; color: var(--primary); }
   .btn-gold:active { opacity: 0.85; }
