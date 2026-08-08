@@ -83,11 +83,10 @@ function Home() {
             </div>
           </div>
           <div className="relative">
-            <div className="absolute -inset-10 -z-10 rounded-sm blur-3xl opacity-50" style={{ background: "var(--gradient-gold)" }} />
             <img
               src={heroImg}
               alt="Abdulrahman signature perfume bottle on dark marble with oud wood and rose petals"
-              className="mx-auto w-full max-w-md rounded-sm shadow-[var(--shadow-elegant)] aspect-square object-cover"
+              className="mx-auto w-full max-w-md rounded-sm border border-border aspect-square object-cover"
               width={1024}
               height={1024}
               fetchPriority="high"
