@@ -159,7 +159,7 @@ function ProductPage() {
   const savings = p.retail_price ? Number(p.retail_price) - Number(p.price) : null;
 
   const doAdd = () => {
-    add({ product_id: p.id, slug: p.slug, name: p.name, price: Number(p.price), image_url: p.image_url, stock: p.stock }, qty);
+    add({ product_id: p.id, slug: p.slug, name: p.name, price: Number(p.price), image_url: p.image_url, stock: p.stock, inspired_by_brand: p.inspired_by_brand ?? null, inspired_by_product: p.inspired_by_product ?? null }, qty);
     toast.success(`Added ${qty} × ${p.name} to cart`);
   };
   const doBuy = () => { doAdd(); navigate({ to: "/checkout" }); };
