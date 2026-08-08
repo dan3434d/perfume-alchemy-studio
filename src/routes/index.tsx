@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
 import { ReviewsCarousel } from "@/components/site/ReviewsCarousel";
 import { SocialFeed } from "@/components/site/SocialFeed";
-import { Truck, Lock, Sparkles, MessageCircle, ArrowRight, Star, MapPin, Droplets, Award } from "lucide-react";
+import { Sparkles, ArrowRight, Star, MapPin, Droplets, Award } from "lucide-react";
 import { TrustBar } from "@/components/site/TrustBar";
 import heroImg from "@/assets/hero-perfume.jpg";
 import blendingImg from "@/assets/craft-blending.jpg";
