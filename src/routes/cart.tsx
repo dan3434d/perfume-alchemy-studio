@@ -88,7 +88,10 @@ function CartPage() {
                 Add 1 more bottle to unlock {BULK_DISCOUNT_PERCENT}% off — Buy 2, save {BULK_DISCOUNT_PERCENT}%.
               </div>
             )}
+            </div>
+            <CartUpsell />
           </div>
+
 
           <aside className="lg:sticky lg:top-24 h-fit">
             <div className="card-elevated p-6 space-y-4">
