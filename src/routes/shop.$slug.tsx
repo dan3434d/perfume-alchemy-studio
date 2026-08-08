@@ -381,9 +381,24 @@ function ProductPage() {
           </div>
         </section>
       )}
+
+      {/* Sticky mobile buy bar */}
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background/95 backdrop-blur px-4 py-3 flex items-center gap-3">
+        <div className="min-w-0">
+          <div className="text-xs text-muted-foreground truncate">{p.name}</div>
+          <div className="font-semibold text-sm">{formatAUD(p.price)}</div>
+        </div>
+        <button onClick={doAdd} className="ml-auto rounded-full border-2 border-foreground px-4 py-2.5 text-sm font-semibold">
+          Add
+        </button>
+        <button onClick={doBuy} className="btn-gold rounded-full px-5 py-2.5 text-sm font-semibold">
+          Buy now
+        </button>
+      </div>
     </div>
   );
 }
+
 
 function Feature({ i: Icon, t, d }: { i: any; t: string; d: string }) {
   return (
