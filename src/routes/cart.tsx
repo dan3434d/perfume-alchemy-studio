@@ -11,6 +11,9 @@ import {
   computeBulkDiscountPercent,
 } from "@/lib/pricing";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, BadgePercent } from "lucide-react";
+import { FreeShipMeter } from "@/components/site/FreeShipMeter";
+import { CartUpsell } from "@/components/site/CartUpsell";
+import { TrustBar } from "@/components/site/TrustBar";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({ meta: [{ title: "Cart — Abdulrahman Perfumes" }] }),
