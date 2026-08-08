@@ -121,7 +121,11 @@ function CartPage() {
           </aside>
         </div>
       )}
+      <div className="mt-14 -mx-4 sm:-mx-6 lg:-mx-8">
+        <TrustBar />
+      </div>
     </div>
+
   );
 }
 
