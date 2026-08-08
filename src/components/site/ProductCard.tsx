@@ -88,34 +88,33 @@ export function ProductCard({ p }: { p: ProductCardData }) {
           <span>{(p.rating ?? 4.8).toFixed(1)}</span>
         </div>
 
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 mt-auto pt-2">
-          <div className="flex items-baseline gap-1.5 min-w-0 flex-wrap">
-            <span className="font-semibold text-sm sm:text-base">{formatAUD(p.price)}</span>
-            {p.compare_at_price && p.compare_at_price > p.price && (
-              <span className="text-[11px] sm:text-xs text-muted-foreground line-through">{formatAUD(p.compare_at_price)}</span>
-            )}
-          </div>
-          <button
-            onClick={() => {
-              add({
-                product_id: p.id,
-                slug: p.slug,
-                name: p.name,
-                price: p.price,
-                image_url: p.image_url,
-                stock: p.stock,
-                inspired_by_brand: p.inspired_by_brand ?? null,
-                inspired_by_product: p.inspired_by_product ?? null,
-              });
-              toast.success(`${p.name} added to cart`);
-            }}
-            aria-label={`Add ${p.name} to cart`}
-            className="shrink-0 inline-flex items-center justify-center gap-1.5 text-xs font-medium rounded-full btn-gold h-9 w-9 sm:w-auto sm:px-3.5 sm:py-2"
-          >
-            <ShoppingBag className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-            <span className="hidden sm:inline">Add</span>
-          </button>
+        <div className="flex items-baseline gap-2 min-w-0 flex-wrap mt-auto pt-1">
+          <span className="font-semibold text-sm sm:text-base">{formatAUD(p.price)}</span>
+          {p.compare_at_price && p.compare_at_price > p.price && (
+            <span className="text-[11px] sm:text-xs text-muted-foreground line-through">{formatAUD(p.compare_at_price)}</span>
+          )}
         </div>
+        <button
+          onClick={() => {
+            add({
+              product_id: p.id,
+              slug: p.slug,
+              name: p.name,
+              price: p.price,
+              image_url: p.image_url,
+              stock: p.stock,
+              inspired_by_brand: p.inspired_by_brand ?? null,
+              inspired_by_product: p.inspired_by_product ?? null,
+            });
+            toast.success(`${p.name} added to cart`);
+          }}
+          aria-label={`Add ${p.name} to cart`}
+          className="mt-2 w-full inline-flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-[0.08em] rounded-sm border border-foreground bg-transparent text-foreground py-2.5 hover:bg-foreground hover:text-background transition-colors"
+        >
+          <ShoppingBag className="w-3.5 h-3.5" />
+          Add to cart
+        </button>
+
       </div>
     </div>
   );
