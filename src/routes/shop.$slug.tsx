@@ -159,7 +159,7 @@ function ProductPage() {
   const savings = p.retail_price ? Number(p.retail_price) - Number(p.price) : null;
 
   const doAdd = () => {
-    add({ product_id: p.id, slug: p.slug, name: p.name, price: Number(p.price), image_url: p.image_url, stock: p.stock }, qty);
+    add({ product_id: p.id, slug: p.slug, name: p.name, price: Number(p.price), image_url: p.image_url, stock: p.stock, inspired_by_brand: p.inspired_by_brand ?? null, inspired_by_product: p.inspired_by_product ?? null }, qty);
     toast.success(`Added ${qty} × ${p.name} to cart`);
   };
   const doBuy = () => { doAdd(); navigate({ to: "/checkout" }); };
@@ -276,6 +276,23 @@ function ProductPage() {
 
           {lowStock && <p className="text-xs text-[var(--amber-deep)]">Only {p.stock} left in stock</p>}
 
+          {/* Bundle nudge */}
+          <button
+            type="button"
+            onClick={() => { setQty(2); toast.success("2 bottles selected — 15% off applies at checkout"); }}
+            className="w-full text-left rounded-2xl border border-[var(--gold)]/50 p-4 flex items-center gap-3 hover:shadow-[var(--shadow-elegant)] transition"
+            style={{ background: "var(--gradient-warm)" }}
+          >
+            <Sparkles className="w-5 h-5 text-[var(--amber-deep)] shrink-0" />
+            <div className="min-w-0">
+              <div className="text-sm font-semibold">Take 2 bottles and save 15%</div>
+              <div className="text-xs text-muted-foreground">
+                2 × 50ml for {formatAUD(Number(p.price) * 2 * 0.85)} instead of {formatAUD(Number(p.price) * 2)} — free metro shipping included.
+              </div>
+            </div>
+          </button>
+
+
           {/* Delivery / Returns */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-border">
             <Info i={Truck} t="Fast AU shipping" d="Ships within 24h from Sydney" />
@@ -364,9 +381,24 @@ function ProductPage() {
           </div>
         </section>
       )}
+
+      {/* Sticky mobile buy bar */}
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background/95 backdrop-blur px-4 py-3 flex items-center gap-3">
+        <div className="min-w-0">
+          <div className="text-xs text-muted-foreground truncate">{p.name}</div>
+          <div className="font-semibold text-sm">{formatAUD(p.price)}</div>
+        </div>
+        <button onClick={doAdd} className="ml-auto rounded-full border-2 border-foreground px-4 py-2.5 text-sm font-semibold">
+          Add
+        </button>
+        <button onClick={doBuy} className="btn-gold rounded-full px-5 py-2.5 text-sm font-semibold">
+          Buy now
+        </button>
+      </div>
     </div>
   );
 }
+
 
 function Feature({ i: Icon, t, d }: { i: any; t: string; d: string }) {
   return (

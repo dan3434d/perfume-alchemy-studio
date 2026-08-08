@@ -11,6 +11,9 @@ import {
   computeBulkDiscountPercent,
 } from "@/lib/pricing";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, BadgePercent } from "lucide-react";
+import { FreeShipMeter } from "@/components/site/FreeShipMeter";
+import { CartUpsell } from "@/components/site/CartUpsell";
+import { TrustBar } from "@/components/site/TrustBar";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({ meta: [{ title: "Cart — Abdulrahman Perfumes" }] }),
@@ -45,10 +48,13 @@ function CartPage() {
         </div>
       ) : (
         <div className="grid lg:grid-cols-3 gap-10">
-          <div className="lg:col-span-2 divide-y divide-border border-y border-border">
+          <div className="lg:col-span-2">
+            <FreeShipMeter amount={subtotalAfterDiscount} count={count} />
+            <div className="divide-y divide-border border-y border-border mt-6">
             {lines.map((l) => (
               <div key={l.product_id} className="py-5 flex gap-4">
                 <Link to="/shop/$slug" params={{ slug: l.slug }} className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden bg-[var(--cream)] flex-shrink-0">
+
                   <img src={productImage(l.image_url)} alt={l.name} className="w-full h-full object-cover" />
                 </Link>
                 <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-3">
@@ -82,7 +88,10 @@ function CartPage() {
                 Add 1 more bottle to unlock {BULK_DISCOUNT_PERCENT}% off — Buy 2, save {BULK_DISCOUNT_PERCENT}%.
               </div>
             )}
+            </div>
+            <CartUpsell />
           </div>
+
 
           <aside className="lg:sticky lg:top-24 h-fit">
             <div className="card-elevated p-6 space-y-4">
@@ -112,7 +121,11 @@ function CartPage() {
           </aside>
         </div>
       )}
+      <div className="mt-14 -mx-4 sm:-mx-6 lg:-mx-8">
+        <TrustBar />
+      </div>
     </div>
+
   );
 }
 

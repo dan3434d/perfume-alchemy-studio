@@ -6,6 +6,7 @@ import { ProductCard, type ProductCardData } from "@/components/site/ProductCard
 import { ReviewsCarousel } from "@/components/site/ReviewsCarousel";
 import { SocialFeed } from "@/components/site/SocialFeed";
 import { Truck, Lock, Sparkles, MessageCircle, ArrowRight, Star, MapPin, Droplets, Award } from "lucide-react";
+import { TrustBar } from "@/components/site/TrustBar";
 import heroImg from "@/assets/hero-perfume.jpg";
 import blendingImg from "@/assets/craft-blending.jpg";
 import ingredientsImg from "@/assets/craft-ingredients.jpg";
@@ -95,8 +96,48 @@ function Home() {
         </div>
       </section>
 
+      {/* TRUST BAR */}
+      <TrustBar />
+
+      {/* PRICE COMPARISON */}
+      <section className="section container-px max-w-5xl mx-auto">
+        <div className="text-center mb-10">
+          <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Why people switch</span>
+          <h2 className="font-display text-3xl sm:text-4xl mt-2">Same character. Less than half the price.</h2>
+          <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
+            We are not a knockoff house. Our perfumers compose fragrances <em>inspired</em> by iconic designer profiles,
+            using UAE-sourced oud, amber and aromatic oils — then add our own signature twist. No designer markup,
+            no duty-free middlemen, no celebrity campaign to pay for.
+          </p>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-5">
+          <div className="rounded-2xl border border-border p-7 bg-background">
+            <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Designer boutique</div>
+            <div className="font-display text-4xl mt-3 text-muted-foreground line-through">$99 – $380</div>
+            <ul className="mt-5 space-y-2 text-sm text-muted-foreground">
+              <li>Retail rent, campaigns and duty-free markup</li>
+              <li>Reformulated batches, thinner concentrations</li>
+              <li>Wait for a sale, or pay full price</li>
+            </ul>
+          </div>
+          <div className="rounded-2xl p-7 border border-[var(--gold)]/50" style={{ background: "var(--gradient-warm)" }}>
+            <div className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Abdulrahman Perfumes</div>
+            <div className="font-display text-4xl mt-3">$41.50 <span className="text-base font-normal text-muted-foreground">/ 50ml</span></div>
+            <ul className="mt-5 space-y-2 text-sm">
+              <li>Extrait-strength UAE oils, 8–12 hour wear</li>
+              <li>Buy 2, save 15% — every day, applied automatically</li>
+              <li>Free metro AU shipping over $50, dispatched in 24h</li>
+            </ul>
+            <Link to="/shop" className="btn-gold inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold mt-6">
+              Shop the collection <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* SHOP BY GENDER */}
       <section className="section container-px max-w-7xl mx-auto">
+
         <div className="text-center mb-8">
           <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Shop by</span>
           <h2 className="font-display text-3xl sm:text-4xl mt-2">Who's it for?</h2>
