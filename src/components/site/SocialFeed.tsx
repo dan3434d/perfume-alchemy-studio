@@ -59,7 +59,7 @@ export function SocialFeed() {
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {IG_POSTS.map((p) => (
-              <div key={p.u} className="rounded-2xl overflow-hidden border border-border bg-background hover:shadow-[var(--shadow-elegant)] transition">
+              <div key={p.u} className="rounded-sm overflow-hidden border border-border bg-background hover:shadow-[var(--shadow-elegant)] transition">
                 <div className="aspect-square relative overflow-hidden bg-secondary">
                   <img
                     src={p.img}
@@ -69,7 +69,7 @@ export function SocialFeed() {
                   />
                   <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/45 to-transparent pointer-events-none" />
                   <div className="absolute top-2 left-2 flex items-center gap-1.5">
-                    <div className="w-7 h-7 rounded-full bg-white/90 grid place-items-center text-[10px] font-bold">{p.a}</div>
+                    <div className="w-7 h-7 rounded-sm bg-white/90 grid place-items-center text-[10px] font-bold">{p.a}</div>
                     <span className="text-[11px] font-semibold text-white drop-shadow">{p.u}</span>
                   </div>
                 </div>
@@ -97,9 +97,9 @@ export function SocialFeed() {
           </div>
           <div className="space-y-4">
             {FB_POSTS.map((p) => (
-              <div key={p.u} className="rounded-2xl border border-border bg-background p-4">
+              <div key={p.u} className="rounded-sm border border-border bg-background p-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[var(--amber-deep)]/15 text-[var(--amber-deep)] grid place-items-center text-sm font-bold">{p.a}</div>
+                  <div className="w-10 h-10 rounded-sm bg-[var(--amber-deep)]/15 text-[var(--amber-deep)] grid place-items-center text-sm font-bold">{p.a}</div>
                   <div>
                     <div className="text-sm font-semibold">{p.u}</div>
                     <div className="text-[11px] text-muted-foreground">{p.t} · Public</div>

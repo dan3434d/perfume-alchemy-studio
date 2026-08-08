@@ -109,7 +109,7 @@ function Shop() {
               <button
                 key={g.l}
                 onClick={() => navigate({ search: (p: ShopSearch) => ({ ...p, gender: g.v }) })}
-                className={`text-xs px-3.5 py-1.5 rounded-full border transition font-medium ${active ? "bg-[var(--amber-deep)] text-background border-[var(--amber-deep)]" : "border-border hover:border-foreground/40"}`}
+                className={`text-xs px-3.5 py-1.5 rounded-sm border transition font-medium ${active ? "bg-[var(--amber-deep)] text-background border-[var(--amber-deep)]" : "border-border hover:border-foreground/40"}`}
               >
                 {g.l}
               </button>
@@ -125,7 +125,7 @@ function Shop() {
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => navigate({ search: (p: ShopSearch) => ({ ...p, brand: undefined }) })}
-              className={`text-xs px-3 py-1.5 rounded-full border transition ${!brand ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground/40"}`}
+              className={`text-xs px-3 py-1.5 rounded-sm border transition ${!brand ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground/40"}`}
             >
               All brands
             </button>
@@ -133,7 +133,7 @@ function Shop() {
               <button
                 key={b}
                 onClick={() => navigate({ search: (p: ShopSearch) => ({ ...p, brand: brand === b ? undefined : b }) })}
-                className={`text-xs px-3 py-1.5 rounded-full border transition ${brand === b ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground/40"}`}
+                className={`text-xs px-3 py-1.5 rounded-sm border transition ${brand === b ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground/40"}`}
               >
                 {b}
               </button>
@@ -152,14 +152,14 @@ function Shop() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name or designer brand (e.g. Tom Ford, Dior)…"
-            className="w-full rounded-full pl-11 pr-4 py-2.5 bg-secondary border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full rounded-sm pl-11 pr-4 py-2.5 bg-secondary border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </form>
         <div className="flex gap-2 flex-wrap">
           <select
             value={category ?? ""}
             onChange={(e) => navigate({ search: (p: ShopSearch) => ({ ...p, category: e.target.value || undefined }) })}
-            className="rounded-full px-4 py-2.5 bg-secondary border border-border text-sm"
+            className="rounded-sm px-4 py-2.5 bg-secondary border border-border text-sm"
           >
             <option value="">All categories</option>
             {categories.data?.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
@@ -167,7 +167,7 @@ function Shop() {
           <select
             value={sort ?? ""}
             onChange={(e) => navigate({ search: (p: ShopSearch) => ({ ...p, sort: e.target.value || undefined }) })}
-            className="rounded-full px-4 py-2.5 bg-secondary border border-border text-sm"
+            className="rounded-sm px-4 py-2.5 bg-secondary border border-border text-sm"
           >
             <option value="">Featured</option>
             <option value="price-asc">Price: low to high</option>
@@ -179,7 +179,7 @@ function Shop() {
 
       {products.isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-          {Array.from({ length: 8 }).map((_, i) => <div key={i} className="aspect-[3/4] rounded-2xl bg-muted animate-pulse" />)}
+          {Array.from({ length: 8 }).map((_, i) => <div key={i} className="aspect-[3/4] rounded-sm bg-muted animate-pulse" />)}
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-20">
