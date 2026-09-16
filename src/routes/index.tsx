@@ -5,7 +5,10 @@ import { ProductCard, type ProductCardData } from "@/components/site/ProductCard
 import { ReviewsCarousel } from "@/components/site/ReviewsCarousel";
 import { SocialFeed } from "@/components/site/SocialFeed";
 import { TrustBar } from "@/components/site/TrustBar";
-import { productImage } from "@/lib/product-image";
+import heroPortrait from "@/assets/brand/woman-closeup.jpeg.asset.json";
+import portraitManLinen from "@/assets/brand/man-linen.jpeg.asset.json";
+import portraitWomanCurls from "@/assets/brand/woman-curls.jpeg.asset.json";
+import portraitWomanWaves from "@/assets/brand/woman-waves.jpeg.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -101,26 +104,28 @@ function Home() {
           </div>
 
           <div className="relative">
+            <div className="aspect-[4/5] overflow-hidden border border-border bg-[var(--sand)]">
+              <img
+                src={heroPortrait.url}
+                alt="A woman holding a 50ml Abdulrahman eau de parfum at her dressing table"
+                className="w-full h-full object-cover"
+                fetchPriority="high"
+              />
+            </div>
             {hero ? (
-              <Link to="/shop/$slug" params={{ slug: hero.slug }} className="block group">
-                <div className="aspect-[4/5] overflow-hidden border border-border bg-[var(--sand)]">
-                  <img
-                    src={productImage(hero.image_url)}
-                    alt={`${hero.name} eau de parfum, 50ml`}
-                    className="w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.03]"
-                    fetchPriority="high"
-                  />
+              <Link
+                to="/shop/$slug"
+                params={{ slug: hero.slug }}
+                className="flex items-baseline justify-between gap-4 mt-4 group"
+              >
+                <div>
+                  <span className="eyebrow text-[10px]">This week on the table</span>
+                  <div className="font-display text-xl mt-1 group-hover:underline underline-offset-4">{hero.name}</div>
                 </div>
-                <div className="flex items-baseline justify-between gap-4 mt-4">
-                  <div>
-                    <span className="eyebrow text-[10px]">This week on the table</span>
-                    <div className="font-display text-xl mt-1">{hero.name}</div>
-                  </div>
-                  <span className="text-sm whitespace-nowrap">$41.50</span>
-                </div>
+                <span className="text-sm whitespace-nowrap">$41.50</span>
               </Link>
             ) : (
-              <div className="aspect-[4/5] lattice border border-border" />
+              <div className="mt-4 eyebrow text-[10px]">Eau de parfum · 50ml · $41.50</div>
             )}
           </div>
         </div>
@@ -150,6 +155,37 @@ function Home() {
           ))}
         </div>
       </section>
+
+      {/* WORN — people, not campaigns */}
+      <section className="section container-px max-w-7xl mx-auto">
+        <div className="max-w-2xl">
+          <span className="eyebrow eyebrow-brass">Worn, not staged</span>
+          <h2 className="font-display mt-3">Morning light, one bottle on the dresser</h2>
+          <p className="text-muted-foreground mt-4 leading-relaxed">
+            No campaign set, no marble plinth. Our bottles live where people get ready — beside the
+            jewellery dish, next to the kettle, picked up on the way out the door.
+          </p>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-px bg-border border border-border mt-10">
+          {[
+            { img: portraitWomanCurls, alt: "A woman smiling as she holds a bottle of Abdulrahman eau de parfum", cap: "The first wear", body: "Warm, close to the skin, and still there at dinner." },
+            { img: portraitManLinen, alt: "A man in linen holding a bottle of Abdulrahman eau de parfum", cap: "For him, for her", body: "Most of our blends are worn by whoever reaches for them first." },
+            { img: portraitWomanWaves, alt: "A woman holding a bottle of Abdulrahman eau de parfum in morning light", cap: "Every day", body: "One price, so the good bottle isn't saved for later." },
+          ].map((p) => (
+            <figure key={p.cap} className="bg-background">
+              <div className="aspect-[4/5] overflow-hidden">
+                <img src={p.img.url} alt={p.alt} loading="lazy" className="w-full h-full object-cover" />
+              </div>
+              <figcaption className="p-6">
+                <div className="eyebrow text-[10px]">{p.cap}</div>
+                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{p.body}</p>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+
 
       {/* COLLECTION */}
       <section className="section container-px max-w-7xl mx-auto">
