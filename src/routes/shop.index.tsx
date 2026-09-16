@@ -86,22 +86,24 @@ function Shop() {
   }, [products.data, category, brand, gender, q, sort]);
 
   return (
-    <div className="container-px max-w-7xl mx-auto py-10 sm:py-14">
-      <div className="mb-8">
-        <h1 className="font-display text-3xl sm:text-4xl">Shop all perfumes</h1>
-        <p className="text-muted-foreground mt-2">
-          {filtered.length} fragrance{filtered.length === 1 ? "" : "s"} — every 50ml just $41.50 · Buy 2, save 15%.
+    <div className="container-px max-w-7xl mx-auto py-12 sm:py-16">
+      <header className="border-b border-border pb-8 mb-8">
+        <span className="eyebrow eyebrow-brass">The collection</span>
+        <h1 className="mt-4">Every bottle in the house</h1>
+        <p className="text-muted-foreground mt-4 max-w-xl">
+          {filtered.length} fragrance{filtered.length === 1 ? "" : "s"}, all 50ml eau de parfum, all $41.50.
+          Take two and 15% comes off on its own.
         </p>
-      </div>
+      </header>
 
       {/* Gender chips */}
-      <div className="mb-5">
-        <div className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)] mb-2">Shop by</div>
+      <div className="mb-6">
+        <div className="eyebrow mb-3">Who it's for</div>
         <div className="flex flex-wrap gap-2">
           {[
             { v: undefined, l: "Everyone" },
-            { v: "mens", l: "Men" },
-            { v: "womens", l: "Women" },
+            { v: "mens", l: "For him" },
+            { v: "womens", l: "For her" },
             { v: "unisex", l: "Unisex" },
           ].map((g) => {
             const active = (gender ?? undefined) === g.v;
@@ -109,7 +111,7 @@ function Shop() {
               <button
                 key={g.l}
                 onClick={() => navigate({ search: (p: ShopSearch) => ({ ...p, gender: g.v }) })}
-                className={`text-xs px-3.5 py-1.5 rounded-sm border transition font-medium ${active ? "bg-[var(--amber-deep)] text-background border-[var(--amber-deep)]" : "border-border hover:border-foreground/40"}`}
+                className={`text-[11px] uppercase tracking-[0.14em] px-4 py-2 border transition ${active ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground"}`}
               >
                 {g.l}
               </button>
@@ -120,20 +122,20 @@ function Shop() {
 
       {/* Brand chips */}
       {brands.length > 0 && (
-        <div className="mb-6">
-          <div className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)] mb-2">Inspired by</div>
+        <div className="mb-8">
+          <div className="eyebrow mb-3">In the spirit of</div>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => navigate({ search: (p: ShopSearch) => ({ ...p, brand: undefined }) })}
-              className={`text-xs px-3 py-1.5 rounded-sm border transition ${!brand ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground/40"}`}
+              className={`text-[11px] uppercase tracking-[0.14em] px-4 py-2 border transition ${!brand ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground"}`}
             >
-              All brands
+              All
             </button>
             {brands.map((b) => (
               <button
                 key={b}
                 onClick={() => navigate({ search: (p: ShopSearch) => ({ ...p, brand: brand === b ? undefined : b }) })}
-                className={`text-xs px-3 py-1.5 rounded-sm border transition ${brand === b ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground/40"}`}
+                className={`text-[11px] uppercase tracking-[0.14em] px-4 py-2 border transition ${brand === b ? "bg-foreground text-background border-foreground" : "border-border hover:border-foreground"}`}
               >
                 {b}
               </button>
