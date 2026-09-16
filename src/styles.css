@@ -236,6 +236,42 @@
   border-top: 1px solid var(--border);
 }
 
+/* Ink section — inverted editorial band used sparingly for contrast */
+@utility ink-section {
+  background: var(--ink);
+  color: var(--background);
+}
+
+/* Fine grain overlay so photography reads as print, not stock */
+@utility grain {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.16;
+    mix-blend-mode: multiply;
+    background-image: radial-gradient(color-mix(in oklab, var(--ink) 55%, transparent) 0.5px, transparent 0.5px);
+    background-size: 3px 3px;
+  }
+}
+
+/* Running house index */
+@utility marquee-track {
+  display: inline-flex;
+  min-width: 200%;
+  animation: marquee 38s linear infinite;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@utility num {
+  font-variant-numeric: tabular-nums;
+}
+
 @utility animate-fade-up {
   animation: fadeUp .6s cubic-bezier(.2,.7,.2,1) both;
 }
