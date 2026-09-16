@@ -158,8 +158,9 @@ function ProductPage() {
   const doAdd = () => {
     add({ product_id: p.id, slug: p.slug, name: p.name, price: Number(p.price), image_url: p.image_url, stock: p.stock, inspired_by_brand: p.inspired_by_brand ?? null, inspired_by_product: p.inspired_by_product ?? null }, qty);
     toast.success(`Added ${qty} × ${p.name} to cart`);
+    navigate({ to: "/checkout" });
   };
-  const doBuy = () => { doAdd(); navigate({ to: "/checkout" }); };
+  const doBuy = () => { doAdd(); };
 
   return (
     <div className="container-px max-w-7xl mx-auto py-10 sm:py-14">

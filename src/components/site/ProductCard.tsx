@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Heart } from "lucide-react";
 import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
@@ -28,6 +28,7 @@ const GENDER_LABEL: Record<string, string> = {
 
 export function ProductCard({ p }: { p: ProductCardData }) {
   const { add } = useCart();
+  const navigate = useNavigate();
   const { has, toggle } = useWishlist();
   const wished = has(p.id);
   const discount =
@@ -102,6 +103,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
               inspired_by_product: p.inspired_by_product ?? null,
             });
             toast.success(`${p.name} added to your bag`);
+            navigate({ to: "/checkout" });
           }}
           aria-label={`Add ${p.name} to bag`}
           className="btn-outline mt-3 w-full py-2.5"

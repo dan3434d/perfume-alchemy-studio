@@ -5,6 +5,7 @@ import { ShoppingAssistant } from "./ShoppingAssistant";
 import { SpinWheel } from "./SpinWheel";
 import { PromoBanner } from "./PromoBanner";
 import { PromoPopup } from "./PromoPopup";
+import { ExitIntentOffer } from "./ExitIntentOffer";
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
   return (
@@ -16,6 +17,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <ShoppingAssistant />
       <SpinWheel />
       <PromoPopup />
+      <ExitIntentOffer />
       <Toaster position="top-center" richColors />
     </div>
   );
