@@ -28,6 +28,7 @@ const GENDER_LABEL: Record<string, string> = {
 
 export function ProductCard({ p }: { p: ProductCardData }) {
   const { add } = useCart();
+  const navigate = useNavigate();
   const { has, toggle } = useWishlist();
   const wished = has(p.id);
   const discount =
