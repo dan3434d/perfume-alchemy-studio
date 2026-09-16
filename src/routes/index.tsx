@@ -6,6 +6,10 @@ import { ReviewsCarousel } from "@/components/site/ReviewsCarousel";
 import { SocialFeed } from "@/components/site/SocialFeed";
 import { TrustBar } from "@/components/site/TrustBar";
 import { productImage } from "@/lib/product-image";
+import heroPortrait from "@/assets/brand/woman-closeup.jpeg.asset.json";
+import portraitManLinen from "@/assets/brand/man-linen.jpeg.asset.json";
+import portraitWomanCurls from "@/assets/brand/woman-curls.jpeg.asset.json";
+import portraitWomanWaves from "@/assets/brand/woman-waves.jpeg.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
