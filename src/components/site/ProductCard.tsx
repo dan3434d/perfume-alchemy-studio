@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Heart, ShoppingBag, Star, Sparkles } from "lucide-react";
+import { Heart } from "lucide-react";
 import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
 import { useCart, useWishlist } from "@/hooks/useCart";
@@ -21,9 +21,9 @@ export type ProductCardData = {
 };
 
 const GENDER_LABEL: Record<string, string> = {
-  mens: "Men",
-  womens: "Women",
-  unisex: "Unisex",
+  mens: "For him",
+  womens: "For her",
+  unisex: "For everyone",
 };
 
 export function ProductCard({ p }: { p: ProductCardData }) {
@@ -39,60 +39,55 @@ export function ProductCard({ p }: { p: ProductCardData }) {
     : null;
 
   return (
-    <div className="group relative flex flex-col">
+    <article className="group relative flex flex-col">
       <Link
         to="/shop/$slug"
         params={{ slug: p.slug }}
-        className="relative block aspect-square bg-[var(--cream)] overflow-hidden rounded-sm"
+        className="relative block aspect-[4/5] bg-[var(--sand)] overflow-hidden border border-border"
       >
         <img
           src={productImage(p.image_url)}
           alt={p.name}
           loading="lazy"
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+          className="w-full h-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]"
         />
         {discount > 0 && (
-          <span className="absolute top-3 left-3 rounded-sm bg-foreground text-background text-[10px] font-semibold px-2 py-1 tracking-wider uppercase">
-            Save {discount}%
-          </span>
-        )}
-        {p.gender && (
-          <span className="absolute bottom-3 left-3 rounded-sm bg-background/95 text-foreground text-[10px] font-semibold px-2 py-1 tracking-wider uppercase border border-border">
-            {GENDER_LABEL[p.gender] ?? "Unisex"}
+          <span className="absolute top-0 left-0 bg-foreground text-background text-[10px] tracking-[0.18em] uppercase px-3 py-1.5">
+            −{discount}%
           </span>
         )}
         <button
           type="button"
           onClick={(e) => { e.preventDefault(); toggle(p.id); }}
-          aria-label="Toggle wishlist"
-          className="absolute top-3 right-3 grid place-items-center w-8 h-8 rounded-full bg-background/95 border border-border hover:bg-background"
+          aria-label={`${wished ? "Remove" : "Save"} ${p.name} ${wished ? "from" : "to"} wishlist`}
+          className="absolute top-2.5 right-2.5 grid place-items-center w-8 h-8 bg-background/90 border border-border hover:bg-background"
         >
-          <Heart className={`w-4 h-4 ${wished ? "fill-foreground text-foreground" : "text-foreground/60"}`} />
+          <Heart className={`w-3.5 h-3.5 ${wished ? "fill-foreground text-foreground" : "text-foreground/55"}`} />
         </button>
       </Link>
-      <div className="pt-3 flex flex-col gap-1.5 flex-1 min-w-0">
-        {p.category_name && (
-          <span className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground truncate">{p.category_name}</span>
-        )}
-        <Link to="/shop/$slug" params={{ slug: p.slug }} className="font-medium text-sm sm:text-base leading-snug hover:underline underline-offset-4 line-clamp-2">
+
+      <div className="pt-4 flex flex-col gap-1.5 flex-1 min-w-0">
+        <span className="eyebrow text-[10px]">
+          {p.category_name || GENDER_LABEL[p.gender ?? "unisex"]}
+        </span>
+        <Link
+          to="/shop/$slug"
+          params={{ slug: p.slug }}
+          className="font-display text-lg sm:text-xl leading-tight link-underline w-fit"
+        >
           {p.name}
         </Link>
         {inspiredFull && (
-          <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground w-fit">
-            <Sparkles className="w-3 h-3 shrink-0" />
-            <span className="truncate">Inspired by <span className="text-foreground font-medium">{inspiredFull}</span></span>
-          </span>
+          <p className="text-[11.5px] text-muted-foreground leading-snug">
+            In the spirit of <span className="text-foreground">{inspiredFull}</span>
+          </p>
         )}
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <Star className="w-3.5 h-3.5 fill-foreground text-foreground shrink-0" />
-          <span>{(p.rating ?? 4.8).toFixed(1)}</span>
-        </div>
-
-        <div className="flex items-baseline gap-2 min-w-0 flex-wrap mt-auto pt-1">
-          <span className="font-semibold text-sm sm:text-base">{formatAUD(p.price)}</span>
+        <div className="flex items-baseline gap-2 flex-wrap mt-auto pt-3">
+          <span className="text-sm">{formatAUD(p.price)}</span>
           {p.compare_at_price && p.compare_at_price > p.price && (
-            <span className="text-[11px] sm:text-xs text-muted-foreground line-through">{formatAUD(p.compare_at_price)}</span>
+            <span className="text-[11px] text-muted-foreground line-through">{formatAUD(p.compare_at_price)}</span>
           )}
+          <span className="text-[11px] text-muted-foreground">· 50ml</span>
         </div>
         <button
           onClick={() => {
@@ -106,16 +101,14 @@ export function ProductCard({ p }: { p: ProductCardData }) {
               inspired_by_brand: p.inspired_by_brand ?? null,
               inspired_by_product: p.inspired_by_product ?? null,
             });
-            toast.success(`${p.name} added to cart`);
+            toast.success(`${p.name} added to your bag`);
           }}
-          aria-label={`Add ${p.name} to cart`}
-          className="mt-2 w-full inline-flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-[0.08em] rounded-sm border border-foreground bg-transparent text-foreground py-2.5 hover:bg-foreground hover:text-background transition-colors"
+          aria-label={`Add ${p.name} to bag`}
+          className="btn-outline mt-3 w-full py-2.5"
         >
-          <ShoppingBag className="w-3.5 h-3.5" />
-          Add to cart
+          Add to bag
         </button>
-
       </div>
-    </div>
+    </article>
   );
 }

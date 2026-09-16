@@ -5,12 +5,12 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Open Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'Open Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Work Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Cormorant Garamond', ui-serif, Georgia, serif;
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
+  --radius-sm: calc(var(--radius) - 1px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
@@ -37,74 +37,80 @@
   --color-gold: var(--gold);
   --color-amber-deep: var(--amber-deep);
   --color-cream: var(--cream);
+  --color-ink: var(--ink);
+  --color-sand: var(--sand);
 
-  /* Shopify-Dawn-like: flat, quiet shadows */
   --shadow-soft: 0 1px 2px oklch(0.2 0.01 60 / 0.04);
-  --shadow-elegant: 0 2px 8px oklch(0.2 0.01 60 / 0.08);
+  --shadow-elegant: 0 2px 10px oklch(0.2 0.01 60 / 0.07);
   --shadow-card: 0 1px 2px oklch(0.2 0.01 60 / 0.04);
   --shadow-ring: 0 0 0 1px var(--border);
 }
 
 :root {
-  --radius: 0.25rem;
+  --radius: 0.125rem;
 
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.19 0.005 60);
+  /* Warm paper, ink and brass — an editorial house palette */
+  --background: oklch(0.985 0.006 85);
+  --foreground: oklch(0.21 0.012 65);
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.19 0.005 60);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.19 0.005 60);
+  --ink: oklch(0.21 0.012 65);
+  --sand: oklch(0.945 0.012 80);
 
-  /* Dawn-style: ink primary, colour used sparingly */
-  --primary: oklch(0.19 0.005 60);
-  --primary-foreground: oklch(1 0 0);
+  --card: oklch(0.995 0.003 85);
+  --card-foreground: oklch(0.21 0.012 65);
+  --popover: oklch(0.995 0.003 85);
+  --popover-foreground: oklch(0.21 0.012 65);
 
-  --secondary: oklch(0.965 0.003 80);
-  --secondary-foreground: oklch(0.28 0.006 60);
+  --primary: oklch(0.21 0.012 65);
+  --primary-foreground: oklch(0.985 0.006 85);
 
-  --muted: oklch(0.97 0.003 80);
-  --muted-foreground: oklch(0.52 0.008 60);
+  --secondary: oklch(0.955 0.009 82);
+  --secondary-foreground: oklch(0.3 0.012 65);
 
-  --accent: oklch(0.955 0.008 80);
-  --accent-foreground: oklch(0.28 0.008 60);
+  --muted: oklch(0.955 0.009 82);
+  --muted-foreground: oklch(0.5 0.012 68);
 
-  --destructive: oklch(0.55 0.2 25);
-  --destructive-foreground: oklch(1 0 0);
+  --accent: oklch(0.94 0.015 80);
+  --accent-foreground: oklch(0.3 0.012 65);
 
-  --border: oklch(0.9 0.004 80);
-  --input: oklch(0.9 0.004 80);
-  --ring: oklch(0.19 0.005 60);
+  --destructive: oklch(0.52 0.19 27);
+  --destructive-foreground: oklch(0.99 0 0);
 
-  --gold: oklch(0.66 0.11 70);
-  --amber-deep: oklch(0.45 0.1 55);
-  --cream: oklch(0.975 0.006 85);
+  --border: oklch(0.885 0.01 80);
+  --input: oklch(0.885 0.01 80);
+  --ring: oklch(0.21 0.012 65);
 
-  --gradient-warm: linear-gradient(180deg, oklch(0.985 0.004 85), oklch(0.97 0.006 80));
-  --gradient-gold: linear-gradient(180deg, oklch(0.24 0.005 60), oklch(0.17 0.005 60));
+  /* Brass, used sparingly as a signature */
+  --gold: oklch(0.65 0.09 70);
+  --amber-deep: oklch(0.52 0.09 62);
+  --cream: oklch(0.96 0.012 82);
+
+  --gradient-warm: linear-gradient(180deg, oklch(0.975 0.01 85), oklch(0.945 0.014 80));
+  --gradient-gold: linear-gradient(180deg, oklch(0.26 0.012 65), oklch(0.19 0.012 65));
 }
 
-
 .dark {
-  --background: oklch(0.18 0.02 60);
-  --foreground: oklch(0.97 0.01 80);
-  --card: oklch(0.22 0.02 60);
-  --card-foreground: oklch(0.97 0.01 80);
-  --popover: oklch(0.22 0.02 60);
-  --popover-foreground: oklch(0.97 0.01 80);
-  --primary: oklch(0.72 0.13 75);
-  --primary-foreground: oklch(0.2 0.02 60);
-  --secondary: oklch(0.28 0.02 60);
-  --secondary-foreground: oklch(0.97 0.01 80);
-  --muted: oklch(0.28 0.02 60);
-  --muted-foreground: oklch(0.7 0.02 70);
-  --accent: oklch(0.3 0.04 65);
-  --accent-foreground: oklch(0.97 0.01 80);
+  --background: oklch(0.18 0.012 65);
+  --foreground: oklch(0.96 0.008 82);
+  --card: oklch(0.22 0.012 65);
+  --card-foreground: oklch(0.96 0.008 82);
+  --popover: oklch(0.22 0.012 65);
+  --popover-foreground: oklch(0.96 0.008 82);
+  --primary: oklch(0.96 0.008 82);
+  --primary-foreground: oklch(0.2 0.012 65);
+  --secondary: oklch(0.27 0.012 65);
+  --secondary-foreground: oklch(0.96 0.008 82);
+  --muted: oklch(0.27 0.012 65);
+  --muted-foreground: oklch(0.72 0.012 72);
+  --accent: oklch(0.3 0.02 68);
+  --accent-foreground: oklch(0.96 0.008 82);
   --destructive: oklch(0.6 0.2 25);
   --destructive-foreground: oklch(0.97 0.01 80);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.72 0.13 75);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.72 0.09 70);
+  --sand: oklch(0.24 0.014 65);
+  --cream: oklch(0.24 0.014 65);
 }
 
 @layer base {
@@ -122,54 +128,74 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
-    font-feature-settings: "ss01", "cv11", "kern";
-    line-height: 1.6;
+    font-weight: 400;
+    line-height: 1.65;
   }
-  h1, h2, h3, h4, .font-display {
+  h1, h2, h3, .font-display {
     font-family: var(--font-display);
-    font-weight: 600;
+    font-weight: 400;
     letter-spacing: -0.01em;
-    line-height: 1.2;
+    line-height: 1.08;
     text-wrap: balance;
   }
-  h1 { font-weight: 700; }
-  strong, b { font-weight: 700; }
+  h4 { font-family: var(--font-sans); font-weight: 600; letter-spacing: 0.01em; }
 
-  h1 { font-size: clamp(2.125rem, 5vw + 0.5rem, 3.75rem); letter-spacing: -0.03em; }
-  h2 { font-size: clamp(1.625rem, 3vw + 0.5rem, 2.75rem); letter-spacing: -0.025em; }
-  h3 { font-size: clamp(1.25rem, 1.5vw + 0.5rem, 1.875rem); letter-spacing: -0.02em; }
-  h4 { font-size: clamp(1.075rem, 0.8vw + 0.75rem, 1.375rem); font-weight: 700; letter-spacing: -0.015em; }
+  h1 { font-size: clamp(2.5rem, 6vw + 0.5rem, 5rem); }
+  h2 { font-size: clamp(1.9rem, 3.4vw + 0.5rem, 3.25rem); }
+  h3 { font-size: clamp(1.35rem, 1.6vw + 0.6rem, 2rem); }
+  h4 { font-size: clamp(1rem, 0.6vw + 0.8rem, 1.125rem); }
   p { text-wrap: pretty; }
   a { transition: color .18s ease, opacity .18s ease; }
   img { -webkit-user-drag: none; }
-  ::selection { background: var(--gold); color: var(--primary-foreground); }
+  ::selection { background: var(--ink); color: var(--background); }
   :focus-visible {
-    outline: 2px solid var(--ring);
-    outline-offset: 2px;
-    border-radius: 6px;
+    outline: 1.5px solid var(--ring);
+    outline-offset: 3px;
   }
 }
 
 @layer components {
-  .container-px { @apply px-5 sm:px-8 lg:px-12; }
-  .section { @apply py-14 sm:py-20 lg:py-24; }
+  .container-px { @apply px-5 sm:px-8 lg:px-14; }
+  .section { @apply py-16 sm:py-24 lg:py-28; }
 
-  /* Dawn-style solid button */
-  .btn-gold {
-    background: var(--primary);
-    color: var(--primary-foreground);
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    border: 1px solid var(--primary);
-    box-shadow: none;
-    transition: background-color .18s ease, color .18s ease, opacity .18s ease;
-    border-radius: var(--radius);
+  /* Editorial eyebrow label */
+  .eyebrow {
+    font-size: 0.6875rem;
+    letter-spacing: 0.26em;
     text-transform: uppercase;
-    font-size: 0.8125rem;
-
+    font-weight: 500;
+    color: var(--muted-foreground);
   }
-  .btn-gold:hover { background: transparent; color: var(--primary); }
-  .btn-gold:active { opacity: 0.85; }
+  .eyebrow-brass { color: var(--amber-deep); }
+
+  .btn-gold,
+  .btn-ink {
+    background: var(--ink);
+    color: var(--background);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    border: 1px solid var(--ink);
+    text-transform: uppercase;
+    font-size: 0.6875rem;
+    border-radius: var(--radius);
+    box-shadow: none;
+    transition: background-color .22s ease, color .22s ease;
+  }
+  .btn-gold:hover,
+  .btn-ink:hover { background: transparent; color: var(--ink); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid color-mix(in oklab, var(--ink) 30%, transparent);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 0.6875rem;
+    border-radius: var(--radius);
+    transition: border-color .22s ease, background-color .22s ease;
+  }
+  .btn-outline:hover { border-color: var(--ink); background: color-mix(in oklab, var(--ink) 5%, transparent); }
 
   .card-elevated {
     background: var(--card);
@@ -178,19 +204,12 @@
     box-shadow: none;
     transition: border-color .2s ease;
   }
-  .card-elevated:hover {
-    border-color: color-mix(in oklab, var(--foreground) 35%, var(--border));
-  }
+  .card-elevated:hover { border-color: color-mix(in oklab, var(--foreground) 32%, var(--border)); }
 
-  .surface-warm {
-    background: var(--gradient-warm);
-    border: 1px solid var(--border);
-  }
-
+  .surface-warm { background: var(--sand); border: 1px solid var(--border); }
 
   .text-balance { text-wrap: balance; }
   .text-pretty { text-wrap: pretty; }
-
   .hairline { border-color: color-mix(in oklab, var(--foreground) 10%, transparent); }
 
   .link-underline {
@@ -203,15 +222,28 @@
   .link-underline:hover { background-size: 100% 1px; }
 }
 
+/* Woven brass lattice — a drawn motif, no photography */
+@utility lattice {
+  background-color: var(--sand);
+  background-image:
+    linear-gradient(45deg, color-mix(in oklab, var(--gold) 22%, transparent) 25%, transparent 25%, transparent 75%, color-mix(in oklab, var(--gold) 22%, transparent) 75%),
+    linear-gradient(-45deg, color-mix(in oklab, var(--gold) 22%, transparent) 25%, transparent 25%, transparent 75%, color-mix(in oklab, var(--gold) 22%, transparent) 75%);
+  background-size: 26px 26px;
+  background-position: 0 0, 13px 13px;
+}
+
+@utility rule-top {
+  border-top: 1px solid var(--border);
+}
+
 @utility animate-fade-up {
-  animation: fadeUp .5s cubic-bezier(.2,.7,.2,1) both;
+  animation: fadeUp .6s cubic-bezier(.2,.7,.2,1) both;
 }
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Smoother scrolling + nicer scrollbar */
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

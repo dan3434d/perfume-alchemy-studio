@@ -9,9 +9,6 @@ import { ProductCard, type ProductCardData } from "@/components/site/ProductCard
 import { Heart, ShoppingBag, Truck, RotateCcw, Lock, Minus, Plus, Star, Check, Sparkles, Leaf, Droplets, Package, FlaskConical } from "lucide-react";
 import { toast } from "sonner";
 import { trackView } from "@/hooks/useBrowsingHistory";
-import ingredientsImg from "@/assets/craft-ingredients.jpg";
-import blendingImg from "@/assets/craft-blending.jpg";
-import packingImg from "@/assets/craft-packing.jpg";
 
 const SITE = "https://www.abdulrahmanperfumes.com.au";
 
@@ -341,24 +338,22 @@ function ProductPage() {
       </section>
 
       {/* How we make it */}
-      <section className="mt-20 rounded-3xl bg-[var(--cream)]/40 border border-border p-6 sm:p-10">
-        <div className="text-center mb-10">
-          <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">Our craft</span>
-          <h2 className="font-display text-2xl sm:text-3xl mt-2">How we make every bottle</h2>
-          <p className="text-muted-foreground mt-3 max-w-xl mx-auto text-sm">
-            Three deliberate stages, from raw ingredient to the bottle on your dresser.
+      <section className="mt-20 border-y border-border py-14">
+        <div className="max-w-2xl">
+          <span className="eyebrow eyebrow-brass">Our craft</span>
+          <h2 className="font-display mt-3">How this bottle came to be</h2>
+          <p className="text-muted-foreground mt-4 text-sm leading-relaxed">
+            Three stages, no shortcuts — from raw oil in the Gulf to the box on your table in Sydney.
           </p>
         </div>
-        <div className="grid md:grid-cols-3 gap-6">
-          <CraftCard n="01" img={ingredientsImg} alt="Oud wood, dried roses and amber resin" title="Sourcing" body="Highest-grade oud, Bulgarian rose, Madagascar vanilla, ambergris and Gulf aromatic oils — chosen for purity and character." />
-          <CraftCard n="02" img={blendingImg} alt="Perfumer blending fragrance oils" title="Blending" body="Perfumers compose each fragrance by hand. Top, heart and base notes are layered, then aged so the oils marry into one balanced scent." />
-          <CraftCard n="03" img={packingImg} alt="Black perfume bottle being placed into a gift box" title="Bottled in Sydney" body="Every 50ml bottle is filled, QC-checked and gift-boxed in our Sydney atelier. Orders ship across Australia within 24 hours." />
+        <div className="grid md:grid-cols-3 gap-px bg-border border border-border mt-10">
+          <CraftCard n="01" title="Sourcing" body="Aged oud, Bulgarian rose absolute, Madagascan vanilla and ambergris accords — bought in smaller quantities, chosen for character over cost." />
+          <CraftCard n="02" title="Composition" body="Perfumers work by nose, layering top, heart and base. The blend is then left to rest for weeks so the oils settle into one another." />
+          <CraftCard n="03" title="Bottled in Sydney" body="Every 50ml is filled, checked against the reference batch and boxed by hand here, then sent across Australia within 24 hours." />
         </div>
-        <div className="text-center mt-8">
-          <Link to="/about" className="text-sm font-semibold underline-offset-4 hover:underline text-[var(--amber-deep)]">
-            Read more about our atelier →
-          </Link>
-        </div>
+        <Link to="/about" className="inline-block mt-8 text-sm link-underline">
+          Read the full story of the house →
+        </Link>
       </section>
 
       {/* FAQ on product */}
@@ -421,17 +416,12 @@ function ProfileRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function CraftCard({ n, img, alt, title, body }: { n: string; img: string; alt: string; title: string; body: string }) {
+function CraftCard({ n, title, body }: { n: string; title: string; body: string }) {
   return (
-    <div className="rounded-2xl overflow-hidden bg-background border border-border">
-      <div className="aspect-[4/3] overflow-hidden">
-        <img src={img} alt={alt} loading="lazy" className="w-full h-full object-cover" />
-      </div>
-      <div className="p-5">
-        <div className="text-xs font-mono text-[var(--amber-deep)]">{n}</div>
-        <h3 className="font-display text-lg mt-1">{title}</h3>
-        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{body}</p>
-      </div>
+    <div className="bg-background p-8">
+      <div className="eyebrow text-[var(--amber-deep)]">Stage {n}</div>
+      <h3 className="font-display text-2xl mt-3">{title}</h3>
+      <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{body}</p>
     </div>
   );
 }

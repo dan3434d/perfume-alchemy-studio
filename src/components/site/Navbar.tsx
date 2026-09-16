@@ -55,9 +55,13 @@ export function Navbar() {
   return (
     <header className={`sticky top-0 z-50 transition-all ${scrolled ? "bg-background/85 backdrop-blur-md border-b border-border" : "bg-background"}`}>
       <div className="container-px max-w-7xl mx-auto h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 group">
-          <span className="font-display text-xl tracking-tight">
-            Abdulrahman <span className="text-[var(--gold)]">Perfumes</span>
+        <Link to="/" className="flex items-center gap-3 group" aria-label="Abdulrahman Perfumes — home">
+          <span className="grid place-items-center w-9 h-9 border border-foreground font-display text-sm leading-none pt-0.5">
+            AP
+          </span>
+          <span className="leading-none">
+            <span className="block font-display text-xl">Abdulrahman</span>
+            <span className="block eyebrow text-[9px] mt-0.5">Perfumes · Sydney</span>
           </span>
         </Link>
 
