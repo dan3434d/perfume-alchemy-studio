@@ -71,68 +71,79 @@ function Home() {
 
   return (
     <>
-      {/* HERO — typographic, anchored by a real bottle photograph */}
-      <section className="border-b border-border">
-        <div className="container-px max-w-7xl mx-auto grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-16 items-center py-16 sm:py-24 lg:py-28">
-          <div className="animate-fade-up">
-            <span className="eyebrow eyebrow-brass">Abdulrahman · A Sydney fragrance house</span>
-            <h1 className="mt-6">
-              Scent is how<br />we say <em className="italic">welcome</em>.
-            </h1>
-            <p className="text-base sm:text-lg text-muted-foreground mt-7 max-w-lg leading-relaxed">
-              The name means <span className="text-foreground">servant of the Most Merciful</span>. In the
-              houses we grew up in, mercy looked like hospitality — and hospitality always arrived as
-              scent, before the tea and long before the conversation. We bottle that gesture:
-              Gulf-composed perfume, one honest price, sent from Sydney.
-            </p>
-            <div className="flex flex-wrap gap-3 mt-9">
-              <Link to="/shop" className="btn-ink px-8 py-3.5">Browse the collection</Link>
-              <Link to="/scent-discovery" className="btn-outline px-8 py-3.5">Find your scent</Link>
+      {/* HERO — a full-bleed plate with the house name set over it */}
+      <section className="relative border-b border-border">
+        <div className="relative grain min-h-[86vh] lg:min-h-[92vh] overflow-hidden bg-[var(--sand)]">
+          <img
+            src={heroPortrait.url}
+            alt="A woman holding a 50ml Abdulrahman eau de parfum in morning light"
+            className="absolute inset-0 w-full h-full object-cover object-center"
+            fetchPriority="high"
+          />
+          <div
+            aria-hidden
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(105deg, color-mix(in oklab, var(--ink) 82%, transparent) 0%, color-mix(in oklab, var(--ink) 55%, transparent) 42%, transparent 78%)",
+            }}
+          />
+          <div className="relative container-px max-w-7xl mx-auto min-h-[86vh] lg:min-h-[92vh] flex items-end pb-14 sm:pb-20">
+            <div className="animate-fade-up max-w-2xl text-[var(--background)]">
+              <span className="eyebrow text-[var(--gold)]">Est. Sydney · Composed in the UAE</span>
+              <h1 className="mt-6">
+                Scent is how<br />we say <em className="italic">welcome</em>.
+              </h1>
+              <p className="text-base sm:text-lg mt-7 max-w-xl leading-relaxed text-[var(--background)]/80">
+                The name means servant of the Most Merciful. In the houses we grew up in, hospitality
+                always arrived as scent — before the tea, long before the conversation. We bottle that
+                gesture: Gulf-composed perfume, one honest price, sent from Sydney.
+              </p>
+              <div className="flex flex-wrap gap-3 mt-9">
+                <Link
+                  to="/shop"
+                  className="px-8 py-3.5 text-[11px] uppercase tracking-[0.14em] font-medium bg-[var(--background)] text-[var(--ink)] border border-[var(--background)] hover:bg-transparent hover:text-[var(--background)] transition-colors"
+                >
+                  Browse the collection
+                </Link>
+                <Link
+                  to="/scent-discovery"
+                  className="px-8 py-3.5 text-[11px] uppercase tracking-[0.14em] font-medium border border-[var(--background)]/45 text-[var(--background)] hover:border-[var(--background)] transition-colors"
+                >
+                  Find your scent
+                </Link>
+              </div>
+              <dl className="grid grid-cols-3 gap-6 mt-12 pt-7 border-t border-[var(--background)]/25 max-w-lg">
+                {[
+                  { t: "Every bottle", v: "$41.50" },
+                  { t: "Volume", v: "50ml" },
+                  { t: "Take two", v: "−15%" },
+                ].map((s) => (
+                  <div key={s.t}>
+                    <dt className="eyebrow text-[10px] text-[var(--background)]/65">{s.t}</dt>
+                    <dd className="font-display num text-2xl mt-1.5">{s.v}</dd>
+                  </div>
+                ))}
+              </dl>
             </div>
-            <dl className="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-border max-w-lg">
-              <div>
-                <dt className="eyebrow text-[10px]">Every bottle</dt>
-                <dd className="font-display text-2xl mt-1.5">$41.50</dd>
-              </div>
-              <div>
-                <dt className="eyebrow text-[10px]">Volume</dt>
-                <dd className="font-display text-2xl mt-1.5">50ml</dd>
-              </div>
-              <div>
-                <dt className="eyebrow text-[10px]">Take two</dt>
-                <dd className="font-display text-2xl mt-1.5">−15%</dd>
-              </div>
-            </dl>
-          </div>
-
-          <div className="relative">
-            <div className="aspect-[4/5] overflow-hidden border border-border bg-[var(--sand)]">
-              <img
-                src={heroPortrait.url}
-                alt="A woman holding a 50ml Abdulrahman eau de parfum at her dressing table"
-                className="w-full h-full object-cover"
-                fetchPriority="high"
-              />
-            </div>
-            {hero ? (
-              <Link
-                to="/shop/$slug"
-                params={{ slug: hero.slug }}
-                className="flex items-baseline justify-between gap-4 mt-4 group"
-              >
-                <div>
-                  <span className="eyebrow text-[10px]">This week on the table</span>
-                  <div className="font-display text-xl mt-1 group-hover:underline underline-offset-4">{hero.name}</div>
-                </div>
-                <span className="text-sm whitespace-nowrap">$41.50</span>
-              </Link>
-            ) : (
-              <div className="mt-4 eyebrow text-[10px]">Eau de parfum · 50ml · $41.50</div>
-            )}
           </div>
         </div>
+        {hero && (
+          <Link
+            to="/shop/$slug"
+            params={{ slug: hero.slug }}
+            className="group block border-t border-border bg-background"
+          >
+            <div className="container-px max-w-7xl mx-auto py-5 flex items-baseline justify-between gap-6">
+              <span className="eyebrow text-[10px]">This week on the table</span>
+              <span className="font-display text-xl sm:text-2xl link-underline">{hero.name}</span>
+              <span className="num text-sm whitespace-nowrap hidden sm:block">$41.50 · 50ml</span>
+            </div>
+          </Link>
+        )}
       </section>
 
+      <HouseMarquee />
       <TrustBar />
 
       {/* MANIFESTO */}
