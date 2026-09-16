@@ -17,6 +17,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <ShoppingAssistant />
       <SpinWheel />
       <PromoPopup />
+      <ExitIntentOffer />
       <Toaster position="top-center" richColors />
     </div>
   );
