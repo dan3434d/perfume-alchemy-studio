@@ -5,6 +5,8 @@ import { ProductCard, type ProductCardData } from "@/components/site/ProductCard
 import { ReviewsCarousel } from "@/components/site/ReviewsCarousel";
 import { SocialFeed } from "@/components/site/SocialFeed";
 import { TrustBar } from "@/components/site/TrustBar";
+import { HouseMarquee } from "@/components/site/HouseMarquee";
+import { SignatureIndex } from "@/components/site/SignatureIndex";
 import heroPortrait from "@/assets/brand/woman-closeup.jpeg.asset.json";
 import portraitManLinen from "@/assets/brand/man-linen.jpeg.asset.json";
 import portraitWomanCurls from "@/assets/brand/woman-curls.jpeg.asset.json";
