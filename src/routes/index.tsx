@@ -157,6 +157,37 @@ function Home() {
         </div>
       </section>
 
+      {/* WORN — people, not campaigns */}
+      <section className="section container-px max-w-7xl mx-auto">
+        <div className="max-w-2xl">
+          <span className="eyebrow eyebrow-brass">Worn, not staged</span>
+          <h2 className="font-display mt-3">Morning light, one bottle on the dresser</h2>
+          <p className="text-muted-foreground mt-4 leading-relaxed">
+            No campaign set, no marble plinth. Our bottles live where people get ready — beside the
+            jewellery dish, next to the kettle, picked up on the way out the door.
+          </p>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-px bg-border border border-border mt-10">
+          {[
+            { img: portraitWomanCurls, alt: "A woman smiling as she holds a bottle of Abdulrahman eau de parfum", cap: "The first wear", body: "Warm, close to the skin, and still there at dinner." },
+            { img: portraitManLinen, alt: "A man in linen holding a bottle of Abdulrahman eau de parfum", cap: "For him, for her", body: "Most of our blends are worn by whoever reaches for them first." },
+            { img: portraitWomanWaves, alt: "A woman holding a bottle of Abdulrahman eau de parfum in morning light", cap: "Every day", body: "One price, so the good bottle isn't saved for later." },
+          ].map((p) => (
+            <figure key={p.cap} className="bg-background">
+              <div className="aspect-[4/5] overflow-hidden">
+                <img src={p.img.url} alt={p.alt} loading="lazy" className="w-full h-full object-cover" />
+              </div>
+              <figcaption className="p-6">
+                <div className="eyebrow text-[10px]">{p.cap}</div>
+                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{p.body}</p>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+
+
       {/* COLLECTION */}
       <section className="section container-px max-w-7xl mx-auto">
         <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6 mb-10">
