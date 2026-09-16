@@ -220,41 +220,75 @@ function Home() {
         )}
       </section>
 
-      {/* HONEST PRICING */}
-      <section className="border-y border-border">
+      {/* HONEST PRICING — inverted band */}
+      <section className="ink-section border-y border-border">
         <div className="container-px max-w-7xl mx-auto grid lg:grid-cols-2">
           <div className="py-16 lg:py-24 lg:pr-16">
-            <span className="eyebrow eyebrow-brass">Why one price</span>
+            <span className="eyebrow text-[var(--gold)]">Why one price</span>
             <h2 className="font-display mt-4">No campaign to pay for. No boutique rent. No theatre.</h2>
-            <p className="text-muted-foreground mt-6 leading-relaxed">
+            <p className="mt-6 leading-relaxed text-[var(--background)]/75">
               A designer bottle carries a model, a magazine spread and a shopfront on its shoulders before
               it reaches you. Ours carries the oil, the glass and the postage. That is the whole difference —
               not a secret, just arithmetic.
             </p>
-            <p className="text-muted-foreground mt-4 leading-relaxed">
+            <p className="mt-4 leading-relaxed text-[var(--background)]/75">
               We compose our own formulas in the spirit of fragrances people already love. They are not
               copies and we are not affiliated with any designer house. They are ours, and they are honest
               about what they cost.
             </p>
             <Link to="/about" className="inline-block mt-8 text-sm link-underline">Read how we make them →</Link>
           </div>
-          <div className="lg:border-l border-border py-16 lg:py-24 lg:pl-16 flex flex-col justify-center gap-8">
-            <div className="flex items-baseline justify-between border-b border-border pb-5">
-              <span className="text-sm text-muted-foreground">A designer counter</span>
-              <span className="font-display text-3xl text-muted-foreground line-through">$99 – $380</span>
+          <div className="lg:border-l border-[var(--background)]/20 py-16 lg:py-24 lg:pl-16 flex flex-col justify-center gap-8">
+            <div className="flex items-baseline justify-between border-b border-[var(--background)]/20 pb-5">
+              <span className="text-sm text-[var(--background)]/65">A designer counter</span>
+              <span className="font-display num text-3xl text-[var(--background)]/55 line-through">$99 – $380</span>
             </div>
-            <div className="flex items-baseline justify-between border-b border-border pb-5">
+            <div className="flex items-baseline justify-between border-b border-[var(--background)]/20 pb-5">
               <span className="text-sm">Abdulrahman, 50ml</span>
-              <span className="font-display text-4xl">$41.50</span>
+              <span className="font-display num text-4xl text-[var(--gold)]">$41.50</span>
             </div>
             <div className="flex items-baseline justify-between">
               <span className="text-sm">Two bottles, together</span>
-              <span className="font-display text-3xl">$70.55</span>
+              <span className="font-display num text-3xl">$70.55</span>
             </div>
-            <Link to="/shop" className="btn-ink px-8 py-3.5 text-center">Shop the collection</Link>
+            <Link
+              to="/shop"
+              className="px-8 py-3.5 text-center text-[11px] uppercase tracking-[0.14em] font-medium bg-[var(--background)] text-[var(--ink)] border border-[var(--background)] hover:bg-transparent hover:text-[var(--background)] transition-colors"
+            >
+              Shop the collection
+            </Link>
           </div>
         </div>
       </section>
+
+      {/* THE RITUAL — how to wear it */}
+      <section className="section container-px max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-[0.8fr_1.2fr] gap-10 lg:gap-16">
+          <div>
+            <span className="eyebrow eyebrow-brass">The ritual</span>
+            <h2 className="font-display mt-3">How to wear it, the way we were taught</h2>
+            <p className="text-muted-foreground mt-5 leading-relaxed">
+              Concentrated oils behave differently to a supermarket spray. A little, in the right place,
+              carries further and lasts longer.
+            </p>
+          </div>
+          <ol className="grid sm:grid-cols-2 gap-px bg-border border border-border">
+            {[
+              { n: "01", t: "Warm skin first", d: "Straight out of the shower, still slightly damp. Oil holds onto moisture, not dry skin." },
+              { n: "02", t: "Pulse points only", d: "Wrists, the base of the neck, behind the ears. Two presses is plenty for a full day." },
+              { n: "03", t: "Never rub it in", d: "Rubbing crushes the top notes. Let it dry in its own time and the opening stays intact." },
+              { n: "04", t: "Store it dark", d: "Away from the window and the bathroom steam. A drawer keeps a bottle good for years." },
+            ].map((s) => (
+              <li key={s.n} className="bg-background p-7 sm:p-8">
+                <span className="num eyebrow text-[10px] text-[var(--amber-deep)]">{s.n}</span>
+                <h3 className="font-display text-xl mt-3">{s.t}</h3>
+                <p className="text-sm text-muted-foreground mt-2.5 leading-relaxed">{s.d}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
 
       {/* SCENT FAMILIES */}
       <section className="section container-px max-w-7xl mx-auto">
