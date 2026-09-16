@@ -198,7 +198,7 @@ function Home() {
         </div>
       </section>
 
-
+      <SignatureIndex items={featured.data ?? []} />
 
       {/* COLLECTION */}
       <section className="section container-px max-w-7xl mx-auto">
