@@ -103,6 +103,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
               inspired_by_product: p.inspired_by_product ?? null,
             });
             toast.success(`${p.name} added to your bag`);
+            navigate({ to: "/checkout" });
           }}
           aria-label={`Add ${p.name} to bag`}
           className="btn-outline mt-3 w-full py-2.5"
