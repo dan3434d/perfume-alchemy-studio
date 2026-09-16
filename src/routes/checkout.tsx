@@ -376,6 +376,18 @@ function Checkout() {
               ))}
             </div>
 
+            <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+              <Link to="/cart" className="link-underline">Edit bag</Link>
+              <Link to="/shop" className="link-underline">Keep shopping</Link>
+            </div>
+
+            {count === 1 && (
+              <div className="rounded-xl border border-[var(--amber-deep)]/40 bg-[var(--amber-deep)]/5 px-3 py-2.5 text-xs">
+                <span className="font-semibold text-[var(--amber-deep)]">One more bottle unlocks {BULK_DISCOUNT_PERCENT}% off</span>
+                <span className="text-muted-foreground"> — you'd save {formatAUD(+(subtotal * 2 * BULK_DISCOUNT_PERCENT / 100).toFixed(2))} on two.</span>
+              </div>
+            )}
+
             {count >= BULK_DISCOUNT_MIN_QTY && (
               <div className="flex items-center gap-2 rounded-xl bg-[var(--amber-deep)]/10 px-3 py-2 text-xs text-[var(--amber-deep)] font-semibold">
                 <BadgePercent className="w-4 h-4" /> Buy {BULK_DISCOUNT_MIN_QTY}+ unlocked — {BULK_DISCOUNT_PERCENT}% off applied
