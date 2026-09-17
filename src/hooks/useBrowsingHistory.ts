@@ -20,6 +20,7 @@ export function trackView(entry: Omit<BrowseEntry, "at">) {
   const list = readHistory().filter((e) => e.product_id !== entry.product_id);
   list.unshift({ ...entry, at: Date.now() });
   localStorage.setItem(KEY, JSON.stringify(list.slice(0, MAX)));
+  window.dispatchEvent(new Event("ap-pricing-update"));
 }
 
 export function topBrands(limit = 3): string[] {

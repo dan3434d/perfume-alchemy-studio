@@ -18,7 +18,7 @@ export const Route = createFileRoute("/shop/")({
   head: () => ({
     meta: [
       { title: "Shop all perfumes — Abdulrahman Perfumes" },
-      { name: "description", content: "Browse the complete Abdulrahman collection — designer-inspired oud, amber, fresh and floral fragrances. Every 50ml eau de parfum is $41.50. Buy 2, save 15%." },
+      { name: "description", content: "Browse the complete Abdulrahman collection — designer-inspired oud, amber, fresh and floral fragrances with visible offers on every 50ml bottle." },
       { property: "og:title", content: "Shop all perfumes — Abdulrahman Perfumes" },
       { property: "og:description", content: "Designer-inspired UAE-blended fragrances. Filter by brand, category and price. Free metro shipping over $50." },
       { property: "og:url", content: "https://www.abdulrahmanperfumes.com.au/shop" },
@@ -91,8 +91,8 @@ function Shop() {
         <span className="eyebrow eyebrow-brass">The collection</span>
         <h1 className="mt-4">Every bottle in the house</h1>
         <p className="text-muted-foreground mt-4 max-w-xl">
-          {filtered.length} fragrance{filtered.length === 1 ? "" : "s"}, all 50ml eau de parfum, all $41.50.
-          Take two and 15% comes off on its own.
+          {filtered.length} fragrance{filtered.length === 1 ? "" : "s"}, all 50ml eau de parfum with current offers shown clearly.
+          Take two and your best available price appears automatically.
         </p>
       </header>
 

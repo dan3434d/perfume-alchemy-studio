@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Heart } from "lucide-react";
-import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
 import { useCart, useWishlist } from "@/hooks/useCart";
 import { toast } from "sonner";
+import { OfferPrice } from "./OfferPrice";
+import { usePricingOffer } from "@/hooks/usePricingOffer";
 
 export type ProductCardData = {
   id: string;
@@ -31,10 +32,8 @@ export function ProductCard({ p }: { p: ProductCardData }) {
   const navigate = useNavigate();
   const { has, toggle } = useWishlist();
   const wished = has(p.id);
-  const discount =
-    p.compare_at_price && p.compare_at_price > p.price
-      ? Math.round(100 - (Number(p.price) / Number(p.compare_at_price)) * 100)
-      : 0;
+  const offer = usePricingOffer(Number(p.price));
+  const discount = offer.savingsPercent;
   const inspiredFull = p.inspired_by_brand
     ? `${p.inspired_by_brand}${p.inspired_by_product ? ` ${p.inspired_by_product}` : ""}`
     : null;
@@ -83,20 +82,14 @@ export function ProductCard({ p }: { p: ProductCardData }) {
             In the spirit of <span className="text-foreground">{inspiredFull}</span>
           </p>
         )}
-        <div className="flex items-baseline gap-2 flex-wrap mt-auto pt-3">
-          <span className="text-sm">{formatAUD(p.price)}</span>
-          {p.compare_at_price && p.compare_at_price > p.price && (
-            <span className="text-[11px] text-muted-foreground line-through">{formatAUD(p.compare_at_price)}</span>
-          )}
-          <span className="text-[11px] text-muted-foreground">· 50ml</span>
-        </div>
+        <div className="mt-auto pt-3"><OfferPrice basePrice={Number(p.price)} /></div>
         <button
           onClick={() => {
             add({
               product_id: p.id,
               slug: p.slug,
               name: p.name,
-              price: p.price,
+              price: offer.price,
               image_url: p.image_url,
               stock: p.stock,
               inspired_by_brand: p.inspired_by_brand ?? null,

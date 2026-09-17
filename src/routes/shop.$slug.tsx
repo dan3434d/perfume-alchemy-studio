@@ -11,6 +11,8 @@ import { ReviewsCarousel } from "@/components/site/ReviewsCarousel";
 import { Heart, ShoppingBag, Truck, RotateCcw, Lock, Minus, Plus, Star, Check, Sparkles, Leaf, Droplets, Package, FlaskConical, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { trackView } from "@/hooks/useBrowsingHistory";
+import { OfferPrice } from "@/components/site/OfferPrice";
+import { usePricingOffer } from "@/hooks/usePricingOffer";
 
 const SITE = "https://www.abdulrahmanperfumes.com.au";
 
@@ -146,6 +148,7 @@ function ProductPage() {
 
 
   const p = product.data;
+  const offer = usePricingOffer(Number(p.price), qty);
   useEffect(() => {
     if (p?.id) trackView({ product_id: p.id, slug: p.slug, brand: p.inspired_by_brand ?? null, category_slug: p.categories?.slug ?? null });
   }, [p?.id, p?.slug, p?.inspired_by_brand, p?.categories?.slug]);
@@ -158,7 +161,7 @@ function ProductPage() {
   const savings = p.retail_price ? Number(p.retail_price) - Number(p.price) : null;
 
   const doAdd = () => {
-    add({ product_id: p.id, slug: p.slug, name: p.name, price: Number(p.price), image_url: p.image_url, stock: p.stock, inspired_by_brand: p.inspired_by_brand ?? null, inspired_by_product: p.inspired_by_product ?? null }, qty);
+    add({ product_id: p.id, slug: p.slug, name: p.name, price: offer.price, image_url: p.image_url, stock: p.stock, inspired_by_brand: p.inspired_by_brand ?? null, inspired_by_product: p.inspired_by_product ?? null }, qty);
     toast.success(`Added ${qty} × ${p.name} to cart`);
     navigate({ to: "/checkout" });
   };
@@ -224,13 +227,7 @@ function ProductPage() {
             </div>
           </div>
 
-          <div className="flex items-baseline gap-3 flex-wrap">
-            <span className="font-display text-3xl">{formatAUD(p.price)}</span>
-            {p.compare_at_price && Number(p.compare_at_price) > Number(p.price) && (
-              <span className="text-lg text-muted-foreground line-through">{formatAUD(p.compare_at_price)}</span>
-            )}
-            <span className="text-xs text-muted-foreground">AUD · incl. taxes</span>
-          </div>
+          <div><OfferPrice basePrice={Number(p.price)} cartQuantity={qty} large /><span className="text-xs text-muted-foreground">AUD · incl. taxes</span></div>
           {savings && savings > 0 && (
             <div className="inline-flex items-center gap-2 text-xs px-3 py-1.5 rounded-full bg-[var(--amber-deep)]/10 text-[var(--amber-deep)] font-semibold">
               You save {formatAUD(savings)} vs the designer original
@@ -284,7 +281,7 @@ function ProductPage() {
             <div className="min-w-0">
               <div className="text-sm font-semibold">Take 2 bottles and save 15%</div>
               <div className="text-xs text-muted-foreground">
-                2 × 50ml for {formatAUD(Number(p.price) * 2 * 0.85)} instead of {formatAUD(Number(p.price) * 2)} — free metro shipping included.
+                2 × 50ml for {formatAUD(Math.max(35, Number(p.price) * 0.85) * 2)} instead of {formatAUD(110)} — free metro shipping included.
               </div>
             </div>
           </button>

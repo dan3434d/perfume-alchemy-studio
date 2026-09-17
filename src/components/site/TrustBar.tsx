@@ -4,7 +4,7 @@ const ITEMS = [
   { t: "Free AU shipping over $50", d: "Sent within 24 hours from Sydney" },
   { t: "4.9 / 5 from 2,400+ people", d: "Most of them come back" },
   { t: "30 days to change your mind", d: "Unopened bottles, no questions" },
-  { t: "Every bottle 50ml", d: "Eau de parfum strength, one price" },
+  { t: "Every bottle 50ml", d: "Current offers shown before checkout" },
 ];
 
 export function TrustBar({ compact = false }: { compact?: boolean }) {
@@ -26,7 +26,7 @@ export function ValueStrip() {
   return (
     <div className="inline-flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
       <span className="inline-flex items-center gap-1.5 font-medium text-[var(--amber-deep)]">
-        <Sparkles className="w-3.5 h-3.5" /> One price, every scent — $41.50
+        <Sparkles className="w-3.5 h-3.5" /> Current offers shown clearly
       </span>
       <span>50ml eau de parfum</span>
       <span>8–12h wear</span>

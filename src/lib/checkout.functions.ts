@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import Stripe from "stripe";
+import { createHash } from "crypto";
 import { computeBulkDiscountPercent, computeShipping, countryNameToCode } from "./pricing";
 
 
@@ -31,7 +32,35 @@ const CheckoutSchema = z.object({
   shipping_method: z.enum(["standard", "express", "worldwide"]).default("standard"),
   user_id: z.string().uuid().nullable().optional(),
   origin: z.string().url(),
+  pricing_quote_id: z.string().uuid().optional(),
+  visitor_key: z.string().min(8).max(100).optional(),
 });
+
+async function getValidatedQuote(supabaseAdmin: any, data: z.infer<typeof CheckoutSchema>) {
+  if (!data.pricing_quote_id || !data.visitor_key) return null;
+  const visitorHash = createHash("sha256").update(data.visitor_key).digest("hex");
+  const { data: quote, error } = await supabaseAdmin
+    .from("pricing_quotes")
+    .select("id,visitor_key_hash,product_prices,reference_prices,expires_at")
+    .eq("id", data.pricing_quote_id)
+    .maybeSingle();
+  if (error) throw error;
+  if (!quote || quote.visitor_key_hash !== visitorHash || new Date(quote.expires_at).getTime() <= Date.now()) {
+    throw new Error("Your offer expired. Refresh checkout to get the latest price.");
+  }
+  const quotedPrices = quote.product_prices as Record<string, { price?: number; quantity?: number }>;
+  const requestedQuantities = data.lines.reduce<Record<string, number>>((all, line) => {
+    all[line.product_id] = (all[line.product_id] ?? 0) + line.quantity;
+    return all;
+  }, {});
+  const exactBag = Object.entries(requestedQuantities).every(([productId, quantity]) =>
+    quotedPrices?.[productId]
+    && quotedPrices[productId].quantity === quantity
+    && Number.isFinite(Number(quotedPrices[productId].price)),
+  ) && Object.keys(quotedPrices ?? {}).length === new Set(data.lines.map((line) => line.product_id)).size;
+  if (!exactBag) throw new Error("Your bag changed. Refresh checkout to update your offer.");
+  return quote;
+}
 
 
 export function getStripe() {
@@ -171,6 +200,7 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const stripe = getStripe();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const quote = await getValidatedQuote(supabaseAdmin, data);
 
     const productIds = [...new Set(data.lines.map((line) => line.product_id))];
     const { data: products, error: productsError } = await supabaseAdmin
@@ -193,7 +223,8 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
         name: product.name,
         display_name: `${product.name}${inspiredSuffix}`,
         slug: product.slug,
-        price: Number(product.price),
+        price: Number((quote?.product_prices as any)?.[product.id]?.price ?? product.price),
+        reference_price: Number((quote?.product_prices as any)?.[product.id]?.referencePrice ?? 55),
         quantity: line.quantity,
         image_url: product.image_url,
       };
@@ -204,7 +235,7 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
     const submittedCode = (data.discount_code || "").toUpperCase();
     const isFreeShipping = submittedCode === "FREESHIPPING";
     const codePercent = submittedCode === "WELCOME5" ? 5 : (isFreeShipping ? 0 : (data.discount_percent || 0));
-    const discountPercent = computeBulkDiscountPercent(totalQty, codePercent);
+    const discountPercent = quote ? 0 : computeBulkDiscountPercent(totalQty, codePercent);
     const discountAmount = +(subtotal * discountPercent / 100).toFixed(2);
     const subtotalAfterDiscount = +(subtotal - discountAmount).toFixed(2);
     const rawShip = computeShipping(subtotalAfterDiscount, {
@@ -249,6 +280,7 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
         notes: data.notes || null,
         status: "pending",
         payment_status: "unpaid",
+        pricing_quote_id: quote?.id ?? null,
       })
       .select("id")
       .single();
@@ -260,6 +292,8 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
       product_name: line.display_name,
       product_slug: line.slug,
       unit_price: line.price,
+      reference_price: line.reference_price,
+      offer_savings: +((line.reference_price - line.price) * line.quantity).toFixed(2),
       quantity: line.quantity,
       line_total: +(line.price * line.quantity).toFixed(2),
       image_url: line.image_url,
@@ -354,6 +388,7 @@ export const createEmbeddedStripeCheckout = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const stripe = getStripe();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const quote = await getValidatedQuote(supabaseAdmin, data);
 
     const productIds = [...new Set(data.lines.map((l) => l.product_id))];
     const { data: products, error: productsError } = await supabaseAdmin
@@ -373,7 +408,9 @@ export const createEmbeddedStripeCheckout = createServerFn({ method: "POST" })
         : "";
       return {
         product_id: p.id, name: p.name, display_name: `${p.name}${inspiredSuffix}`, slug: p.slug,
-        price: Number(p.price), quantity: l.quantity, image_url: p.image_url,
+        price: Number((quote?.product_prices as any)?.[p.id]?.price ?? p.price),
+        reference_price: Number((quote?.product_prices as any)?.[p.id]?.referencePrice ?? 55),
+        quantity: l.quantity, image_url: p.image_url,
       };
     });
 
@@ -382,7 +419,7 @@ export const createEmbeddedStripeCheckout = createServerFn({ method: "POST" })
     const submittedCode = (data.discount_code || "").toUpperCase();
     const isFreeShipping = submittedCode === "FREESHIPPING";
     const codePercent = submittedCode === "WELCOME5" ? 5 : (isFreeShipping ? 0 : (data.discount_percent || 0));
-    const discountPercent = computeBulkDiscountPercent(totalQty, codePercent);
+    const discountPercent = quote ? 0 : computeBulkDiscountPercent(totalQty, codePercent);
     const discountAmount = +(subtotal * discountPercent / 100).toFixed(2);
     const subtotalAfterDiscount = +(subtotal - discountAmount).toFixed(2);
     const rawShip = computeShipping(subtotalAfterDiscount, {
@@ -412,7 +449,7 @@ export const createEmbeddedStripeCheckout = createServerFn({ method: "POST" })
         shipping_postcode: data.shipping_postcode, shipping_country: data.shipping_country,
         subtotal, shipping, total,
         discount_code: discountCode, discount_percent: discountPercent, discount_amount: discountAmount,
-        notes: data.notes || null, status: "pending", payment_status: "unpaid",
+        notes: data.notes || null, status: "pending", payment_status: "unpaid", pricing_quote_id: quote?.id ?? null,
       })
       .select("id")
       .single();
@@ -421,6 +458,7 @@ export const createEmbeddedStripeCheckout = createServerFn({ method: "POST" })
     const { error: itemsError } = await supabaseAdmin.from("order_items").insert(orderLines.map((l) => ({
       order_id: order.id, product_id: l.product_id, product_name: l.display_name,
       product_slug: l.slug, unit_price: l.price, quantity: l.quantity,
+      reference_price: l.reference_price, offer_savings: +((l.reference_price - l.price) * l.quantity).toFixed(2),
       line_total: +(l.price * l.quantity).toFixed(2), image_url: l.image_url,
     })));
     if (itemsError) throw itemsError;

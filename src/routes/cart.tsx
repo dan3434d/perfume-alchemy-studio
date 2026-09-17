@@ -14,6 +14,7 @@ import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, BadgePercent } from "luci
 import { FreeShipMeter } from "@/components/site/FreeShipMeter";
 import { CartUpsell } from "@/components/site/CartUpsell";
 import { TrustBar } from "@/components/site/TrustBar";
+import { useCartPricing } from "@/hooks/useCartPricing";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({ meta: [{ title: "Cart — Abdulrahman Perfumes" }] }),
@@ -21,11 +22,12 @@ export const Route = createFileRoute("/cart")({
 });
 
 function CartPage() {
-  const { lines, updateQty, remove, subtotal, count } = useCart();
+  const { lines, updateQty, remove, count } = useCart();
+  const { pricedLines, subtotal, quote } = useCartPricing(lines);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const bulkPercent = computeBulkDiscountPercent(count);
+  const bulkPercent = quote ? 0 : computeBulkDiscountPercent(count);
   const discountAmount = +(subtotal * bulkPercent / 100).toFixed(2);
   const subtotalAfterDiscount = +(subtotal - discountAmount).toFixed(2);
   const shipping = subtotalAfterDiscount === 0 ? 0 : subtotalAfterDiscount >= FREE_SHIPPING_THRESHOLD ? 0 : METRO_SHIPPING_FEE;
@@ -51,7 +53,7 @@ function CartPage() {
           <div className="lg:col-span-2">
             <FreeShipMeter amount={subtotalAfterDiscount} count={count} />
             <div className="divide-y divide-border border-y border-border mt-6">
-            {lines.map((l) => (
+            {pricedLines.map((l) => (
               <div key={l.product_id} className="py-5 flex gap-4">
                 <Link to="/shop/$slug" params={{ slug: l.slug }} className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl overflow-hidden bg-[var(--cream)] flex-shrink-0">
 
@@ -66,7 +68,10 @@ function CartPage() {
                         <span className="font-semibold">{l.inspired_by_brand}{l.inspired_by_product ? ` ${l.inspired_by_product}` : ""}</span>
                       </div>
                     )}
-                    <div className="text-sm text-muted-foreground mt-1">{formatAUD(l.price)}</div>
+                    <div className="mt-1" aria-live="polite">
+                      <span className="text-sm font-medium">{formatAUD(l.price)}</span>
+                      {l.referencePrice > l.price && <span className="ml-2 text-xs text-muted-foreground line-through">{formatAUD(l.referencePrice)}</span>}
+                    </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="inline-flex items-center rounded-full border border-border" role="group" aria-label={`Quantity for ${l.name}`}>
@@ -96,6 +101,12 @@ function CartPage() {
           <aside className="lg:sticky lg:top-24 h-fit">
             <div className="card-elevated p-6 space-y-4">
               <h2 className="font-display text-xl">Order summary</h2>
+              {quote && quote.savings > 0 && (
+                <div className="border-y border-border py-3" aria-live="polite">
+                  <div className="eyebrow text-[9px] text-[var(--amber-deep)]">Your current offer</div>
+                  <div className="mt-1 flex justify-between text-sm"><span>You save</span><strong>{formatAUD(quote.savings)}</strong></div>
+                </div>
+              )}
               <Row k="Subtotal" v={formatAUD(subtotal)} />
               {bulkPercent > 0 && (
                 <Row k={`Buy ${BULK_DISCOUNT_MIN_QTY}+ discount (−${bulkPercent}%)`} v={`− ${formatAUD(discountAmount)}`} accent />

@@ -8,3 +8,7 @@
 - [x] Verify the product-to-payment journey reaches the live on-site payment form.
 - [x] Add a branded trust seal and stronger checkout reassurance.
 - [ ] Complete a paid test transaction (blocked because the connected payment account is in live mode and would create a real charge).
+
+- [ ] Implement bounded dynamic pricing quotes and visible offer updates across the store.
+- [ ] Keep displayed, charged, recorded, and emailed prices consistent.
+- [ ] Validate dynamic pricing on desktop, mobile, and checkout.
