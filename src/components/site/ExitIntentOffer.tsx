@@ -4,6 +4,7 @@ import { X, Gift } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { useDiscount, spinShown, markSpinShown } from "@/hooks/useDiscount";
 import { formatAUD } from "@/lib/format";
+import { announcePricingUpdate } from "@/hooks/usePricingOffer";
 
 const SHOWN_KEY = "ap_exit_offer_v1";
 
@@ -29,6 +30,7 @@ export function ExitIntentOffer() {
       localStorage.setItem(SHOWN_KEY, "1");
       markSpinShown(); // never stack the wheel on top of this
       apply({ code: "WELCOME5", percent: 5 });
+      announcePricingUpdate();
       setOpen(true);
     };
 
