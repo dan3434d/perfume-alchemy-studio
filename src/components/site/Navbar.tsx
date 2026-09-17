@@ -14,6 +14,9 @@ const NAV = [
   { to: "/contact", label: "Contact" },
 ];
 
+const linkClass =
+  "relative text-[13px] font-medium uppercase tracking-[0.08em] text-foreground/75 hover:text-foreground transition-colors after:absolute after:left-0 after:-bottom-1 after:h-px after:w-0 after:bg-foreground after:transition-all hover:after:w-full";
+
 export function Navbar() {
   const { count } = useCart();
   const { user, isAdmin } = useAuth();
@@ -37,13 +40,11 @@ export function Navbar() {
     staleTime: 5 * 60 * 1000,
   });
 
-
   const signOut = async () => {
     await supabase.auth.signOut();
     setOpen(false);
     navigate({ to: "/" });
   };
-
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 8);
@@ -53,25 +54,30 @@ export function Navbar() {
   }, []);
 
   return (
-    <header className={`sticky top-0 z-50 transition-all ${scrolled ? "bg-background/85 backdrop-blur-md border-b border-border" : "bg-background"}`}>
-      <div className="container-px max-w-7xl mx-auto h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3 group" aria-label="Abdulrahman Perfumes — home">
-          <span className="grid place-items-center w-9 h-9 border border-foreground font-display text-sm leading-none pt-0.5">
-            AP
+    <header
+      className={`sticky top-0 z-50 border-b border-border bg-background transition-shadow ${
+        scrolled ? "shadow-[0_1px_12px_rgba(0,0,0,0.06)]" : ""
+      }`}
+    >
+      <div className="container-px max-w-7xl mx-auto h-16 flex items-center justify-between gap-6">
+        {/* Wordmark — plain type, no badge */}
+        <Link to="/" aria-label="Abdulrahman Perfumes — home" className="shrink-0">
+          <span className="font-display text-[22px] leading-none tracking-tight">
+            Abdulrahman
           </span>
-          <span className="leading-none">
-            <span className="block font-display text-xl">Abdulrahman</span>
-            <span className="block eyebrow text-[9px] mt-0.5">Perfumes · Sydney</span>
+          <span className="ml-2 text-[11px] uppercase tracking-[0.22em] text-muted-foreground">
+            Perfumes
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8">
+        {/* Desktop nav */}
+        <nav className="hidden md:flex items-center gap-7">
           {NAV.map((n) => (
             <Link
               key={n.to}
               to={n.to}
-              className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
-              activeProps={{ className: "text-foreground" }}
+              className={linkClass}
+              activeProps={{ className: `${linkClass} text-foreground after:w-full` }}
               activeOptions={{ exact: n.to === "/" }}
             >
               {n.label}
@@ -84,17 +90,17 @@ export function Navbar() {
           >
             <button
               onClick={() => setCatOpen((o) => !o)}
-              className="inline-flex items-center gap-1 text-sm font-medium text-foreground/80 hover:text-foreground transition-colors"
+              className={`${linkClass} inline-flex items-center gap-1`}
             >
-              Shop by brand <ChevronDown className={`w-3.5 h-3.5 transition-transform ${catOpen ? "rotate-180" : ""}`} />
+              Brands <ChevronDown className={`w-3.5 h-3.5 transition-transform ${catOpen ? "rotate-180" : ""}`} />
             </button>
             {catOpen && (
-              <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-64">
-                <div className="rounded-sm border border-border bg-popover shadow-xl py-2 text-sm max-h-[70vh] overflow-auto">
+              <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 w-60">
+                <div className="border border-border bg-popover py-1.5 text-sm">
                   <Link
                     to="/shop"
                     onClick={() => setCatOpen(false)}
-                    className="block px-4 py-2 hover:bg-secondary font-medium"
+                    className="block px-5 py-2.5 hover:bg-secondary font-medium"
                   >
                     All brands
                   </Link>
@@ -105,32 +111,38 @@ export function Navbar() {
                       to="/shop"
                       search={{ brand: b }}
                       onClick={() => setCatOpen(false)}
-                      className="block px-4 py-2 hover:bg-secondary"
+                      className="block px-5 py-2.5 hover:bg-secondary text-foreground/80 hover:text-foreground"
                     >
-                      {b}<span className="text-muted-foreground"> inspired</span>
+                      {b}
                     </Link>
                   ))}
                 </div>
               </div>
             )}
-
           </div>
           {isAdmin && (
-            <Link to="/admin" className="text-sm font-medium text-[var(--amber-deep)] hover:underline">Admin</Link>
+            <Link to="/admin" className={`${linkClass} text-[var(--amber-deep)]`}>
+              Admin
+            </Link>
           )}
         </nav>
 
-        <div className="flex items-center gap-1">
-          <Link to="/shop" aria-label="Search" className="hidden sm:inline-flex p-2 rounded-sm hover:bg-secondary">
-            <Search className="w-5 h-5" />
+        {/* Icons — plain, opacity hover like a Shopify storefront */}
+        <div className="flex items-center gap-0.5">
+          <Link to="/shop" aria-label="Search" className="hidden sm:inline-flex p-2 hover:opacity-60 transition-opacity">
+            <Search className="w-[19px] h-[19px]" strokeWidth={1.75} />
           </Link>
-          <Link to={isAdmin ? "/admin" : user ? "/account" : "/auth"} aria-label="Account" className="p-2 rounded-sm hover:bg-secondary">
-            <User className="w-5 h-5" />
+          <Link
+            to={isAdmin ? "/admin" : user ? "/account" : "/auth"}
+            aria-label="Account"
+            className="p-2 hover:opacity-60 transition-opacity"
+          >
+            <User className="w-[19px] h-[19px]" strokeWidth={1.75} />
           </Link>
-          <Link to="/cart" aria-label="Cart" className="relative p-2 rounded-sm hover:bg-secondary">
-            <ShoppingBag className="w-5 h-5" />
+          <Link to="/cart" aria-label="Cart" className="relative p-2 hover:opacity-60 transition-opacity">
+            <ShoppingBag className="w-[19px] h-[19px]" strokeWidth={1.75} />
             {count > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-foreground text-background text-[10px] font-semibold w-4 h-4 rounded-sm grid place-items-center">
+              <span className="absolute top-0 right-0 bg-foreground text-background text-[10px] font-semibold min-w-4 h-4 px-0.5 rounded-full grid place-items-center">
                 {count}
               </span>
             )}
@@ -140,56 +152,72 @@ export function Navbar() {
               onClick={signOut}
               aria-label="Sign out"
               title="Sign out"
-              className="hidden sm:inline-flex p-2 rounded-sm hover:bg-secondary"
+              className="hidden sm:inline-flex p-2 hover:opacity-60 transition-opacity"
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className="w-[19px] h-[19px]" strokeWidth={1.75} />
             </button>
           )}
           <button
-            className="md:hidden p-2 rounded-sm hover:bg-secondary"
+            className="md:hidden p-2 hover:opacity-60 transition-opacity"
             onClick={() => setOpen((o) => !o)}
             aria-label="Menu"
+            aria-expanded={open}
           >
             {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
-
         </div>
       </div>
 
+      {/* Mobile menu — clean divided list */}
       {open && (
         <div className="md:hidden border-t border-border bg-background">
-          <nav className="container-px max-w-7xl mx-auto py-4 flex flex-col gap-1">
+          <nav className="container-px max-w-7xl mx-auto py-2 flex flex-col divide-y divide-border">
             {NAV.map((n) => (
-              <Link key={n.to} to={n.to} onClick={() => setOpen(false)} className="py-2.5 text-sm font-medium">
+              <Link
+                key={n.to}
+                to={n.to}
+                onClick={() => setOpen(false)}
+                className="py-3.5 text-[13px] font-medium uppercase tracking-[0.08em]"
+              >
                 {n.label}
               </Link>
             ))}
-            <div className="pt-2 mt-2 border-t border-border">
-              <div className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground mb-1">Shop by brand</div>
+            <div className="py-3.5">
+              <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground mb-2">
+                Shop by brand
+              </div>
               {brands.data?.map((b) => (
                 <Link
                   key={b}
                   to="/shop"
                   search={{ brand: b }}
                   onClick={() => setOpen(false)}
-                  className="block py-2 text-sm"
+                  className="block py-2 text-sm text-foreground/80"
                 >
-                  {b} <span className="text-muted-foreground">inspired</span>
+                  {b}
                 </Link>
               ))}
             </div>
-
-            {isAdmin && <Link to="/admin" onClick={() => setOpen(false)} className="py-2.5 text-sm font-medium text-[var(--amber-deep)]">Admin Dashboard</Link>}
+            {isAdmin && (
+              <Link
+                to="/admin"
+                onClick={() => setOpen(false)}
+                className="py-3.5 text-[13px] font-medium uppercase tracking-[0.08em] text-[var(--amber-deep)]"
+              >
+                Admin
+              </Link>
+            )}
             {user && (
-              <button onClick={signOut} className="py-2.5 text-left text-sm font-medium text-destructive">
+              <button
+                onClick={signOut}
+                className="py-3.5 text-left text-[13px] font-medium uppercase tracking-[0.08em] text-destructive"
+              >
                 Sign out
               </button>
             )}
           </nav>
         </div>
       )}
-
     </header>
   );
 }
-
