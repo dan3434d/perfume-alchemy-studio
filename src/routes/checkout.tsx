@@ -5,6 +5,8 @@ import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe
 import { getStripePromise } from "@/lib/stripe-client";
 import { useCart } from "@/hooks/useCart";
 import { useDiscount } from "@/hooks/useDiscount";
+import { useCartPricing } from "@/hooks/useCartPricing";
+import { getVisitorKey } from "@/hooks/usePricingOffer";
 import { supabase } from "@/integrations/supabase/client";
 import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
@@ -46,7 +48,7 @@ const AU_STATES = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"];
 
 function Checkout() {
   const location = useLocation();
-  const { lines, subtotal, count } = useCart();
+  const { lines, count } = useCart();
   const { discount, clear: clearDiscount } = useDiscount();
   const navigate = useNavigate();
   const startStripe = useServerFn(createEmbeddedStripeCheckout);
@@ -62,6 +64,7 @@ function Checkout() {
     notes: "",
   });
   const intl = !isAustralia(form.country);
+  const { quote, pricedLines, subtotal, loading: quoteLoading } = useCartPricing(lines, { postcode: form.postcode, country: form.country });
 
 
   const applyPromo = () => {
@@ -86,8 +89,8 @@ function Checkout() {
   }, []);
 
   const discountPercent = useMemo(
-    () => computeBulkDiscountPercent(count, discount?.percent ?? 0),
-    [count, discount?.percent],
+    () => quote ? 0 : computeBulkDiscountPercent(count, discount?.percent ?? 0),
+    [count, discount?.percent, quote],
   );
   const discountAmount = +(subtotal * discountPercent / 100).toFixed(2);
   const subtotalAfterDiscount = +(subtotal - discountAmount).toFixed(2);
@@ -104,6 +107,7 @@ function Checkout() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (lines.length === 0) { toast.error("Your cart is empty"); return; }
+    if (!quote) { toast.error("Your current offer is still updating"); return; }
 
 
     setSubmitting(true);
@@ -121,7 +125,7 @@ function Checkout() {
           shipping_postcode: form.postcode,
           shipping_country: form.country,
           notes: form.notes || null,
-          lines: lines.map((l) => ({
+          lines: pricedLines.map((l) => ({
             product_id: l.product_id, name: l.name, slug: l.slug,
             price: l.price, quantity: l.quantity, image_url: l.image_url ?? null,
           })),
@@ -130,6 +134,8 @@ function Checkout() {
           shipping_method: intl ? "worldwide" : shippingMethod,
           user_id: userData.user?.id ?? null,
           origin: window.location.origin,
+          pricing_quote_id: quote.id,
+          visitor_key: getVisitorKey(),
 
         },
       });
@@ -332,10 +338,10 @@ function Checkout() {
               {/* Desktop submit (in-form). Mobile uses sticky bar below. */}
               <button
                 type="submit"
-                disabled={submitting}
+                disabled={submitting || quoteLoading}
                 className="hidden lg:inline-flex btn-gold w-full rounded-full py-3.5 font-semibold disabled:opacity-60 items-center justify-center gap-2"
               >
-                {submitting ? (
+                {submitting || quoteLoading ? (
                   <><Loader2 className="w-4 h-4 animate-spin" /> Preparing secure payment…</>
                 ) : (
                   <><CreditCard className="w-4 h-4" /> Continue to payment · {formatAUD(total)}</>
@@ -380,7 +386,7 @@ function Checkout() {
               <span className="eyebrow text-[9px]">{count} {count === 1 ? "bottle" : "bottles"}</span>
             </div>
             <div className="space-y-3 max-h-64 overflow-auto pr-1 -mr-1">
-              {lines.map((l) => (
+              {pricedLines.map((l) => (
                 <div key={l.product_id} className="flex gap-3 items-start">
                   <img src={productImage(l.image_url)} alt={l.name} className="w-12 h-12 rounded-lg object-cover ring-1 ring-border" />
                   <div className="flex-1 text-sm min-w-0">
@@ -392,7 +398,10 @@ function Checkout() {
                     )}
                     <div className="text-xs text-muted-foreground">Qty {l.quantity}</div>
                   </div>
-                  <div className="text-sm whitespace-nowrap font-medium">{formatAUD(l.price * l.quantity)}</div>
+                  <div className="text-right whitespace-nowrap">
+                    <div className="text-sm font-medium">{formatAUD(l.price * l.quantity)}</div>
+                    {l.referencePrice > l.price && <div className="text-[10px] text-muted-foreground line-through">{formatAUD(l.referencePrice * l.quantity)}</div>}
+                  </div>
                 </div>
               ))}
             </div>
@@ -409,7 +418,7 @@ function Checkout() {
               </div>
             )}
 
-            {count >= BULK_DISCOUNT_MIN_QTY && (
+            {count >= BULK_DISCOUNT_MIN_QTY && !quote && (
               <div className="flex items-center gap-2 rounded-xl bg-[var(--amber-deep)]/10 px-3 py-2 text-xs text-[var(--amber-deep)] font-semibold">
                 <BadgePercent className="w-4 h-4" /> Buy {BULK_DISCOUNT_MIN_QTY}+ unlocked — {BULK_DISCOUNT_PERCENT}% off applied
               </div>
@@ -461,6 +470,15 @@ function Checkout() {
             )}
 
             <div className="border-t border-border pt-3 space-y-1.5 text-sm">
+              {quote && quote.savings > 0 && (
+                <div className="mb-3 border-y border-border py-3" aria-live="polite">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="eyebrow text-[9px] text-[var(--amber-deep)]">Your current offer</span>
+                    <span className="font-semibold text-[var(--amber-deep)]">Save {formatAUD(quote.savings)}</span>
+                  </div>
+                  <div className="mt-1 text-[11px] text-muted-foreground">Held for 30 minutes while you complete checkout.</div>
+                </div>
+              )}
               <Row label="Subtotal" value={formatAUD(subtotal)} />
               {discountAmount > 0 && <Row label={`Discount (−${discountPercent}%)`} value={`− ${formatAUD(discountAmount)}`} accent />}
               <Row
@@ -494,7 +512,7 @@ function Checkout() {
           <button
             type="submit"
             form="checkout-details"
-            disabled={submitting}
+            disabled={submitting || quoteLoading}
             className="btn-gold w-full rounded-full py-3.5 font-semibold disabled:opacity-60 inline-flex items-center justify-center gap-2"
           >
             {submitting ? (
