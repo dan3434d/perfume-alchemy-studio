@@ -4,5 +4,7 @@ Disallow: /admin
 Disallow: /account
 Disallow: /checkout
 Disallow: /api/
+Allow: /api/public/products-sitemap
 
 Sitemap: https://www.abdulrahmanperfumes.com.au/sitemap.xml
+Sitemap: https://www.abdulrahmanperfumes.com.au/api/public/products-sitemap
