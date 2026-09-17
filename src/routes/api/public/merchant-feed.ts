@@ -74,7 +74,7 @@ export const Route = createFileRoute("/api/public/merchant-feed")({
       <g:gender>${gender}</g:gender>
       <g:age_group>adult</g:age_group>
       <g:google_product_category>469</g:google_product_category>
-      <g:product_type>${clean(`Perfume &gt; ${p.categories?.name || "Eau de Parfum"}`, 200)}</g:product_type>
+      <g:product_type>${clean(`Perfume > ${p.categories?.name || "Eau de Parfum"}`, 200)}</g:product_type>
       <g:unit_pricing_measure>${esc(p.size || "50ml")}</g:unit_pricing_measure>
       <g:shipping>
         <g:country>AU</g:country>
