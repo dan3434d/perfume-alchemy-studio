@@ -295,11 +295,13 @@ export type Database = {
           id: string
           image_url: string | null
           line_total: number
+          offer_savings: number
           order_id: string
           product_id: string | null
           product_name: string
           product_slug: string
           quantity: number
+          reference_price: number | null
           unit_price: number
         }
         Insert: {
@@ -307,11 +309,13 @@ export type Database = {
           id?: string
           image_url?: string | null
           line_total: number
+          offer_savings?: number
           order_id: string
           product_id?: string | null
           product_name: string
           product_slug: string
           quantity: number
+          reference_price?: number | null
           unit_price: number
         }
         Update: {
@@ -319,11 +323,13 @@ export type Database = {
           id?: string
           image_url?: string | null
           line_total?: number
+          offer_savings?: number
           order_id?: string
           product_id?: string | null
           product_name?: string
           product_slug?: string
           quantity?: number
+          reference_price?: number | null
           unit_price?: number
         }
         Relationships: [
@@ -357,6 +363,7 @@ export type Database = {
           order_number: string
           payment_status: Database["public"]["Enums"]["payment_status"]
           phone: string | null
+          pricing_quote_id: string | null
           refunded_at: string | null
           shipped_at: string | null
           shipping: number
@@ -389,6 +396,7 @@ export type Database = {
           order_number?: string
           payment_status?: Database["public"]["Enums"]["payment_status"]
           phone?: string | null
+          pricing_quote_id?: string | null
           refunded_at?: string | null
           shipped_at?: string | null
           shipping?: number
@@ -421,6 +429,7 @@ export type Database = {
           order_number?: string
           payment_status?: Database["public"]["Enums"]["payment_status"]
           phone?: string | null
+          pricing_quote_id?: string | null
           refunded_at?: string | null
           shipped_at?: string | null
           shipping?: number
@@ -439,6 +448,50 @@ export type Database = {
           tracking_number?: string | null
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_pricing_quote_id_fkey"
+            columns: ["pricing_quote_id"]
+            isOneToOne: false
+            referencedRelation: "pricing_quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pricing_quotes: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          product_prices: Json
+          reference_prices: Json
+          region_band: string | null
+          savings_percent: number
+          signal_tier: number
+          visitor_key_hash: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          product_prices?: Json
+          reference_prices?: Json
+          region_band?: string | null
+          savings_percent?: number
+          signal_tier?: number
+          visitor_key_hash: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          product_prices?: Json
+          reference_prices?: Json
+          region_band?: string | null
+          savings_percent?: number
+          signal_tier?: number
+          visitor_key_hash?: string
         }
         Relationships: []
       }
