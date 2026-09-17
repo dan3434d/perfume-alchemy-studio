@@ -17,9 +17,9 @@ export const Route = createFileRoute("/shop/")({
   }),
   head: () => ({
     meta: [
-      { title: "Shop all perfumes — Abdulrahman Perfumes" },
-      { name: "description", content: "Browse the complete Abdulrahman collection — designer-inspired oud, amber, fresh and floral fragrances with visible offers on every 50ml bottle." },
-      { property: "og:title", content: "Shop all perfumes — Abdulrahman Perfumes" },
+      { title: "Shop Luxury Inspired Perfumes | 50ml Eau de Parfum from $35" },
+      { name: "description", content: "Shop luxury designer-inspired perfumes for men and women. Long-lasting 50ml oud, amber, fresh and floral eau de parfum from $35, shipped Australia-wide from Sydney." },
+      { property: "og:title", content: "Shop Luxury Inspired Perfumes | Abdulrahman Perfumes" },
       { property: "og:description", content: "Designer-inspired UAE-blended fragrances. Filter by brand, category and price. Free metro shipping over $50." },
       { property: "og:url", content: "https://www.abdulrahmanperfumes.com.au/shop" },
       { property: "og:type", content: "website" },

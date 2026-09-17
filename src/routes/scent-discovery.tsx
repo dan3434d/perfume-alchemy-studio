@@ -8,13 +8,15 @@ import { ArrowRight, Sparkles } from "lucide-react";
 export const Route = createFileRoute("/scent-discovery")({
   head: () => ({
     meta: [
-      { title: "Scent Discovery — Find your signature fragrance | Abdulrahman Perfumes" },
-      { name: "description", content: "Take our 4-question scent quiz to find the perfect Abdulrahman fragrance for you. Designer-inspired oud, amber, fresh and floral scents." },
-      { property: "og:title", content: "Find your signature scent" },
+      { title: "Perfume Quiz — Find Your Signature Luxury Scent" },
+      { name: "description", content: "Answer 4 questions and we'll match you with a luxury designer-inspired fragrance — oud, amber, fresh or floral 50ml eau de parfum, shipped from Sydney." },
+      { property: "og:title", content: "Perfume Quiz — Find Your Signature Luxury Scent" },
       { property: "og:description", content: "A quick 4-step quiz to match you with the perfect perfume from our UAE-blended collection." },
-      { property: "og:url", content: "/scent-discovery" },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://www.abdulrahmanperfumes.com.au/scent-discovery" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/scent-discovery" }],
+    links: [{ rel: "canonical", href: "https://www.abdulrahmanperfumes.com.au/scent-discovery" }],
   }),
   component: ScentDiscovery,
 });

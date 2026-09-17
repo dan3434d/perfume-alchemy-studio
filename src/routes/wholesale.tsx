@@ -5,9 +5,15 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/wholesale")({
   head: () => ({
     meta: [
-      { title: "Wholesale Enquiries — Abdulrahman Perfumes" },
-      { name: "description", content: "Stock Abdulrahman Perfumes in your store. Submit a wholesale enquiry and our team will reply within one business day." },
+      { title: "Perfume Wholesale Australia | Bulk Inspired Fragrances" },
+      { name: "description", content: "Stock luxury designer-inspired perfumes in your store. Bulk 50ml eau de parfum pricing for Australian retailers — submit an enquiry and we reply within one business day." },
+      { property: "og:title", content: "Perfume Wholesale Australia | Abdulrahman Perfumes" },
+      { property: "og:description", content: "Bulk pricing on UAE-blended 50ml eau de parfum for Australian retailers and resellers." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://www.abdulrahmanperfumes.com.au/wholesale" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://www.abdulrahmanperfumes.com.au/wholesale" }],
   }),
   component: Wholesale,
 });
