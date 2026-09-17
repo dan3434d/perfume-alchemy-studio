@@ -8,7 +8,7 @@ import { useCart, useWishlist } from "@/hooks/useCart";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
 import { ClientMoments } from "@/components/site/ClientMoments";
 import { ReviewsCarousel } from "@/components/site/ReviewsCarousel";
-import { Heart, ShoppingBag, Truck, RotateCcw, Lock, Minus, Plus, Star, Check, Sparkles, Leaf, Droplets, Package, FlaskConical } from "lucide-react";
+import { Heart, ShoppingBag, Truck, RotateCcw, Lock, Minus, Plus, Star, Check, Sparkles, Leaf, Droplets, Package, FlaskConical, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { trackView } from "@/hooks/useBrowsingHistory";
 
@@ -295,6 +295,17 @@ function ProductPage() {
             <Info i={Truck} t="Sent from Sydney" d="Dispatched within 24h" />
             <Info i={RotateCcw} t="30-day returns" d="On unopened bottles" />
             <Info i={Lock} t="Protected payment" d="Secure on-site checkout" />
+          </div>
+
+          <div className="flex items-center gap-3 border-y border-border py-4">
+            <div className="relative grid h-12 w-10 shrink-0 place-items-center text-[var(--amber-deep)]" aria-hidden="true">
+              <ShieldCheck className="absolute inset-0 h-full w-full" strokeWidth={1.25} />
+              <span className="font-display text-xs font-semibold">AP</span>
+            </div>
+            <div>
+              <div className="text-sm font-semibold">The Abdulrahman Promise</div>
+              <p className="text-xs text-muted-foreground mt-0.5">Secure payment, tracked delivery and personal support from our Sydney team.</p>
+            </div>
           </div>
 
           <ul className="text-sm text-muted-foreground space-y-1.5 pt-2">

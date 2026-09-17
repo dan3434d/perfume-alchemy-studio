@@ -27,7 +27,7 @@ import {
   type ShippingMethod,
 } from "@/lib/pricing";
 import { toast } from "sonner";
-import { Lock, Truck, ShieldCheck, BadgePercent, X, ArrowLeft, CreditCard, Loader2, Zap, Globe2 } from "lucide-react";
+import { Lock, Truck, ShieldCheck, BadgePercent, X, ArrowLeft, CreditCard, Loader2, Zap, Globe2, MailCheck, Headphones } from "lucide-react";
 
 
 export const Route = createFileRoute("/checkout")({
@@ -190,6 +190,24 @@ function Checkout() {
         <CheckoutTrust i={ShieldCheck} t="Protected payment" d="Card details stay encrypted" />
         <CheckoutTrust i={Truck} t="Sent in 24 hours" d="Tracked from Sydney" />
         <CheckoutTrust i={Lock} t="30-day returns" d="On unopened bottles" />
+      </div>
+
+      <div className="mb-8 border border-border bg-secondary/35 px-4 py-5 sm:px-6" aria-label="Abdulrahman customer promise">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8">
+          <div className="flex items-center gap-3 sm:pr-8 sm:border-r border-border shrink-0">
+            <TrustSeal />
+            <div>
+              <div className="font-display text-lg leading-none">The Abdulrahman Promise</div>
+              <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground mt-1">Care from checkout to delivery</div>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-x-5 gap-y-3 flex-1 text-xs">
+            <TrustPoint icon={MailCheck} label="Immediate order receipt" />
+            <TrustPoint icon={Truck} label="Tracked Australian delivery" />
+            <TrustPoint icon={ShieldCheck} label="Secure encrypted payment" />
+            <TrustPoint icon={Headphones} label="Real customer support" />
+          </div>
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8 lg:gap-10">
@@ -532,6 +550,24 @@ function CheckoutTrust({ i: Icon, t, d }: { i: any; t: string; d: string }) {
     <div className="min-w-0 px-3 py-4 sm:px-5 flex items-start gap-2 border-r border-border last:border-r-0">
       <Icon className="w-4 h-4 mt-0.5 text-[var(--amber-deep)] shrink-0" />
       <div className="min-w-0"><div className="text-xs font-medium">{t}</div><div className="hidden sm:block text-[11px] text-muted-foreground mt-0.5">{d}</div></div>
+    </div>
+  );
+}
+
+function TrustSeal() {
+  return (
+    <div className="relative grid h-14 w-12 shrink-0 place-items-center text-[var(--amber-deep)]" aria-hidden="true">
+      <ShieldCheck className="absolute inset-0 h-full w-full" strokeWidth={1.25} />
+      <span className="font-display text-sm font-semibold">AP</span>
+    </div>
+  );
+}
+
+function TrustPoint({ icon: Icon, label }: { icon: typeof ShieldCheck; label: string }) {
+  return (
+    <div className="flex items-center gap-2 text-foreground/80">
+      <Icon className="h-3.5 w-3.5 shrink-0 text-[var(--amber-deep)]" aria-hidden="true" />
+      <span>{label}</span>
     </div>
   );
 }

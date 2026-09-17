@@ -5,3 +5,6 @@
 - [x] Refine checkout presentation for faster completion, clearer totals, discreet upsells, and stronger reassurance.
 - [x] Add reusable brand visual treatments without generated imagery.
 - [x] Verify product, story, and checkout experiences on desktop and mobile.
+- [x] Verify the product-to-payment journey reaches the live on-site payment form.
+- [x] Add a branded trust seal and stronger checkout reassurance.
+- [ ] Complete a paid test transaction (blocked because the connected payment account is in live mode and would create a real charge).
