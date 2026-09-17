@@ -38,6 +38,7 @@ export function announcePricingUpdate() {
 
 export function usePricingOffer(basePrice: number, cartQuantity = 0, location?: { postcode?: string; country?: string }) {
   const [revision, setRevision] = useState(0);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     if (!sessionStorage.getItem(SESSION_KEY)) {
@@ -45,6 +46,7 @@ export function usePricingOffer(basePrice: number, cartQuantity = 0, location?: 
       localStorage.setItem(VISITS_KEY, String(visits));
       sessionStorage.setItem(SESSION_KEY, "1");
     }
+    setHydrated(true);
     const refresh = () => setRevision((value) => value + 1);
     window.addEventListener(PRICING_EVENT, refresh);
     window.addEventListener("storage", refresh);
@@ -55,7 +57,7 @@ export function usePricingOffer(basePrice: number, cartQuantity = 0, location?: 
   }, []);
 
   return useMemo(
-    () => computeUnitOffer(basePrice, getPricingSignals(cartQuantity, location)),
-    [basePrice, cartQuantity, location?.postcode, location?.country, revision],
+    () => computeUnitOffer(basePrice, hydrated ? getPricingSignals(cartQuantity, location) : { cartQuantity }),
+    [basePrice, cartQuantity, location?.postcode, location?.country, revision, hydrated],
   );
 }

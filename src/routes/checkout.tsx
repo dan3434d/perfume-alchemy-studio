@@ -424,7 +424,7 @@ function Checkout() {
               </div>
             )}
 
-            {discount && (
+            {discount && !quote && (
               <div className="flex items-center justify-between gap-2 rounded-xl bg-[var(--amber-deep)]/10 px-3 py-2 text-xs">
                 <span className="flex items-center gap-2 text-[var(--amber-deep)] font-semibold">
                   <BadgePercent className="w-4 h-4" /> {discount.code} · −{discount.percent}%
