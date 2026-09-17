@@ -49,10 +49,14 @@ async function getValidatedQuote(supabaseAdmin: any, data: z.infer<typeof Checko
     throw new Error("Your offer expired. Refresh checkout to get the latest price.");
   }
   const quotedPrices = quote.product_prices as Record<string, { price?: number; quantity?: number }>;
-  const exactBag = data.lines.every((line) =>
-    quotedPrices?.[line.product_id]
-    && quotedPrices[line.product_id].quantity === line.quantity
-    && Number.isFinite(Number(quotedPrices[line.product_id].price)),
+  const requestedQuantities = data.lines.reduce<Record<string, number>>((all, line) => {
+    all[line.product_id] = (all[line.product_id] ?? 0) + line.quantity;
+    return all;
+  }, {});
+  const exactBag = Object.entries(requestedQuantities).every(([productId, quantity]) =>
+    quotedPrices?.[productId]
+    && quotedPrices[productId].quantity === quantity
+    && Number.isFinite(Number(quotedPrices[productId].price)),
   ) && Object.keys(quotedPrices ?? {}).length === new Set(data.lines.map((line) => line.product_id)).size;
   if (!exactBag) throw new Error("Your bag changed. Refresh checkout to update your offer.");
   return quote;
