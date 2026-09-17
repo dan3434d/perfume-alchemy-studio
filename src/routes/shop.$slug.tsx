@@ -6,6 +6,8 @@ import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
 import { useCart, useWishlist } from "@/hooks/useCart";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
+import { ClientMoments } from "@/components/site/ClientMoments";
+import { ReviewsCarousel } from "@/components/site/ReviewsCarousel";
 import { Heart, ShoppingBag, Truck, RotateCcw, Lock, Minus, Plus, Star, Check, Sparkles, Leaf, Droplets, Package, FlaskConical } from "lucide-react";
 import { toast } from "sonner";
 import { trackView } from "@/hooks/useBrowsingHistory";
@@ -180,7 +182,7 @@ function ProductPage() {
       <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
         {/* Image */}
         <div className="space-y-4 lg:sticky lg:top-24 self-start">
-          <div className="max-w-sm mx-auto lg:mx-0 aspect-square rounded-2xl overflow-hidden bg-[var(--cream)] border border-border relative">
+          <div className="max-w-lg mx-auto lg:mx-0 aspect-[4/5] overflow-hidden bg-[var(--cream)] border border-border relative">
             <img src={productImage(p.image_url)} alt={p.name} className="w-full h-full object-cover" width={800} height={800} />
             {discount > 0 && (
               <span className="absolute top-3 left-3 rounded-full bg-foreground text-background text-xs font-semibold px-3 py-1.5 tracking-wider">
@@ -189,7 +191,7 @@ function ProductPage() {
             )}
           </div>
           {p.inspired_by_brand && (
-            <div className="max-w-sm mx-auto lg:mx-0 rounded-2xl border border-border bg-[var(--cream)]/40 p-4 text-sm flex items-center gap-3">
+            <div className="max-w-lg mx-auto lg:mx-0 border border-border bg-[var(--cream)]/40 p-4 text-sm flex items-center gap-3">
               <Sparkles className="w-4 h-4 text-[var(--amber-deep)] shrink-0" />
               <div>
                 <span className="text-muted-foreground">Inspired by </span>
@@ -205,7 +207,7 @@ function ProductPage() {
         </div>
 
         {/* Details */}
-        <div className="space-y-6">
+          <div className="space-y-6 lg:pt-3">
           <div>
             {p.categories?.name && <span className="text-xs uppercase tracking-[0.2em] text-[var(--amber-deep)]">{p.categories.name}</span>}
             <h1 className="font-display text-3xl sm:text-4xl mt-2">{p.name}</h1>
@@ -215,9 +217,10 @@ function ProductPage() {
                 <span className="not-italic font-medium text-foreground">{p.inspired_by_brand} {p.inspired_by_product}</span>
               </p>
             )}
-            <div className="flex items-center gap-3 mt-3 text-sm">
+            <div className="flex items-center gap-3 mt-4 text-sm border-y border-border py-3">
               <div className="flex gap-0.5">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className="w-4 h-4 fill-[var(--gold)] text-[var(--gold)]" />)}</div>
-              <span className="text-muted-foreground">({(p.rating ?? 4.8).toFixed(1)}) · {p.review_count ?? 0} reviews</span>
+              <span className="font-medium">{(p.rating ?? 4.8).toFixed(1)} / 5</span>
+              <span className="text-muted-foreground">from verified orders</span>
             </div>
           </div>
 
@@ -237,7 +240,7 @@ function ProductPage() {
           <p className="text-muted-foreground leading-relaxed">{p.long_description || p.description}</p>
 
           {/* Fragrance notes */}
-          <div className="rounded-2xl border border-border p-5 bg-[var(--cream)]/30">
+          <div className="border-y border-border py-5">
             <h2 className="font-semibold text-sm uppercase tracking-wider mb-3">Fragrance notes</h2>
             <div className="grid grid-cols-3 gap-4 text-sm">
               <NoteCol label="Top" notes={p.notes_top} />
@@ -249,25 +252,22 @@ function ProductPage() {
           {/* Size */}
           <div>
             <h2 className="text-sm font-semibold mb-2">Size</h2>
-            <div className="inline-flex rounded-full border border-foreground bg-foreground px-4 py-2 text-sm text-background">
+            <div className="inline-flex border border-foreground bg-foreground px-4 py-2 text-sm text-background">
               50ml
             </div>
           </div>
 
           {/* Qty + Buttons */}
           <div className="flex flex-wrap items-center gap-3">
-            <div className="inline-flex items-center rounded-full border border-border overflow-hidden" role="group" aria-label="Quantity">
+            <div className="inline-flex items-center border border-border overflow-hidden" role="group" aria-label="Quantity">
               <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Decrease quantity" className="p-3 hover:bg-secondary"><Minus className="w-4 h-4" /></button>
               <span className="w-10 text-center text-sm font-medium" aria-live="polite">{qty}</span>
               <button type="button" onClick={() => setQty((q) => q + 1)} aria-label="Increase quantity" className="p-3 hover:bg-secondary"><Plus className="w-4 h-4" /></button>
             </div>
-            <button onClick={doAdd} className="flex-1 min-w-[160px] inline-flex items-center justify-center gap-2 rounded-full border-2 border-foreground bg-background text-foreground font-semibold py-3 hover:bg-foreground hover:text-background transition">
-              <ShoppingBag className="w-4 h-4" /> Add to cart
+            <button onClick={doBuy} className="flex-1 min-w-[220px] btn-ink inline-flex items-center justify-center gap-2 py-4">
+              <ShoppingBag className="w-4 h-4" /> Add to bag & checkout
             </button>
-            <button onClick={doBuy} className="flex-1 min-w-[160px] btn-gold rounded-full font-semibold py-3">
-              Buy now
-            </button>
-            <button onClick={() => toggle(p.id)} aria-label="Wishlist" className="p-3 rounded-full border border-border hover:bg-secondary">
+            <button onClick={() => toggle(p.id)} aria-label="Wishlist" className="p-3 border border-border hover:bg-secondary">
               <Heart className={`w-5 h-5 ${wished ? "fill-[var(--amber-deep)] text-[var(--amber-deep)]" : ""}`} />
             </button>
           </div>
@@ -278,8 +278,7 @@ function ProductPage() {
           <button
             type="button"
             onClick={() => { setQty(2); toast.success("2 bottles selected — 15% off applies at checkout"); }}
-            className="w-full text-left rounded-2xl border border-[var(--gold)]/50 p-4 flex items-center gap-3 hover:shadow-[var(--shadow-elegant)] transition"
-            style={{ background: "var(--gradient-warm)" }}
+            className="w-full text-left border border-[var(--gold)]/50 bg-sand p-4 flex items-center gap-3 hover:border-foreground transition-colors"
           >
             <Sparkles className="w-5 h-5 text-[var(--amber-deep)] shrink-0" />
             <div className="min-w-0">
@@ -292,10 +291,10 @@ function ProductPage() {
 
 
           {/* Delivery / Returns */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-border">
-            <Info i={Truck} t="Fast AU shipping" d="Ships within 24h from Sydney" />
-            <Info i={RotateCcw} t="30-day returns" d="Hassle-free" />
-            <Info i={Lock} t="Secure checkout" d="Encrypted" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-5 border-t border-border">
+            <Info i={Truck} t="Sent from Sydney" d="Dispatched within 24h" />
+            <Info i={RotateCcw} t="30-day returns" d="On unopened bottles" />
+            <Info i={Lock} t="Protected payment" d="Secure on-site checkout" />
           </div>
 
           <ul className="text-sm text-muted-foreground space-y-1.5 pt-2">
@@ -304,6 +303,20 @@ function ProductPage() {
             <li className="flex gap-2"><Check className="w-4 h-4 text-[var(--amber-deep)]" /> Long-lasting, suitable day & night</li>
             <li className="flex gap-2"><Check className="w-4 h-4 text-[var(--amber-deep)]" /> Cruelty-free</li>
           </ul>
+        </div>
+      </div>
+
+      <div className="mt-20">
+        <ClientMoments compact />
+        <div className="grid lg:grid-cols-[0.75fr_1.25fr] gap-8 lg:gap-16 border-b border-border py-12 sm:py-16">
+          <div>
+            <span className="eyebrow eyebrow-brass">Worn in real life</span>
+            <h2 className="font-display mt-3">A bottle becomes personal when it leaves our hands.</h2>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-8 text-sm leading-relaxed">
+            <p>Every fragrance is packed in Sydney and sent to become part of someone else's routine—on a dresser, in a work bag, or shared at the door before an evening out.</p>
+            <p className="text-muted-foreground">The portraits above come from our community. They show the house as it is meant to be experienced: held, worn and passed between people.</p>
+          </div>
         </div>
       </div>
 
@@ -327,7 +340,7 @@ function ProductPage() {
             <Feature i={Package} t="Packed in Sydney" d="QC-checked and gift-boxed. Ships within 24 hours." />
           </div>
         </div>
-        <aside className="rounded-2xl border border-border bg-[var(--cream)]/40 p-6 space-y-4">
+        <aside className="border border-border bg-[var(--cream)]/40 p-6 space-y-4">
           <h3 className="font-display text-xl">Fragrance profile</h3>
           <ProfileRow label="Family" value={p.categories?.name ?? "Signature"} />
           <ProfileRow label="Size" value="50ml" />
@@ -357,6 +370,10 @@ function ProductPage() {
         </Link>
       </section>
 
+      <div className="mt-20 -mx-5 sm:-mx-8 lg:-mx-14">
+        <ReviewsCarousel />
+      </div>
+
       {/* FAQ on product */}
       <section className="mt-16 max-w-3xl mx-auto">
         <h2 className="font-display text-2xl sm:text-3xl text-center mb-6">Common questions</h2>
@@ -384,11 +401,8 @@ function ProductPage() {
           <div className="text-xs text-muted-foreground truncate">{p.name}</div>
           <div className="font-semibold text-sm">{formatAUD(p.price)}</div>
         </div>
-        <button onClick={doAdd} className="ml-auto rounded-full border-2 border-foreground px-4 py-2.5 text-sm font-semibold">
-          Add
-        </button>
-        <button onClick={doBuy} className="btn-gold rounded-full px-5 py-2.5 text-sm font-semibold">
-          Buy now
+        <button onClick={doBuy} className="btn-ink ml-auto px-5 py-3 text-xs">
+          Checkout
         </button>
       </div>
     </div>
@@ -398,7 +412,7 @@ function ProductPage() {
 
 function Feature({ i: Icon, t, d }: { i: any; t: string; d: string }) {
   return (
-    <div className="flex items-start gap-3 rounded-xl border border-border p-3 bg-background">
+    <div className="flex items-start gap-3 border border-border p-3 bg-background">
       <Icon className="w-5 h-5 text-[var(--amber-deep)] mt-0.5 shrink-0" />
       <div>
         <div className="text-sm font-semibold">{t}</div>
@@ -429,7 +443,7 @@ function CraftCard({ n, title, body }: { n: string; title: string; body: string 
 
 function FaqRow({ q, a }: { q: string; a: string }) {
   return (
-    <details className="group rounded-xl border border-border bg-background p-4">
+    <details className="group border-y border-border bg-background py-5">
       <summary className="cursor-pointer list-none font-medium flex justify-between items-center">
         {q}
         <Plus className="w-4 h-4 text-[var(--amber-deep)] group-open:rotate-45 transition" />

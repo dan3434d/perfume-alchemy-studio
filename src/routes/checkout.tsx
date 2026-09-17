@@ -31,7 +31,14 @@ import { Lock, Truck, ShieldCheck, BadgePercent, X, ArrowLeft, CreditCard, Loade
 
 
 export const Route = createFileRoute("/checkout")({
-  head: () => ({ meta: [{ title: "Checkout — Abdulrahman Perfumes" }] }),
+  head: () => ({ meta: [
+    { title: "Secure Checkout — Abdulrahman Perfumes" },
+    { name: "description", content: "Complete your Abdulrahman Perfumes order with secure on-site payment, tracked delivery and 30-day returns." },
+    { property: "og:title", content: "Secure Checkout — Abdulrahman Perfumes" },
+    { property: "og:description", content: "Secure payment, clear delivery choices and 30-day returns." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: Checkout,
 });
 
@@ -158,7 +165,7 @@ function Checkout() {
     <div className="container-px max-w-6xl mx-auto py-8 sm:py-14 pb-32 lg:pb-14">
       {/* Steps */}
       <div className="flex items-center justify-center gap-2 sm:gap-6 mb-8 text-[11px] sm:text-sm overflow-x-auto">
-        {["Cart", "Details", "Payment", "Done"].map((s, i) => {
+        {["Bag", "Delivery", "Pay", "Done"].map((s, i) => {
           const stepIdx = clientSecret ? 2 : 1;
           const active = i === stepIdx;
           const done = i < stepIdx;
@@ -179,15 +186,18 @@ function Checkout() {
         <Lock className="w-3.5 h-3.5" /> Secure on-site payment by Stripe · AUD
       </p>
 
+      <div className="grid grid-cols-3 border-y border-border mb-8">
+        <CheckoutTrust i={ShieldCheck} t="Protected payment" d="Card details stay encrypted" />
+        <CheckoutTrust i={Truck} t="Sent in 24 hours" d="Tracked from Sydney" />
+        <CheckoutTrust i={Lock} t="30-day returns" d="On unopened bottles" />
+      </div>
+
       <div className="grid lg:grid-cols-3 gap-8 lg:gap-10">
         <div className="lg:col-span-2 space-y-6">
           {!clientSecret && (
             <form onSubmit={onSubmit} className="space-y-6" id="checkout-details">
-              <UpsellBuyTwo />
-              <Section title="Contact" subtitle="We'll email your order confirmation here.">
+              <Section title="Delivery details" subtitle="One page, then secure payment.">
                 <Field label="Email" required value={form.email} onChange={(v) => setForm({ ...form, email: v })} type="email" />
-              </Section>
-              <Section title="Shipping address" subtitle="Start typing — we'll auto-complete your Australian address.">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <Field label="Full name" required value={form.full_name} onChange={(v) => setForm({ ...form, full_name: v })} />
                   <Field label="Phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
@@ -244,6 +254,8 @@ function Checkout() {
                 </label>
               </Section>
 
+              <UpsellBuyTwo />
+
               <Section title="Shipping method" subtitle={intl ? "International orders ship worldwide via tracked air." : "Choose how fast you'd like it."}>
                 {intl ? (
                   <div className="rounded-xl border border-[var(--amber-deep)]/40 bg-[var(--amber-deep)]/5 p-4 flex items-start gap-3">
@@ -280,15 +292,16 @@ function Checkout() {
                 )}
               </Section>
 
-              <Section title="Order notes" subtitle="Optional">
+              <details className="border-y border-border py-4">
+                <summary className="cursor-pointer text-sm font-medium">Add an order note <span className="text-muted-foreground font-normal">(optional)</span></summary>
                 <textarea
                   value={form.notes}
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
                   rows={3}
-                  className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
+                  className="mt-4 w-full border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
                   placeholder="Anything we should know?"
                 />
-              </Section>
+              </details>
 
               <Section title="Payment" subtitle="Card, Apple Pay or Google Pay — processed securely on this page.">
                 <div className="rounded-xl border border-border p-4 flex items-center gap-2 text-sm">
@@ -297,19 +310,6 @@ function Checkout() {
                   <span className="text-xs text-muted-foreground ml-auto">Secure Stripe checkout</span>
                 </div>
               </Section>
-
-              <div className="grid sm:grid-cols-3 gap-3">
-                {[
-                  { i: Lock, t: "256-bit SSL", d: "Encrypted checkout" },
-                  { i: ShieldCheck, t: "Buyer protection", d: "Stripe-powered" },
-                  { i: Truck, t: "Ships in 24h", d: "From Sydney" },
-                ].map(({ i: Icon, t, d }) => (
-                  <div key={t} className="rounded-xl border border-border bg-card p-3 flex items-start gap-2">
-                    <Icon className="w-4 h-4 mt-0.5 text-[var(--amber-deep)] shrink-0" />
-                    <div className="text-xs"><div className="font-semibold">{t}</div><div className="text-muted-foreground">{d}</div></div>
-                  </div>
-                ))}
-              </div>
 
               {/* Desktop submit (in-form). Mobile uses sticky bar below. */}
               <button
@@ -357,7 +357,10 @@ function Checkout() {
 
         <aside className="lg:sticky lg:top-24 h-fit space-y-4">
           <div className="card-elevated p-5 sm:p-6 space-y-4">
-            <h2 className="font-display text-xl">Your order</h2>
+            <div className="flex items-baseline justify-between gap-4">
+              <h2 className="font-display text-xl">Your order</h2>
+              <span className="eyebrow text-[9px]">{count} {count === 1 ? "bottle" : "bottles"}</span>
+            </div>
             <div className="space-y-3 max-h-64 overflow-auto pr-1 -mr-1">
               {lines.map((l) => (
                 <div key={l.product_id} className="flex gap-3 items-start">
@@ -455,8 +458,8 @@ function Checkout() {
               {ship.handling > 0 && (
                 <Row label="Remote area handling" value={formatAUD(ship.handling)} />
               )}
-              <div className="flex justify-between font-semibold text-base pt-2 border-t border-border">
-                <span>Total</span><span className="font-display text-lg">{formatAUD(total)}</span>
+              <div className="flex justify-between font-semibold text-base pt-3 border-t border-foreground">
+                <span>Total <span className="text-xs text-muted-foreground font-normal">AUD</span></span><span className="font-display text-2xl">{formatAUD(total)}</span>
               </div>
             </div>
             <p className="text-[11px] text-center text-muted-foreground leading-relaxed">
@@ -490,13 +493,13 @@ function Checkout() {
 
 function Section({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
-    <div className="card-elevated p-5 sm:p-6 space-y-4">
+    <section className="border-t border-border pt-6 space-y-4">
       <div>
         <h2 className="font-display text-xl">{title}</h2>
         {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
       </div>
       {children}
-    </div>
+    </section>
   );
 }
 
@@ -518,8 +521,17 @@ function Field({ label, value, onChange, required, type = "text" }: { label: str
         required={required}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
+        className="mt-1 w-full border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring transition-shadow"
       />
     </label>
+  );
+}
+
+function CheckoutTrust({ i: Icon, t, d }: { i: any; t: string; d: string }) {
+  return (
+    <div className="min-w-0 px-3 py-4 sm:px-5 flex items-start gap-2 border-r border-border last:border-r-0">
+      <Icon className="w-4 h-4 mt-0.5 text-[var(--amber-deep)] shrink-0" />
+      <div className="min-w-0"><div className="text-xs font-medium">{t}</div><div className="hidden sm:block text-[11px] text-muted-foreground mt-0.5">{d}</div></div>
+    </div>
   );
 }
