@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { productImage } from "@/lib/product-image";
 import type { ProductCardData } from "@/components/site/ProductCard";
+import { OfferPrice } from "./OfferPrice";
 
 /**
  * An editorial ledger of the house's signatures — numbered rows that reveal
@@ -43,7 +44,7 @@ export function SignatureIndex({ items }: { items: ProductCardData[] }) {
                       : p.category_name || "Eau de parfum"}
                   </span>
                 </span>
-                <span className="num text-sm whitespace-nowrap">$41.50</span>
+                <OfferPrice basePrice={Number(p.price)} />
               </Link>
             </li>
           ))}
