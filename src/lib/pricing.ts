@@ -10,6 +10,65 @@ export const RURAL_HANDLING_FEE = 5.5;
 export const RURAL_HANDLING_WAIVED_OVER = 100;
 export const BULK_DISCOUNT_MIN_QTY = 2;
 export const BULK_DISCOUNT_PERCENT = 15;
+export const MIN_UNIT_PRICE = 35;
+export const MAX_REFERENCE_PRICE = 55;
+export const OFFER_QUOTE_MINUTES = 30;
+
+export type PricingSignals = {
+  returnVisits?: number;
+  productInterest?: number;
+  cartQuantity?: number;
+  exitIntent?: boolean;
+  quizCompleted?: boolean;
+  postcode?: string | null;
+  country?: string | null;
+};
+
+export type UnitOffer = {
+  referencePrice: number;
+  price: number;
+  savings: number;
+  savingsPercent: number;
+  signalTier: number;
+  regionBand: string | null;
+};
+
+function money(value: number): number {
+  return +value.toFixed(2);
+}
+
+export function getRegionBand(postcode?: string | null, country?: string | null): string | null {
+  const cleaned = (postcode ?? "").replace(/\D/g, "");
+  if (!isAustralia(country) || cleaned.length < 1) return null;
+  const first = cleaned[0];
+  if (first === "2" || first === "3") return "south-east";
+  if (first === "4") return "north-east";
+  if (first === "5" || first === "6") return "west";
+  return "national";
+}
+
+export function computeUnitOffer(basePrice: number, signals: PricingSignals = {}): UnitOffer {
+  const safeBase = Math.min(MAX_REFERENCE_PRICE, Math.max(MIN_UNIT_PRICE, Number(basePrice) || UNIT_PRICE));
+  let score = 0;
+  if ((signals.returnVisits ?? 0) >= 2) score += 1;
+  if ((signals.productInterest ?? 0) >= 2 || signals.quizCompleted) score += 1;
+  if ((signals.cartQuantity ?? 0) >= 1) score += 1;
+  if ((signals.cartQuantity ?? 0) >= BULK_DISCOUNT_MIN_QTY) score += 2;
+  if (signals.exitIntent) score += 2;
+
+  const regionBand = getRegionBand(signals.postcode, signals.country);
+  if (regionBand === "south-east" || regionBand === "north-east") score += 1;
+
+  const intentPrice = score >= 3 ? 35 : score === 2 ? 37.5 : score === 1 ? 39.5 : safeBase;
+  const bulkPrice = (signals.cartQuantity ?? 0) >= BULK_DISCOUNT_MIN_QTY
+    ? safeBase * (1 - BULK_DISCOUNT_PERCENT / 100)
+    : safeBase;
+  const price = money(Math.max(MIN_UNIT_PRICE, Math.min(safeBase, intentPrice, bulkPrice)));
+  const referencePrice = MAX_REFERENCE_PRICE;
+  const savings = money(referencePrice - price);
+  const savingsPercent = Math.round((savings / referencePrice) * 100);
+  return { referencePrice, price, savings, savingsPercent, signalTier: Math.min(score, 4), regionBand };
+}
 
 export type ShippingMethod = "standard" | "express" | "worldwide";
 
