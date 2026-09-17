@@ -273,6 +273,8 @@ function Home() {
         </div>
       </section>
 
+      <SignatureIndex items={featured.data ?? []} />
+
       {/* COLLECTION */}
       <section className="section container-px max-w-7xl mx-auto">
         <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6 mb-10">
