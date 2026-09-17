@@ -16,9 +16,9 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Abdulrahman Perfumes — Scent as a welcome" },
-      { name: "description", content: "A Sydney fragrance house built on Gulf hospitality. Oud, amber and modern blends composed in the UAE, bottled here. Every 50ml is $41.50." },
+      { name: "description", content: "A Sydney fragrance house built on Gulf hospitality. Oud, amber and modern blends composed in the UAE, bottled here, with current offers shown clearly." },
       { property: "og:title", content: "Abdulrahman Perfumes — Scent as a welcome" },
-      { property: "og:description", content: "A Sydney fragrance house built on Gulf hospitality. Every 50ml eau de parfum is $41.50 — take two and save 15%." },
+      { property: "og:description", content: "A Sydney fragrance house built on Gulf hospitality. Explore 50ml eau de parfums with current offers shown clearly." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -40,7 +40,7 @@ const PILLARS = [
   {
     n: "III",
     t: "The everyday",
-    d: "One price for every bottle, because a good scent should not be saved for a rare occasion. Wear it to work. Wear it to nothing at all.",
+    d: "A fair price on every bottle, with every saving shown before checkout. Wear it to work. Wear it to nothing at all.",
   },
 ];
 
@@ -97,7 +97,7 @@ function Home() {
               <p className="text-base sm:text-lg mt-7 max-w-xl leading-relaxed text-[var(--background)]/80">
                 The name means servant of the Most Merciful. In the houses we grew up in, hospitality
                 always arrived as scent — before the tea, long before the conversation. We bottle that
-                gesture: Gulf-composed perfume, one honest price, sent from Sydney.
+                gesture: Gulf-composed perfume, honest value, sent from Sydney.
               </p>
               <div className="flex flex-wrap gap-3 mt-9">
                 <Link
@@ -115,7 +115,7 @@ function Home() {
               </div>
               <dl className="grid grid-cols-3 gap-6 mt-12 pt-7 border-t border-[var(--background)]/25 max-w-lg">
                 {[
-                  { t: "Every bottle", v: "$41.50" },
+                  { t: "Current offers", v: "$35–$55" },
                   { t: "Volume", v: "50ml" },
                   { t: "Take two", v: "−15%" },
                 ].map((s) => (
@@ -137,7 +137,7 @@ function Home() {
             <div className="container-px max-w-7xl mx-auto py-5 flex items-baseline justify-between gap-6">
               <span className="eyebrow text-[10px]">This week on the table</span>
               <span className="font-display text-xl sm:text-2xl link-underline">{hero.name}</span>
-              <span className="num text-sm whitespace-nowrap hidden sm:block">$41.50 · 50ml</span>
+              <span className="num text-sm whitespace-nowrap hidden sm:block">Current offer · 50ml</span>
             </div>
           </Link>
         )}
@@ -183,7 +183,7 @@ function Home() {
           {[
             { img: portraitWomanCurls, alt: "A woman smiling as she holds a bottle of Abdulrahman eau de parfum", cap: "The first wear", body: "Warm, close to the skin, and still there at dinner." },
             { img: portraitManLinen, alt: "A man in linen holding a bottle of Abdulrahman eau de parfum", cap: "For him, for her", body: "Most of our blends are worn by whoever reaches for them first." },
-            { img: portraitWomanWaves, alt: "A woman holding a bottle of Abdulrahman eau de parfum in morning light", cap: "Every day", body: "One price, so the good bottle isn't saved for later." },
+            { img: portraitWomanWaves, alt: "A woman holding a bottle of Abdulrahman eau de parfum in morning light", cap: "Every day", body: "Visible value, so the good bottle isn't saved for later." },
           ].map((p) => (
             <figure key={p.cap} className="bg-background">
               <div className="aspect-[4/5] overflow-hidden">
@@ -224,7 +224,7 @@ function Home() {
       <section className="ink-section border-y border-border">
         <div className="container-px max-w-7xl mx-auto grid lg:grid-cols-2">
           <div className="py-16 lg:py-24 lg:pr-16">
-            <span className="eyebrow text-[var(--gold)]">Why one price</span>
+            <span className="eyebrow text-[var(--gold)]">Why fair pricing</span>
             <h2 className="font-display mt-4">No campaign to pay for. No boutique rent. No theatre.</h2>
             <p className="mt-6 leading-relaxed text-[var(--background)]/75">
               A designer bottle carries a model, a magazine spread and a shopfront on its shoulders before
@@ -245,7 +245,7 @@ function Home() {
             </div>
             <div className="flex items-baseline justify-between border-b border-[var(--background)]/20 pb-5">
               <span className="text-sm">Abdulrahman, 50ml</span>
-              <span className="font-display num text-4xl text-[var(--gold)]">$41.50</span>
+              <span className="font-display num text-4xl text-[var(--gold)]">$35–$55</span>
             </div>
             <div className="flex items-baseline justify-between">
               <span className="text-sm">Two bottles, together</span>

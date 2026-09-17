@@ -5,7 +5,7 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "Our story — Abdulrahman Perfumes" },
-      { name: "description", content: "Abdulrahman Perfumes is a Sydney fragrance house built on Gulf hospitality: perfume composed in the UAE, bottled here, sold at one honest price." },
+      { name: "description", content: "Abdulrahman Perfumes is a Sydney fragrance house built on Gulf hospitality: perfume composed in the UAE, bottled here, with honest visible offers." },
       { property: "og:title", content: "Our story — Abdulrahman Perfumes" },
       { property: "og:description", content: "The name means servant of the Most Merciful. Here's what that has to do with perfume." },
       { property: "og:type", content: "website" },
@@ -48,7 +48,7 @@ function AboutPage() {
             <div className="grid grid-cols-3 gap-5 mt-10 pt-6 border-t border-border max-w-lg">
               <Fact value="UAE" label="Composed" />
               <Fact value="Sydney" label="Bottled" />
-              <Fact value="$41.50" label="One price" />
+              <Fact value="$35–$55" label="Visible offers" />
             </div>
           </div>
           <BrandStoryPortrait />
@@ -104,14 +104,14 @@ function AboutPage() {
           <div className="py-16 sm:py-24 lg:pr-20">
             <span className="eyebrow text-[var(--gold)]">Chapter IV · The honest price</span>
             <h2 className="font-display mt-4">The oil, the glass, the care. Not the theatre.</h2>
-            <p className="mt-6 text-[var(--background)]/70 leading-relaxed">We do not ask one fragrance to subsidise a billboard for another. Every 50ml bottle is the same price, because choosing by instinct should not come with a penalty.</p>
+            <p className="mt-6 text-[var(--background)]/70 leading-relaxed">We do not ask a fragrance to carry the cost of a billboard. Every current offer is shown before checkout, because choosing by instinct should not come with a hidden surprise.</p>
           </div>
           <div className="py-16 sm:py-24 lg:pl-20 lg:border-l border-[var(--background)]/20 flex flex-col justify-center">
             <div className="flex items-end justify-between border-b border-[var(--background)]/20 pb-6">
               <span className="eyebrow text-[var(--background)]/60">Every fragrance</span>
-              <span className="font-display num text-5xl text-[var(--gold)]">$41.50</span>
+              <span className="font-display num text-5xl text-[var(--gold)]">$35–$55</span>
             </div>
-            <p className="text-sm text-[var(--background)]/65 mt-5">50ml eau de parfum · buy two and save 15% automatically</p>
+            <p className="text-sm text-[var(--background)]/65 mt-5">50ml eau de parfum · your strongest available offer is applied automatically</p>
           </div>
         </div>
       </section>

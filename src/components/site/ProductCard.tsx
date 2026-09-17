@@ -1,6 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Heart } from "lucide-react";
-import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
 import { useCart, useWishlist } from "@/hooks/useCart";
 import { toast } from "sonner";
@@ -34,10 +33,7 @@ export function ProductCard({ p }: { p: ProductCardData }) {
   const { has, toggle } = useWishlist();
   const wished = has(p.id);
   const offer = usePricingOffer(Number(p.price));
-  const discount =
-    p.compare_at_price && p.compare_at_price > p.price
-      ? Math.round(100 - (Number(p.price) / Number(p.compare_at_price)) * 100)
-      : 0;
+  const discount = offer.savingsPercent;
   const inspiredFull = p.inspired_by_brand
     ? `${p.inspired_by_brand}${p.inspired_by_product ? ` ${p.inspired_by_product}` : ""}`
     : null;
