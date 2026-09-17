@@ -31,6 +31,8 @@ import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as CheckoutSuccessOrderIdRouteImport } from './routes/checkout.success.$orderId'
+import { Route as ApiPublicProductsSitemapRouteImport } from './routes/api/public/products-sitemap'
+import { Route as ApiPublicMerchantFeedRouteImport } from './routes/api/public/merchant-feed'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -148,6 +150,17 @@ const CheckoutSuccessOrderIdRoute = CheckoutSuccessOrderIdRouteImport.update({
   path: '/success/$orderId',
   getParentRoute: () => CheckoutRoute,
 } as any)
+const ApiPublicProductsSitemapRoute =
+  ApiPublicProductsSitemapRouteImport.update({
+    id: '/api/public/products-sitemap',
+    path: '/api/public/products-sitemap',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicMerchantFeedRoute = ApiPublicMerchantFeedRouteImport.update({
+  id: '/api/public/merchant-feed',
+  path: '/api/public/merchant-feed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailTransactionalSendRoute =
   LovableEmailTransactionalSendRouteImport.update({
     id: '/lovable/email/transactional/send',
@@ -204,6 +217,8 @@ export interface FileRoutesByFullPath {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/shop/': typeof ShopIndexRoute
+  '/api/public/merchant-feed': typeof ApiPublicMerchantFeedRoute
+  '/api/public/products-sitemap': typeof ApiPublicProductsSitemapRoute
   '/checkout/success/$orderId': typeof CheckoutSuccessOrderIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/stripe/sync-orders': typeof ApiPublicStripeSyncOrdersRoute
@@ -234,6 +249,8 @@ export interface FileRoutesByTo {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/shop': typeof ShopIndexRoute
+  '/api/public/merchant-feed': typeof ApiPublicMerchantFeedRoute
+  '/api/public/products-sitemap': typeof ApiPublicProductsSitemapRoute
   '/checkout/success/$orderId': typeof CheckoutSuccessOrderIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/stripe/sync-orders': typeof ApiPublicStripeSyncOrdersRoute
@@ -265,6 +282,8 @@ export interface FileRoutesById {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/shop/': typeof ShopIndexRoute
+  '/api/public/merchant-feed': typeof ApiPublicMerchantFeedRoute
+  '/api/public/products-sitemap': typeof ApiPublicProductsSitemapRoute
   '/checkout/success/$orderId': typeof CheckoutSuccessOrderIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/stripe/sync-orders': typeof ApiPublicStripeSyncOrdersRoute
@@ -297,6 +316,8 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/shop/$slug'
     | '/shop/'
+    | '/api/public/merchant-feed'
+    | '/api/public/products-sitemap'
     | '/checkout/success/$orderId'
     | '/lovable/email/suppression'
     | '/api/public/stripe/sync-orders'
@@ -327,6 +348,8 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/shop/$slug'
     | '/shop'
+    | '/api/public/merchant-feed'
+    | '/api/public/products-sitemap'
     | '/checkout/success/$orderId'
     | '/lovable/email/suppression'
     | '/api/public/stripe/sync-orders'
@@ -357,6 +380,8 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/shop/$slug'
     | '/shop/'
+    | '/api/public/merchant-feed'
+    | '/api/public/products-sitemap'
     | '/checkout/success/$orderId'
     | '/lovable/email/suppression'
     | '/api/public/stripe/sync-orders'
@@ -388,6 +413,8 @@ export interface RootRouteChildren {
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   ShopSlugRoute: typeof ShopSlugRoute
   ShopIndexRoute: typeof ShopIndexRoute
+  ApiPublicMerchantFeedRoute: typeof ApiPublicMerchantFeedRoute
+  ApiPublicProductsSitemapRoute: typeof ApiPublicProductsSitemapRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicStripeSyncOrdersRoute: typeof ApiPublicStripeSyncOrdersRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -553,6 +580,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutSuccessOrderIdRouteImport
       parentRoute: typeof CheckoutRoute
     }
+    '/api/public/products-sitemap': {
+      id: '/api/public/products-sitemap'
+      path: '/api/public/products-sitemap'
+      fullPath: '/api/public/products-sitemap'
+      preLoaderRoute: typeof ApiPublicProductsSitemapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/merchant-feed': {
+      id: '/api/public/merchant-feed'
+      path: '/api/public/merchant-feed'
+      fullPath: '/api/public/merchant-feed'
+      preLoaderRoute: typeof ApiPublicMerchantFeedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/send': {
       id: '/lovable/email/transactional/send'
       path: '/lovable/email/transactional/send'
@@ -631,6 +672,8 @@ const rootRouteChildren: RootRouteChildren = {
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   ShopSlugRoute: ShopSlugRoute,
   ShopIndexRoute: ShopIndexRoute,
+  ApiPublicMerchantFeedRoute: ApiPublicMerchantFeedRoute,
+  ApiPublicProductsSitemapRoute: ApiPublicProductsSitemapRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicStripeSyncOrdersRoute: ApiPublicStripeSyncOrdersRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,

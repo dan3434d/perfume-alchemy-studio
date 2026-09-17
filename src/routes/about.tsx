@@ -4,13 +4,15 @@ import { BrandStoryPortrait, ClientMoments } from "@/components/site/ClientMomen
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "Our story — Abdulrahman Perfumes" },
-      { name: "description", content: "Abdulrahman Perfumes is a Sydney fragrance house built on Gulf hospitality: perfume composed in the UAE, bottled here, with honest visible offers." },
-      { property: "og:title", content: "Our story — Abdulrahman Perfumes" },
+      { title: "Our Story — How Our Luxury Inspired Perfumes Are Made" },
+      { name: "description", content: "How Abdulrahman Perfumes makes luxury designer-inspired fragrance: oud, rose and amber composed by Gulf perfumers in the UAE, aged, then bottled by hand in Sydney." },
+      { property: "og:title", content: "Our Story — How Our Luxury Inspired Perfumes Are Made" },
       { property: "og:description", content: "The name means servant of the Most Merciful. Here's what that has to do with perfume." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://www.abdulrahmanperfumes.com.au/about" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://www.abdulrahmanperfumes.com.au/about" }],
   }),
   component: AboutPage,
 });

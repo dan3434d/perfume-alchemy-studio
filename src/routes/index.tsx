@@ -15,12 +15,32 @@ import portraitWomanWaves from "@/assets/brand/woman-waves.jpeg.asset.json";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Abdulrahman Perfumes — Scent as a welcome" },
-      { name: "description", content: "A Sydney fragrance house built on Gulf hospitality. Oud, amber and modern blends composed in the UAE, bottled here, with current offers shown clearly." },
-      { property: "og:title", content: "Abdulrahman Perfumes — Scent as a welcome" },
-      { property: "og:description", content: "A Sydney fragrance house built on Gulf hospitality. Explore 50ml eau de parfums with current offers shown clearly." },
+      { title: "Luxury Inspired Perfumes Australia | Abdulrahman Perfumes" },
+      { name: "description", content: "Luxury designer-inspired perfumes from $35. Long-lasting 50ml oud, amber, fresh and floral eau de parfum composed in the UAE, bottled in Sydney, shipped Australia-wide." },
+      { property: "og:title", content: "Luxury Inspired Perfumes Australia | Abdulrahman Perfumes" },
+      { property: "og:description", content: "Designer-inspired 50ml eau de parfum, composed in the UAE and bottled in Sydney. Current offers shown clearly, tracked Australian delivery." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://www.abdulrahmanperfumes.com.au/" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Luxury Inspired Perfumes Australia | Abdulrahman Perfumes" },
+      { name: "twitter:description", content: "Designer-inspired 50ml eau de parfum, composed in the UAE and bottled in Sydney." },
+    ],
+    links: [{ rel: "canonical", href: "https://www.abdulrahmanperfumes.com.au/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Store",
+          name: "Abdulrahman Perfumes",
+          url: "https://www.abdulrahmanperfumes.com.au/",
+          description:
+            "Luxury designer-inspired eau de parfum composed in the UAE and bottled in Sydney, Australia.",
+          priceRange: "$35–$55 AUD",
+          areaServed: "Australia",
+          address: { "@type": "PostalAddress", addressLocality: "Sydney", addressRegion: "NSW", addressCountry: "AU" },
+        }),
+      },
     ],
   }),
   component: Home,
