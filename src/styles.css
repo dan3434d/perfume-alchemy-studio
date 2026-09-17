@@ -208,6 +208,15 @@
 
   .surface-warm { background: var(--sand); border: 1px solid var(--border); }
 
+  .brand-rule {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1rem;
+  }
+  .brand-rule::before,
+  .brand-rule::after { content: ""; height: 1px; background: var(--border); }
+
   .text-balance { text-wrap: balance; }
   .text-pretty { text-wrap: pretty; }
   .hairline { border-color: color-mix(in oklab, var(--foreground) 10%, transparent); }

@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { BrandStoryPortrait, ClientMoments } from "@/components/site/ClientMoments";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -36,67 +37,82 @@ function AboutPage() {
   return (
     <>
       <section className="border-b border-border">
-        <div className="container-px max-w-4xl mx-auto py-20 sm:py-28">
-          <span className="eyebrow eyebrow-brass">Our story</span>
-          <h1 className="mt-6">A name, and what it asks of us.</h1>
-          <p className="text-lg text-muted-foreground mt-8 leading-relaxed">
-            Abdulrahman means <span className="text-foreground">servant of the Most Merciful</span>. It is a
-            family name before it is a label on a bottle, and it carries an instruction: be generous first,
-            and be generous without being asked.
-          </p>
+        <div className="container-px max-w-7xl mx-auto grid lg:grid-cols-[0.85fr_1.15fr] gap-10 lg:gap-16 items-center py-10 sm:py-16">
+          <div className="py-8 sm:py-12">
+            <span className="eyebrow eyebrow-brass">The house of Abdulrahman</span>
+            <h1 className="mt-6">A name, and what it asks of us.</h1>
+            <p className="text-lg text-muted-foreground mt-8 leading-relaxed max-w-xl">
+              Abdulrahman means <span className="text-foreground">servant of the Most Merciful</span>. It is a
+              family name before it is a label, and it carries an instruction: be generous first, without being asked.
+            </p>
+            <div className="grid grid-cols-3 gap-5 mt-10 pt-6 border-t border-border max-w-lg">
+              <Fact value="UAE" label="Composed" />
+              <Fact value="Sydney" label="Bottled" />
+              <Fact value="$41.50" label="One price" />
+            </div>
+          </div>
+          <BrandStoryPortrait />
         </div>
       </section>
 
-      <section className="section container-px max-w-4xl mx-auto">
-        <div className="space-y-7 text-lg leading-relaxed">
-          <p>
-            Every house we grew up in had a scent waiting at the door. Bakhoor smouldering in the hallway
-            before guests arrived. A small bottle of oud pressed into a visitor's hand on the way out, so
-            the evening travelled home with them. Nobody called it luxury. It was simply how you told
-            someone they were welcome.
-          </p>
-          <p className="text-muted-foreground">
-            When we started selling perfume in Australia, the thing that felt wrong wasn't the fragrance —
-            it was the price of being welcomed. Two hundred dollars for a gesture that, where we're from,
-            costs a host nothing to give. So we built the house we wanted: Gulf perfumers composing serious
-            blends, one price for every bottle, and no marketing theatre folded into the cost.
-          </p>
-          <p className="text-muted-foreground">
-            We don't stage photographs of people we've never met. We don't invent a heritage we don't have.
-            What we have is a family name, a set of formulas we're proud of, and a bench in Sydney where
-            every order is packed by someone who knows what's in it.
-          </p>
+      <section className="section container-px max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-[0.65fr_1.35fr] gap-8 lg:gap-20">
+          <div>
+            <span className="eyebrow eyebrow-brass">Chapter I · The welcome</span>
+            <p className="font-display text-3xl sm:text-4xl mt-4 leading-tight">“Perfume was never decoration. It was how you told someone they mattered.”</p>
+          </div>
+          <div className="space-y-7 text-lg leading-relaxed">
+            <p>Every house we grew up in had a scent waiting at the door. Bakhoor smouldered in the hallway before guests arrived. Oud was offered on the wrist. A small bottle might be pressed into a visitor's hand so the evening travelled home with them.</p>
+            <p className="text-muted-foreground">Nobody called it luxury. It was simply hospitality: warm, instinctive and generous. Abdulrahman Perfumes began with the belief that this gesture still belongs in everyday life.</p>
+          </div>
         </div>
       </section>
 
-      <section className="border-y border-border bg-[var(--sand)]">
+      <ClientMoments />
+
+      <section className="section container-px max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-24">
+          <div>
+            <span className="eyebrow eyebrow-brass">Chapter II · Two places</span>
+            <h2 className="font-display mt-4">Composed in the Gulf. Finished close to home.</h2>
+          </div>
+          <div className="space-y-6 text-base leading-relaxed">
+            <p>Our formulas are developed with perfumers in the UAE, where oud, rose, resin and amber are part of a living fragrance culture rather than a passing trend.</p>
+            <p className="text-muted-foreground">The concentrates arrive in Sydney to be checked, bottled and packed. This keeps the craft connected to its source and the service close to the people ordering from us.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-border lattice">
         <div className="container-px max-w-7xl mx-auto py-16 sm:py-24">
           <span className="eyebrow eyebrow-brass">How it's made</span>
           <h2 className="font-display mt-3 mb-12">Three stages, no shortcuts</h2>
           <div className="grid md:grid-cols-3 gap-px bg-border border border-border">
             {STEPS.map((s) => (
-              <div key={s.n} className="bg-background p-8 sm:p-10">
+              <div key={s.n} className="bg-background p-8 sm:p-10 min-h-72 flex flex-col">
                 <div className="eyebrow text-[var(--amber-deep)]">Stage {s.n}</div>
                 <h3 className="font-display text-2xl mt-4">{s.t}</h3>
-                <p className="text-sm text-muted-foreground mt-4 leading-relaxed">{s.b}</p>
+                <p className="text-sm text-muted-foreground mt-auto pt-8 leading-relaxed">{s.b}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="section container-px max-w-5xl mx-auto">
-        <div className="grid sm:grid-cols-3 gap-10">
-          {[
-            { t: "One price", d: "$41.50 for every 50ml, whether it took us a week or a year to get right." },
-            { t: "Composed in the UAE", d: "By perfumers trained in the souks, working to our brief and our corrections." },
-            { t: "Sent from Sydney", d: "Packed by hand, out the door within 24 hours, tracked across Australia." },
-          ].map((v) => (
-            <div key={v.t} className="border-t border-foreground pt-5">
-              <h3 className="font-display text-2xl">{v.t}</h3>
-              <p className="text-sm text-muted-foreground mt-3 leading-relaxed">{v.d}</p>
+      <section className="ink-section border-b border-border">
+        <div className="container-px max-w-7xl mx-auto grid lg:grid-cols-2">
+          <div className="py-16 sm:py-24 lg:pr-20">
+            <span className="eyebrow text-[var(--gold)]">Chapter IV · The honest price</span>
+            <h2 className="font-display mt-4">The oil, the glass, the care. Not the theatre.</h2>
+            <p className="mt-6 text-[var(--background)]/70 leading-relaxed">We do not ask one fragrance to subsidise a billboard for another. Every 50ml bottle is the same price, because choosing by instinct should not come with a penalty.</p>
+          </div>
+          <div className="py-16 sm:py-24 lg:pl-20 lg:border-l border-[var(--background)]/20 flex flex-col justify-center">
+            <div className="flex items-end justify-between border-b border-[var(--background)]/20 pb-6">
+              <span className="eyebrow text-[var(--background)]/60">Every fragrance</span>
+              <span className="font-display num text-5xl text-[var(--gold)]">$41.50</span>
             </div>
-          ))}
+            <p className="text-sm text-[var(--background)]/65 mt-5">50ml eau de parfum · buy two and save 15% automatically</p>
+          </div>
         </div>
       </section>
 
@@ -114,4 +130,8 @@ function AboutPage() {
       </section>
     </>
   );
+}
+
+function Fact({ value, label }: { value: string; label: string }) {
+  return <div><div className="font-display text-xl sm:text-2xl">{value}</div><div className="eyebrow text-[9px] mt-1">{label}</div></div>;
 }

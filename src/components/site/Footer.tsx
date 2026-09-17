@@ -34,6 +34,7 @@ export function Footer() {
           </div>
           <div>
             <h4 className="eyebrow">Reach us</h4>
+            <p className="font-display text-lg mt-4">Composed in the UAE.<br />Sent from Sydney.</p>
             <p className="mt-4 text-sm">support@abdulrahman.store</p>
             <p className="text-sm text-muted-foreground mt-1">Sydney, Australia · AUD</p>
             <ul className="mt-4 space-y-2.5 text-sm">
