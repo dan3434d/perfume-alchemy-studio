@@ -165,7 +165,7 @@ function ProductPage() {
   const doBuy = () => { doAdd(); };
 
   return (
-    <div className="container-px max-w-7xl mx-auto py-10 sm:py-14">
+    <div className="container-px max-w-7xl mx-auto py-10 sm:py-14 pb-28 lg:pb-14">
       {/* Breadcrumb */}
       <nav className="text-xs text-muted-foreground mb-6 flex gap-1.5 flex-wrap">
         <Link to="/" className="hover:text-foreground">Home</Link><span>/</span>
@@ -396,7 +396,7 @@ function ProductPage() {
       )}
 
       {/* Sticky mobile buy bar */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background/95 backdrop-blur px-4 py-3 flex items-center gap-3">
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background/95 backdrop-blur pl-4 pr-20 py-3 flex items-center gap-3">
         <div className="min-w-0">
           <div className="text-xs text-muted-foreground truncate">{p.name}</div>
           <div className="font-semibold text-sm">{formatAUD(p.price)}</div>

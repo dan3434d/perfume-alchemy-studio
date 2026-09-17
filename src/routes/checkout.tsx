@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link, Outlet, useChildMatches } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
@@ -45,7 +45,7 @@ export const Route = createFileRoute("/checkout")({
 const AU_STATES = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"];
 
 function Checkout() {
-  const childMatches = useChildMatches();
+  const location = useLocation();
   const { lines, subtotal, count } = useCart();
   const { discount, clear: clearDiscount } = useDiscount();
   const navigate = useNavigate();
@@ -148,7 +148,7 @@ function Checkout() {
 
   const fetchClientSecret = useCallback(() => Promise.resolve(clientSecret ?? ""), [clientSecret]);
 
-  if (childMatches.length > 0) {
+  if (location.pathname !== "/checkout" && location.pathname.startsWith("/checkout/")) {
     return <Outlet />;
   }
 
@@ -232,7 +232,7 @@ function Checkout() {
                         required
                         value={form.state}
                         onChange={(e) => setForm({ ...form, state: e.target.value })}
-                        className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
+                        className="mt-1 w-full border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring transition-shadow"
                       >
                         <option value="">Select…</option>
                         {AU_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -247,7 +247,7 @@ function Checkout() {
                     required
                     value={form.country}
                     onChange={(e) => setForm({ ...form, country: e.target.value })}
-                    className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
+                    className="mt-1 w-full border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring transition-shadow"
                   >
                     {COUNTRIES.map((c) => <option key={c.code} value={c.name}>{c.name}</option>)}
                   </select>
@@ -429,7 +429,7 @@ function Checkout() {
                   value={promoInput}
                   onChange={(e) => setPromoInput(e.target.value)}
                   placeholder="Promo code"
-                  className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="flex-1 border border-border bg-background px-3 py-2 text-sm uppercase tracking-wide focus:outline-none focus:ring-1 focus:ring-ring"
                   onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyPromo(); } }}
                 />
                 <button
