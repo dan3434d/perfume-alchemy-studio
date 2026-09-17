@@ -11,6 +11,8 @@ import heroPortrait from "@/assets/brand/woman-closeup.jpeg.asset.json";
 import portraitManLinen from "@/assets/brand/man-linen.jpeg.asset.json";
 import portraitWomanCurls from "@/assets/brand/woman-curls.jpeg.asset.json";
 import portraitWomanWaves from "@/assets/brand/woman-waves.jpeg.asset.json";
+import brandFilmOne from "@/assets/brand/brand-film-1.mp4.asset.json";
+import brandFilmTwo from "@/assets/brand/brand-film-2.mp4.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -166,6 +168,29 @@ function Home() {
       <HouseMarquee />
       <TrustBar />
 
+      {/* BRAND FILM — full-bleed moving portrait */}
+      <section className="relative border-b border-border">
+        <div className="relative w-full overflow-hidden bg-[var(--ink)]">
+          <video
+            src={brandFilmOne.url}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            className="w-full h-[52vh] sm:h-[64vh] object-cover opacity-90"
+            aria-label="Abdulrahman Perfumes brand film"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/25 pointer-events-none" />
+          <div className="absolute bottom-0 inset-x-0 container-px pb-8 sm:pb-12">
+            <span className="eyebrow text-white/80">The house film</span>
+            <p className="font-display text-white text-2xl sm:text-4xl mt-3 max-w-2xl leading-snug">
+              Fragrance, worn in real light — not lit for a campaign.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* MANIFESTO */}
       <section className="section container-px max-w-5xl mx-auto text-center">
         <span className="eyebrow eyebrow-brass">What we believe</span>
@@ -215,6 +240,36 @@ function Home() {
               </figcaption>
             </figure>
           ))}
+        </div>
+      </section>
+
+      {/* CRAFT IN MOTION — second film with copy */}
+      <section className="border-y border-border bg-[var(--sand)]">
+        <div className="container-px max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 lg:gap-16 items-center section">
+          <div className="overflow-hidden border border-border bg-[var(--ink)]">
+            <video
+              src={brandFilmTwo.url}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              className="w-full aspect-video object-cover"
+              aria-label="An Abdulrahman perfume bottle being worn and carried through the day"
+            />
+          </div>
+          <div>
+            <span className="eyebrow eyebrow-brass">In motion</span>
+            <h2 className="font-display mt-3">The bottle that goes where you go</h2>
+            <p className="text-muted-foreground mt-4 leading-relaxed">
+              Composed in the UAE, bottled in Sydney, and made for the everyday — the commute, the
+              dinner, the last-minute plan. A good fragrance should keep up with a life, not sit on
+              a shelf waiting for a special occasion.
+            </p>
+            <p className="text-muted-foreground mt-4 leading-relaxed">
+              That's the standard every Abdulrahman blend is held to before it earns a label.
+            </p>
+          </div>
         </div>
       </section>
 
