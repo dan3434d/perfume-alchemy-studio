@@ -78,6 +78,18 @@ export const Route = createFileRoute("/shop/$slug")({
               : undefined,
           }),
         },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: `${SITE}/` },
+              { "@type": "ListItem", position: 2, name: "Shop", item: `${SITE}/shop` },
+              { "@type": "ListItem", position: 3, name: p.name, item: url },
+            ],
+          }),
+        },
       ],
     };
   },
