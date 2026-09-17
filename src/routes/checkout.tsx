@@ -414,7 +414,7 @@ function Checkout() {
             {count === 1 && (
               <div className="rounded-xl border border-[var(--amber-deep)]/40 bg-[var(--amber-deep)]/5 px-3 py-2.5 text-xs">
                 <span className="font-semibold text-[var(--amber-deep)]">One more bottle unlocks {BULK_DISCOUNT_PERCENT}% off</span>
-                <span className="text-muted-foreground"> — you'd save {formatAUD(+(subtotal * 2 * BULK_DISCOUNT_PERCENT / 100).toFixed(2))} on two.</span>
+                <span className="text-muted-foreground"> — your best available two-bottle price appears automatically.</span>
               </div>
             )}
 

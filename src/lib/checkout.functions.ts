@@ -48,6 +48,13 @@ async function getValidatedQuote(supabaseAdmin: any, data: z.infer<typeof Checko
   if (!quote || quote.visitor_key_hash !== visitorHash || new Date(quote.expires_at).getTime() <= Date.now()) {
     throw new Error("Your offer expired. Refresh checkout to get the latest price.");
   }
+  const quotedPrices = quote.product_prices as Record<string, { price?: number; quantity?: number }>;
+  const exactBag = data.lines.every((line) =>
+    quotedPrices?.[line.product_id]
+    && quotedPrices[line.product_id].quantity === line.quantity
+    && Number.isFinite(Number(quotedPrices[line.product_id].price)),
+  ) && Object.keys(quotedPrices ?? {}).length === new Set(data.lines.map((line) => line.product_id)).size;
+  if (!exactBag) throw new Error("Your bag changed. Refresh checkout to update your offer.");
   return quote;
 }
 

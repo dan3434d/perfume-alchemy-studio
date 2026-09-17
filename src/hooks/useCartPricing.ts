@@ -6,7 +6,7 @@ import type { CartLine } from "./useCart";
 
 export function useCartPricing(lines: CartLine[], location?: { postcode?: string; country?: string }) {
   const requestQuote = useServerFn(createPricingQuote);
-  const [quote, setQuote] = useState<PricingQuote | null>(null);
+  const [quoteState, setQuoteState] = useState<{ signature: string; quote: PricingQuote } | null>(null);
   const [refresh, setRefresh] = useState(0);
   const signature = useMemo(() => lines.map((line) => `${line.product_id}:${line.quantity}`).sort().join("|"), [lines]);
   const count = lines.reduce((sum, line) => sum + line.quantity, 0);
@@ -18,7 +18,7 @@ export function useCartPricing(lines: CartLine[], location?: { postcode?: string
   }, []);
 
   useEffect(() => {
-    if (!lines.length) { setQuote(null); return; }
+    if (!lines.length) { setQuoteState(null); return; }
     const timer = window.setTimeout(async () => {
       try {
         const next = await requestQuote({ data: {
@@ -26,14 +26,17 @@ export function useCartPricing(lines: CartLine[], location?: { postcode?: string
           lines: lines.map((line) => ({ product_id: line.product_id, quantity: line.quantity })),
           signals: getPricingSignals(count, location),
         } });
-        setQuote((current) => current && current.subtotal < next.subtotal ? current : next);
+        setQuoteState((current) => current?.signature === signature && current.quote.subtotal < next.subtotal
+          ? current
+          : { signature, quote: next });
       } catch {
-        setQuote(null);
+        setQuoteState(null);
       }
     }, 250);
     return () => window.clearTimeout(timer);
   }, [signature, count, location?.postcode, location?.country, refresh, requestQuote]);
 
+  const quote = quoteState?.signature === signature ? quoteState.quote : null;
   const pricedLines = lines.map((line) => ({
     ...line,
     price: quote?.lines[line.product_id]?.price ?? line.price,

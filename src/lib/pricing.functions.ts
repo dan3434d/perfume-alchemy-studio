@@ -20,7 +20,7 @@ const QuoteSchema = z.object({
 export type PricingQuote = {
   id: string;
   expiresAt: string;
-  lines: Record<string, { price: number; referencePrice: number; savings: number; savingsPercent: number }>;
+  lines: Record<string, { price: number; referencePrice: number; savings: number; savingsPercent: number; quantity: number }>;
   subtotal: number;
   referenceSubtotal: number;
   savings: number;
@@ -54,6 +54,7 @@ export const createPricingQuote = createServerFn({ method: "POST" })
         referencePrice: offer.referencePrice,
         savings: offer.savings,
         savingsPercent: offer.savingsPercent,
+        quantity,
       };
       subtotal += offer.price * quantity;
       referenceSubtotal += offer.referencePrice * quantity;
