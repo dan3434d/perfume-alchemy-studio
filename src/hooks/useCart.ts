@@ -30,7 +30,10 @@ function writeLocal(lines: CartLine[]) {
 function emit() { listeners.forEach((l) => l(cache)); }
 
 export function useCart() {
-  const [lines, setLines] = useState<CartLine[]>(cache.length ? cache : []);
+  // Keep the server and the browser's first render identical. Cart data is
+  // restored after mount so one visitor's module cache can never leak into
+  // another server-rendered response.
+  const [lines, setLines] = useState<CartLine[]>([]);
 
   useEffect(() => {
     if (cache.length === 0) {

@@ -2,8 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
-import { ReviewsCarousel } from "@/components/site/ReviewsCarousel";
-import { SocialFeed } from "@/components/site/SocialFeed";
 import { TrustBar } from "@/components/site/TrustBar";
 import { HouseMarquee } from "@/components/site/HouseMarquee";
 import { SignatureIndex } from "@/components/site/SignatureIndex";
@@ -13,6 +11,8 @@ import portraitWomanCurls from "@/assets/brand/woman-curls.jpeg.asset.json";
 import portraitWomanWaves from "@/assets/brand/woman-waves.jpeg.asset.json";
 import brandFilmOne from "@/assets/brand/brand-film-1.mp4.asset.json";
 import brandFilmTwo from "@/assets/brand/brand-film-2.mp4.asset.json";
+import houseBottlePlinth from "@/assets/brand/house-bottle-plinth.jpg";
+import houseCitrusWater from "@/assets/brand/house-citrus-water.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -167,6 +167,25 @@ function Home() {
 
       <HouseMarquee />
       <TrustBar />
+
+      <section className="border-b border-border">
+        <div className="container-px max-w-7xl mx-auto grid lg:grid-cols-[1.15fr_0.85fr] gap-px bg-border border-x border-border">
+          <figure className="relative min-h-[58vh] overflow-hidden bg-[var(--cream)]">
+            <img src={houseCitrusWater} alt="Abdulrahman Perfumes house bottle surrounded by fresh citrus and cucumber underwater" className="absolute inset-0 h-full w-full object-cover" />
+          </figure>
+          <div className="bg-background p-8 sm:p-12 lg:p-16 flex flex-col justify-center">
+            <span className="eyebrow eyebrow-brass">The bottle, honestly shown</span>
+            <h2 className="font-display mt-4">Made to be picked up, used, and remembered.</h2>
+            <p className="text-muted-foreground mt-5 leading-relaxed">
+              A weighty 50ml glass bottle, eau de parfum concentration, and a composition built to stay with you. The label changes with the scent; the standard behind it does not.
+            </p>
+            <figure className="mt-8 grid grid-cols-[96px_1fr] gap-5 items-center border-t border-border pt-6">
+              <img src={houseBottlePlinth} alt="Abdulrahman Perfumes house bottle on a stone plinth" className="aspect-square w-24 object-cover" loading="lazy" />
+              <figcaption className="text-sm text-muted-foreground leading-relaxed">House photography of our bottle and presentation. Individual fragrance pages show the scent you are choosing.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
 
       {/* BRAND FILM — full-bleed moving portrait */}
       <section className="relative border-b border-border">
@@ -401,9 +420,6 @@ function Home() {
           ))}
         </div>
       </section>
-
-      <ReviewsCarousel />
-      <SocialFeed />
 
       {/* QUIZ */}
       <section className="section container-px max-w-4xl mx-auto text-center">

@@ -29,7 +29,8 @@ import {
   type ShippingMethod,
 } from "@/lib/pricing";
 import { toast } from "sonner";
-import { Lock, Truck, ShieldCheck, BadgePercent, X, ArrowLeft, CreditCard, Loader2, Zap, Globe2, MailCheck, Headphones } from "lucide-react";
+import { Lock, Truck, ShieldCheck, BadgePercent, X, ArrowLeft, CreditCard, Loader2, Zap, Globe2, RotateCcw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 
 export const Route = createFileRoute("/checkout")({
@@ -169,62 +170,43 @@ function Checkout() {
 
   return (
     <div className="container-px max-w-6xl mx-auto py-8 sm:py-14 pb-32 lg:pb-14">
-      {/* Steps */}
-      <div className="flex items-center justify-center gap-2 sm:gap-6 mb-8 text-[11px] sm:text-sm overflow-x-auto">
-        {["Bag", "Delivery", "Pay", "Done"].map((s, i) => {
-          const stepIdx = clientSecret ? 2 : 1;
+      <div className="flex items-center gap-3 mb-7 text-xs" aria-label="Checkout progress">
+        {["Delivery", "Secure payment"].map((s, i) => {
+          const stepIdx = clientSecret ? 1 : 0;
           const active = i === stepIdx;
           const done = i < stepIdx;
           return (
             <div key={s} className="flex items-center gap-2 shrink-0">
-              <span className={`w-6 h-6 rounded-full grid place-items-center text-[10px] font-bold transition-colors ${active ? "bg-foreground text-background" : done ? "bg-[var(--amber-deep)] text-white" : "bg-secondary text-muted-foreground"}`}>
+              <span className={`w-6 h-6 grid place-items-center text-[10px] font-bold transition-colors ${active ? "bg-foreground text-background" : done ? "bg-[var(--amber-deep)] text-background" : "border border-border text-muted-foreground"}`}>
                 {done ? "✓" : i + 1}
               </span>
               <span className={active ? "font-semibold" : "text-muted-foreground"}>{s}</span>
-              {i < 3 && <span className="w-6 sm:w-10 h-px bg-border" />}
+              {i === 0 && <span className="w-10 h-px bg-border" />}
             </div>
           );
         })}
       </div>
 
       <h1 className="font-display text-3xl sm:text-4xl mb-2">Checkout</h1>
-      <p className="text-sm text-muted-foreground mb-8 flex items-center gap-2">
-        <Lock className="w-3.5 h-3.5" /> Secure on-site payment by Stripe · AUD
+      <p className="text-sm text-muted-foreground mb-6 flex items-center gap-2">
+        <Lock className="w-3.5 h-3.5" /> Payment stays on this site · Prices in AUD
       </p>
 
-      <div className="grid grid-cols-3 border-y border-border mb-8">
-        <CheckoutTrust i={ShieldCheck} t="Protected payment" d="Card details stay encrypted" />
-        <CheckoutTrust i={Truck} t="Sent in 24 hours" d="Tracked from Sydney" />
-        <CheckoutTrust i={Lock} t="30-day returns" d="On unopened bottles" />
-      </div>
-
-      <div className="mb-8 border border-border bg-secondary/35 px-4 py-5 sm:px-6" aria-label="Abdulrahman customer promise">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-8">
-          <div className="flex items-center gap-3 sm:pr-8 sm:border-r border-border shrink-0">
-            <TrustSeal />
-            <div>
-              <div className="font-display text-lg leading-none">The Abdulrahman Promise</div>
-              <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground mt-1">Care from checkout to delivery</div>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-x-5 gap-y-3 flex-1 text-xs">
-            <TrustPoint icon={MailCheck} label="Immediate order receipt" />
-            <TrustPoint icon={Truck} label="Tracked Australian delivery" />
-            <TrustPoint icon={ShieldCheck} label="Secure encrypted payment" />
-            <TrustPoint icon={Headphones} label="Real customer support" />
-          </div>
-        </div>
+      <div className="grid grid-cols-3 border-y border-border mb-8" aria-label="Order assurances">
+        <CheckoutTrust i={ShieldCheck} t="Encrypted payment" d="Processed by Stripe" />
+        <CheckoutTrust i={Truck} t="Tracked delivery" d="Dispatched from Sydney" />
+        <CheckoutTrust i={RotateCcw} t="30-day returns" d="On unopened bottles" />
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8 lg:gap-10">
         <div className="lg:col-span-2 space-y-6">
           {!clientSecret && (
             <form onSubmit={onSubmit} className="space-y-6" id="checkout-details">
-              <Section title="Delivery details" subtitle="One page, then secure payment.">
-                <Field label="Email" required value={form.email} onChange={(v) => setForm({ ...form, email: v })} type="email" />
+              <Section title="Where should we send it?" subtitle="We’ll email your receipt and tracking details.">
+                <Field label="Email" required value={form.email} onChange={(v) => setForm({ ...form, email: v })} type="email" name="email" autoComplete="email" inputMode="email" />
                 <div className="grid sm:grid-cols-2 gap-4">
-                  <Field label="Full name" required value={form.full_name} onChange={(v) => setForm({ ...form, full_name: v })} />
-                  <Field label="Phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
+                  <Field label="Full name" required value={form.full_name} onChange={(v) => setForm({ ...form, full_name: v })} name="name" autoComplete="name" />
+                  <Field label="Phone (optional)" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} type="tel" name="tel" autoComplete="tel" inputMode="tel" />
                 </div>
                 <label className="block">
                   <span className="text-xs font-medium text-muted-foreground">Address line 1 *</span>
@@ -244,15 +226,17 @@ function Checkout() {
                     />
                   </div>
                 </label>
-                <Field label="Apt/Suite (optional)" value={form.line2} onChange={(v) => setForm({ ...form, line2: v })} />
+                <Field label="Apt / suite (optional)" value={form.line2} onChange={(v) => setForm({ ...form, line2: v })} name="address-line2" autoComplete="address-line2" />
                 <div className="grid sm:grid-cols-3 gap-4">
-                  <Field label="City / Suburb" required value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
+                  <Field label="City / suburb" required value={form.city} onChange={(v) => setForm({ ...form, city: v })} name="address-level2" autoComplete="address-level2" />
                   {intl ? (
                     <Field label="State / Region" value={form.state} onChange={(v) => setForm({ ...form, state: v })} />
                   ) : (
                     <label className="block">
                       <span className="text-xs font-medium text-muted-foreground">State *</span>
                       <select
+                        name="address-level1"
+                        autoComplete="address-level1"
                         required
                         value={form.state}
                         onChange={(e) => setForm({ ...form, state: e.target.value })}
@@ -263,11 +247,13 @@ function Checkout() {
                       </select>
                     </label>
                   )}
-                  <Field label={intl ? "Postal code" : "Postcode"} required value={form.postcode} onChange={(v) => setForm({ ...form, postcode: v })} />
+                  <Field label={intl ? "Postal code" : "Postcode"} required value={form.postcode} onChange={(v) => setForm({ ...form, postcode: v })} name="postal-code" autoComplete="postal-code" inputMode="numeric" />
                 </div>
                 <label className="block">
                   <span className="text-xs font-medium text-muted-foreground">Country *</span>
                   <select
+                    name="country-name"
+                    autoComplete="country-name"
                     required
                     value={form.country}
                     onChange={(e) => setForm({ ...form, country: e.target.value })}
@@ -277,8 +263,6 @@ function Checkout() {
                   </select>
                 </label>
               </Section>
-
-              <UpsellBuyTwo />
 
               <Section title="Shipping method" subtitle={intl ? "International orders ship worldwide via tracked air." : "Choose how fast you'd like it."}>
                 {intl ? (
@@ -292,26 +276,32 @@ function Checkout() {
                   </div>
                 ) : (
                   <div className="grid sm:grid-cols-2 gap-3">
-                    <button
+                    <Button
                       type="button"
+                      variant="outline"
                       onClick={() => setShippingMethod("standard")}
-                      className={`text-left rounded-xl border p-4 transition-all ${shippingMethod === "standard" ? "border-[var(--amber-deep)] bg-[var(--amber-deep)]/5 ring-2 ring-[var(--amber-deep)]/30" : "border-border hover:border-foreground/30"}`}
+                      className={`h-auto min-h-24 whitespace-normal rounded-none p-4 text-left justify-start items-start ${shippingMethod === "standard" ? "border-foreground bg-secondary" : "border-border"}`}
                     >
-                      <div className="flex items-center gap-2 font-semibold text-sm">
-                        <Truck className="w-4 h-4 text-[var(--amber-deep)]" /> Standard
+                      <div>
+                        <div className="flex items-center gap-2 font-semibold text-sm">
+                          <Truck className="w-4 h-4 text-[var(--amber-deep)]" /> Standard
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">3–5 business days · Free over {formatAUD(FREE_SHIPPING_THRESHOLD)}.</div>
                       </div>
-                      <div className="text-xs text-muted-foreground mt-1">3–5 business days · Free over {formatAUD(FREE_SHIPPING_THRESHOLD)}.</div>
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       type="button"
+                      variant="outline"
                       onClick={() => setShippingMethod("express")}
-                      className={`text-left rounded-xl border p-4 transition-all ${shippingMethod === "express" ? "border-[var(--amber-deep)] bg-[var(--amber-deep)]/5 ring-2 ring-[var(--amber-deep)]/30" : "border-border hover:border-foreground/30"}`}
+                      className={`h-auto min-h-24 whitespace-normal rounded-none p-4 text-left justify-start items-start ${shippingMethod === "express" ? "border-foreground bg-secondary" : "border-border"}`}
                     >
-                      <div className="flex items-center gap-2 font-semibold text-sm">
-                        <Zap className="w-4 h-4 text-[var(--amber-deep)]" /> Express
+                      <div>
+                        <div className="flex items-center gap-2 font-semibold text-sm">
+                          <Zap className="w-4 h-4 text-[var(--amber-deep)]" /> Express
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">1–2 business days · +{formatAUD(EXPRESS_SHIPPING_SURCHARGE)} on top.</div>
                       </div>
-                      <div className="text-xs text-muted-foreground mt-1">1–2 business days · +{formatAUD(EXPRESS_SHIPPING_SURCHARGE)} on top.</div>
-                    </button>
+                    </Button>
                   </div>
                 )}
               </Section>
@@ -327,11 +317,11 @@ function Checkout() {
                 />
               </details>
 
-              <Section title="Payment" subtitle="Card, Apple Pay or Google Pay — processed securely on this page.">
-                <div className="rounded-xl border border-border p-4 flex items-center gap-2 text-sm">
+              <Section title="Payment" subtitle="The secure payment form opens next, without sending you away.">
+                <div className="border border-border p-4 flex flex-wrap items-center gap-2 text-sm">
                   <CreditCard className="w-4 h-4 text-[var(--amber-deep)]" />
-                  <span className="font-semibold">Pay by card</span>
-                  <span className="text-xs text-muted-foreground ml-auto">Secure Stripe checkout</span>
+                  <span className="font-semibold">Card, Apple Pay or Google Pay</span>
+                  <span className="text-xs text-muted-foreground sm:ml-auto">Encrypted by Stripe</span>
                 </div>
               </Section>
 
@@ -380,7 +370,7 @@ function Checkout() {
         </div>
 
         <aside className="lg:sticky lg:top-24 h-fit space-y-4">
-          <div className="card-elevated p-5 sm:p-6 space-y-4">
+            <div className="border-y border-border py-5 sm:py-6 space-y-4">
             <div className="flex items-baseline justify-between gap-4">
               <h2 className="font-display text-xl">Your order</h2>
               <span className="eyebrow text-[9px]">{count} {count === 1 ? "bottle" : "bottles"}</span>
@@ -462,7 +452,7 @@ function Checkout() {
                 <button
                   type="button"
                   onClick={applyPromo}
-                  className="rounded-xl border border-border px-4 py-2 text-sm font-semibold hover:bg-secondary"
+                  className="border border-border px-4 py-2 text-sm font-semibold hover:bg-secondary"
                 >
                   Apply
                 </button>
@@ -503,6 +493,7 @@ function Checkout() {
             </p>
 
           </div>
+          {!clientSecret && <UpsellBuyTwo />}
         </aside>
       </div>
 
@@ -548,12 +539,15 @@ function Row({ label, value, accent }: { label: string; value: string; accent?: 
   );
 }
 
-function Field({ label, value, onChange, required, type = "text" }: { label: string; value: string; onChange: (v: string) => void; required?: boolean; type?: string }) {
+function Field({ label, value, onChange, required, type = "text", name, autoComplete, inputMode }: { label: string; value: string; onChange: (v: string) => void; required?: boolean; type?: string; name?: string; autoComplete?: string; inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"] }) {
   return (
     <label className="block">
       <span className="text-xs font-medium text-muted-foreground">{label}{required && " *"}</span>
       <input
         type={type}
+        name={name}
+        autoComplete={autoComplete}
+        inputMode={inputMode}
         required={required}
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -572,20 +566,3 @@ function CheckoutTrust({ i: Icon, t, d }: { i: any; t: string; d: string }) {
   );
 }
 
-function TrustSeal() {
-  return (
-    <div className="relative grid h-14 w-12 shrink-0 place-items-center text-[var(--amber-deep)]" aria-hidden="true">
-      <ShieldCheck className="absolute inset-0 h-full w-full" strokeWidth={1.25} />
-      <span className="font-display text-sm font-semibold">AP</span>
-    </div>
-  );
-}
-
-function TrustPoint({ icon: Icon, label }: { icon: typeof ShieldCheck; label: string }) {
-  return (
-    <div className="flex items-center gap-2 text-foreground/80">
-      <Icon className="h-3.5 w-3.5 shrink-0 text-[var(--amber-deep)]" aria-hidden="true" />
-      <span>{label}</span>
-    </div>
-  );
-}

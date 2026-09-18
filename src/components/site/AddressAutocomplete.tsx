@@ -96,6 +96,7 @@ export function AddressAutocomplete({ value, onChange, onSelect, placeholder, re
       <div className="relative">
         <MapPin className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <input
+          name="address-line1"
           required={required}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -120,13 +121,13 @@ export function AddressAutocomplete({ value, onChange, onSelect, placeholder, re
             }
           }}
           placeholder={placeholder ?? "Start typing your address…"}
-          className="w-full rounded-xl border border-border bg-background pl-10 pr-9 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-          autoComplete="off"
+          className="w-full border border-border bg-background pl-10 pr-9 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+          autoComplete="street-address"
         />
         {loading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-muted-foreground" />}
       </div>
       {open && results.length > 0 && (
-        <ul className="absolute z-30 mt-1 w-full max-h-72 overflow-auto rounded-xl border border-border bg-popover shadow-lg text-sm">
+        <ul className="absolute z-30 mt-1 w-full max-h-72 overflow-auto border border-border bg-popover shadow-lg text-sm">
           {results.map((r, i) => (
             <li
               key={r.display}
@@ -146,7 +147,7 @@ export function AddressAutocomplete({ value, onChange, onSelect, placeholder, re
           ))}
         </ul>
       )}
-      <p className="mt-1 text-[11px] text-muted-foreground">Australian addresses · powered by Photon</p>
+      <p className="mt-1 text-[11px] text-muted-foreground">Select a suggestion or enter the address manually.</p>
     </div>
   );
 }
