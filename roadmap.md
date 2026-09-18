@@ -12,6 +12,6 @@
 - [ ] Implement bounded dynamic pricing quotes and visible offer updates across the store.
 - [ ] Keep displayed, charged, recorded, and emailed prices consistent.
 - [ ] Validate dynamic pricing on desktop, mobile, and checkout.
-- [ ] Refine checkout flow and presentation for faster completion.
-- [ ] Rebrand and add uploaded product photography without false product attribution.
-- [ ] Verify product and checkout experiences on desktop and mobile.
+- [x] Refine checkout flow and presentation for faster completion.
+- [x] Rebrand and add uploaded product photography without false product attribution.
+- [x] Verify product and checkout experiences on desktop and mobile.
