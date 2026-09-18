@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/hooks/useCart";
 import { formatAUD } from "@/lib/format";
 import { productImage } from "@/lib/product-image";
-import { BadgePercent, Plus, Sparkles } from "lucide-react";
+import { Plus, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { BULK_DISCOUNT_PERCENT } from "@/lib/pricing";
 import { topBrands, viewedIds } from "@/hooks/useBrowsingHistory";
 
@@ -43,47 +44,44 @@ export function UpsellBuyTwo() {
   const picks = [
     ...all.filter((p: any) => viewedSet.has(p.id)),
     ...all.filter((p: any) => !viewedSet.has(p.id)),
-  ].slice(0, 3);
+  ].slice(0, 2);
   if (picks.length === 0) return null;
   const personalised = brands.length > 0;
 
   return (
-    <div className="card-elevated p-5 sm:p-6 border-2 border-[var(--gold)]/60 bg-[var(--gold)]/5">
-      <div className="flex items-start gap-3 mb-4">
-        <div className="w-10 h-10 rounded-full grid place-items-center text-white shrink-0" style={{ background: "var(--gradient-gold)" }}>
-          <BadgePercent className="w-5 h-5" />
-        </div>
-        <div className="flex-1">
-          <h3 className="font-display text-lg leading-tight">
-            Add 1 more to unlock <span className="text-[var(--amber-deep)]">{BULK_DISCOUNT_PERCENT}% off</span>
+    <section className="border-y border-border py-5" aria-labelledby="complete-pair-title">
+      <div className="mb-4">
+          <span className="eyebrow text-[9px] text-[var(--amber-deep)]">Complete the pair</span>
+          <h3 id="complete-pair-title" className="font-display text-xl mt-2">
+            Add one more, save {BULK_DISCOUNT_PERCENT}%
           </h3>
-          <p className="text-xs text-muted-foreground mt-1 inline-flex items-center gap-1.5">
+          <p className="text-xs text-muted-foreground mt-2 inline-flex items-center gap-1.5">
             {personalised && <Sparkles className="w-3 h-3 text-[var(--amber-deep)]" />}
             {personalised
-              ? `Picked for you based on ${brands.slice(0, 2).join(" & ")} fragrances you browsed.`
-              : "Buy 2 bottles and save automatically — top-rated picks below."}
+              ? `Chosen from ${brands.slice(0, 2).join(" and ")} fragrances you viewed.`
+              : "Your best eligible two-bottle price updates automatically."}
           </p>
-        </div>
       </div>
-      <div className="grid sm:grid-cols-3 gap-3">
+      <div className="divide-y divide-border border-y border-border">
         {picks.map((p: any) => (
-          <div key={p.id} className="rounded-xl border border-border bg-background p-3 flex flex-col">
+          <div key={p.id} className="py-3 flex items-center gap-3">
             <img
               src={productImage(p.image_url)}
               alt={p.name}
-              className="w-full aspect-square object-cover rounded-lg bg-[var(--cream)]"
+              className="h-16 w-14 object-cover bg-[var(--cream)]"
               loading="lazy"
             />
-            <div className="mt-2.5 flex-1">
+            <div className="min-w-0 flex-1">
               <div className="text-sm font-medium leading-tight line-clamp-1">{p.name}</div>
               {p.inspired_by_brand && (
                 <div className="text-[11px] text-muted-foreground mt-0.5">Inspired by {p.inspired_by_brand}</div>
               )}
+              <div className="text-sm mt-1">{formatAUD(Number(p.price))}</div>
             </div>
-            <div className="flex items-center justify-between mt-2.5">
-              <span className="text-sm font-semibold">{formatAUD(Number(p.price))}</span>
-              <button
+              <Button
                 type="button"
+                variant="outline"
+                size="sm"
                 onClick={() =>
                   add(
                     {
@@ -93,18 +91,19 @@ export function UpsellBuyTwo() {
                       price: Number(p.price),
                       image_url: p.image_url,
                       stock: p.stock,
+                      inspired_by_brand: p.inspired_by_brand ?? null,
                     },
                     1,
                   )
                 }
-                className="btn-gold inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold"
+                className="shrink-0 rounded-none"
               >
                 <Plus className="w-3.5 h-3.5" /> Add
-              </button>
-            </div>
+              </Button>
           </div>
         ))}
       </div>
-    </div>
+      <p className="mt-3 text-[11px] text-muted-foreground">Optional — continue with one bottle whenever you’re ready.</p>
+    </section>
   );
 }

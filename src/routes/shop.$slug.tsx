@@ -13,6 +13,9 @@ import { toast } from "sonner";
 import { trackView } from "@/hooks/useBrowsingHistory";
 import { OfferPrice } from "@/components/site/OfferPrice";
 import { usePricingOffer } from "@/hooks/usePricingOffer";
+import houseBottlePlinth from "@/assets/brand/house-bottle-plinth.jpg";
+import houseBottleHand from "@/assets/brand/house-bottle-in-hand.jpg";
+import houseBottleTriptych from "@/assets/brand/house-bottle-triptych.jpg";
 
 const SITE = "https://www.abdulrahmanperfumes.com.au";
 
@@ -103,6 +106,7 @@ function ProductPage() {
   const { add } = useCart();
   const { has, toggle } = useWishlist();
   const [qty, setQty] = useState(1);
+  const [activeImage, setActiveImage] = useState(0);
 
   const product = useQuery({
     queryKey: ["product", slug],
@@ -171,6 +175,13 @@ function ProductPage() {
       ? Math.round(100 - (Number(p.price) / Number(p.compare_at_price)) * 100)
       : 0;
   const savings = p.retail_price ? Number(p.retail_price) - Number(p.price) : null;
+  const gallery = [
+    { src: productImage(p.image_url), alt: `${p.name} 50ml eau de parfum`, label: p.name },
+    { src: houseBottlePlinth, alt: "An Abdulrahman Perfumes house bottle on a stone plinth", label: "The house bottle" },
+    { src: houseBottleHand, alt: "An Abdulrahman Perfumes bottle held in two hands", label: "In hand" },
+    { src: houseBottleTriptych, alt: "Three editorial views of the Abdulrahman Perfumes house bottle", label: "House details" },
+  ];
+  const selectedImage = gallery[activeImage] ?? gallery[0];
 
   const doAdd = () => {
     add({ product_id: p.id, slug: p.slug, name: p.name, price: offer.price, image_url: p.image_url, stock: p.stock, inspired_by_brand: p.inspired_by_brand ?? null, inspired_by_product: p.inspired_by_product ?? null }, qty);
@@ -198,13 +209,30 @@ function ProductPage() {
         {/* Image */}
         <div className="space-y-4 lg:sticky lg:top-24 self-start">
           <div className="max-w-lg mx-auto lg:mx-0 aspect-[4/5] overflow-hidden bg-[var(--cream)] border border-border relative">
-            <img src={productImage(p.image_url)} alt={p.name} className="w-full h-full object-cover" width={800} height={800} />
+            <img src={selectedImage.src} alt={selectedImage.alt} className="w-full h-full object-cover" width={800} height={1000} />
             {discount > 0 && (
               <span className="absolute top-3 left-3 rounded-full bg-foreground text-background text-xs font-semibold px-3 py-1.5 tracking-wider">
                 −{discount}% OFF
               </span>
             )}
           </div>
+          <div className="max-w-lg mx-auto lg:mx-0 grid grid-cols-4 gap-2" aria-label="Product image gallery">
+            {gallery.map((image, index) => (
+              <button
+                key={image.label}
+                type="button"
+                onClick={() => setActiveImage(index)}
+                aria-label={`View ${image.label}`}
+                aria-pressed={activeImage === index}
+                className={`aspect-square overflow-hidden border bg-[var(--cream)] transition-opacity ${activeImage === index ? "border-foreground" : "border-border opacity-70 hover:opacity-100"}`}
+              >
+                <img src={image.src} alt="" className="h-full w-full object-cover" loading={index === 0 ? "eager" : "lazy"} />
+              </button>
+            ))}
+          </div>
+          {activeImage > 0 && (
+            <p className="max-w-lg mx-auto lg:mx-0 text-[11px] text-muted-foreground">House photography shows our 50ml bottle and presentation; scent labels vary by fragrance.</p>
+          )}
           {p.inspired_by_brand && (
             <div className="max-w-lg mx-auto lg:mx-0 border border-border bg-[var(--cream)]/40 p-4 text-sm flex items-center gap-3">
               <Sparkles className="w-4 h-4 text-[var(--amber-deep)] shrink-0" />
@@ -299,30 +327,24 @@ function ProductPage() {
           </button>
 
 
-          {/* Delivery / Returns */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-5 border-t border-border">
-            <Info i={Truck} t="Sent from Sydney" d="Dispatched within 24h" />
-            <Info i={RotateCcw} t="30-day returns" d="On unopened bottles" />
-            <Info i={Lock} t="Protected payment" d="Secure on-site checkout" />
-          </div>
-
-          <div className="flex items-center gap-3 border-y border-border py-4">
-            <div className="relative grid h-12 w-10 shrink-0 place-items-center text-[var(--amber-deep)]" aria-hidden="true">
-              <ShieldCheck className="absolute inset-0 h-full w-full" strokeWidth={1.25} />
-              <span className="font-display text-xs font-semibold">AP</span>
+          <section className="border-y border-border py-5" aria-labelledby="promise-title">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="relative grid h-11 w-9 shrink-0 place-items-center text-[var(--amber-deep)]" aria-hidden="true">
+                <ShieldCheck className="absolute inset-0 h-full w-full" strokeWidth={1.25} />
+                <span className="font-display text-[11px] font-semibold">AP</span>
+              </div>
+              <div>
+                <div id="promise-title" className="font-display text-lg">The Abdulrahman Promise</div>
+                <p className="text-xs text-muted-foreground">Clear facts, careful packing, no inflated claims.</p>
+              </div>
             </div>
-            <div>
-              <div className="text-sm font-semibold">The Abdulrahman Promise</div>
-              <p className="text-xs text-muted-foreground mt-0.5">Secure payment, tracked delivery and personal support from our Sydney team.</p>
+            <div className="grid sm:grid-cols-2 gap-x-6 gap-y-3">
+              <Info i={FlaskConical} t="50ml eau de parfum" d="Alcohol-based fragrance concentration" />
+              <Info i={Package} t="Packed in Sydney" d="Checked before dispatch" />
+              <Info i={Truck} t="Tracked delivery" d="Tracking sent by email" />
+              <Info i={RotateCcw} t="30-day returns" d="On unopened bottles" />
             </div>
-          </div>
-
-          <ul className="text-sm text-muted-foreground space-y-1.5 pt-2">
-            <li className="flex gap-2"><Check className="w-4 h-4 text-[var(--amber-deep)]" /> Premium 50ml bottle · alcohol-based eau de parfum</li>
-            <li className="flex gap-2"><Check className="w-4 h-4 text-[var(--amber-deep)]" /> UAE-blended oils · packed in Sydney, Australia</li>
-            <li className="flex gap-2"><Check className="w-4 h-4 text-[var(--amber-deep)]" /> Long-lasting, suitable day & night</li>
-            <li className="flex gap-2"><Check className="w-4 h-4 text-[var(--amber-deep)]" /> Cruelty-free</li>
-          </ul>
+          </section>
         </div>
       </div>
 
@@ -419,7 +441,7 @@ function ProductPage() {
       <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border bg-background/95 backdrop-blur pl-4 pr-20 py-3 flex items-center gap-3">
         <div className="min-w-0">
           <div className="text-xs text-muted-foreground truncate">{p.name}</div>
-          <div className="font-semibold text-sm">{formatAUD(p.price)}</div>
+          <div className="font-semibold text-sm">{formatAUD(offer.price)}</div>
         </div>
         <button onClick={doBuy} className="btn-ink ml-auto px-5 py-3 text-xs">
           Checkout
