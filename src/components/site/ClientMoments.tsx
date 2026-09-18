@@ -6,19 +6,19 @@ import portraitWaves from "@/assets/brand/woman-waves.jpeg.asset.json";
 const MOMENTS = [
   {
     image: portraitCurls,
-    alt: "A client smiling while holding an Abdulrahman perfume bottle",
+        alt: "A woman smiling while holding a perfume bottle",
     label: "The first spray",
     note: "Chosen in the morning. Still present when the day is done.",
   },
   {
     image: portraitLinen,
-    alt: "A client in linen holding an Abdulrahman perfume bottle",
+        alt: "A man in linen holding a perfume bottle",
     label: "Shared freely",
     note: "Made for whoever reaches for the bottle first.",
   },
   {
     image: portraitWaves,
-    alt: "A client holding an Abdulrahman perfume bottle in soft daylight",
+        alt: "A woman holding a perfume bottle in soft daylight",
     label: "Worn every day",
     note: "A good bottle should not have to wait for an occasion.",
   },
@@ -52,12 +52,12 @@ export function ClientMoments({ compact = false }: { compact?: boolean }) {
       <div className="container-px max-w-7xl mx-auto">
         <div className="grid gap-8 lg:grid-cols-[0.65fr_1.35fr] lg:gap-16 items-end mb-10">
           <div>
-            <span className="eyebrow eyebrow-brass">From our community</span>
+            <span className="eyebrow eyebrow-brass">House portraits</span>
             <h2 className="font-display mt-3">Perfume, where it belongs</h2>
           </div>
           <p className="text-muted-foreground leading-relaxed max-w-2xl lg:ml-auto">
             Not on a plinth. Not saved for later. These are bottles held, shared and worn by the people
-            who bring the house into their own daily rituals.
+             who bring fragrance into their own daily rituals.
           </p>
         </div>
         <div className="grid sm:grid-cols-3 gap-px bg-border border border-border">
@@ -83,7 +83,7 @@ export function BrandStoryPortrait() {
     <figure className="relative min-h-[58vh] overflow-hidden grain bg-sand">
       <img
         src={portraitCloseup.url}
-        alt="A client holding an Abdulrahman perfume bottle close to her face"
+        alt="A woman holding a perfume bottle close to her face"
         className="absolute inset-0 h-full w-full object-cover"
         fetchPriority="high"
       />

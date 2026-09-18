@@ -7,8 +7,7 @@ import { productImage } from "@/lib/product-image";
 import { useCart, useWishlist } from "@/hooks/useCart";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
 import { ClientMoments } from "@/components/site/ClientMoments";
-import { ReviewsCarousel } from "@/components/site/ReviewsCarousel";
-import { Heart, ShoppingBag, Truck, RotateCcw, Lock, Minus, Plus, Star, Check, Sparkles, Leaf, Droplets, Package, FlaskConical, ShieldCheck } from "lucide-react";
+import { Heart, ShoppingBag, Truck, RotateCcw, Minus, Plus, Sparkles, Leaf, Droplets, Package, FlaskConical, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { trackView } from "@/hooks/useBrowsingHistory";
 import { OfferPrice } from "@/components/site/OfferPrice";
@@ -260,10 +259,8 @@ function ProductPage() {
                 <span className="not-italic font-medium text-foreground">{p.inspired_by_brand} {p.inspired_by_product}</span>
               </p>
             )}
-            <div className="flex items-center gap-3 mt-4 text-sm border-y border-border py-3">
-              <div className="flex gap-0.5">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className="w-4 h-4 fill-[var(--gold)] text-[var(--gold)]" />)}</div>
-              <span className="font-medium">{(p.rating ?? 4.8).toFixed(1)} / 5</span>
-              <span className="text-muted-foreground">from verified orders</span>
+            <div className="mt-4 border-y border-border py-3 text-xs text-muted-foreground">
+              50ml eau de parfum · Composed in the UAE · Packed in Sydney
             </div>
           </div>
 
@@ -357,7 +354,7 @@ function ProductPage() {
           </div>
           <div className="grid sm:grid-cols-2 gap-8 text-sm leading-relaxed">
             <p>Every fragrance is packed in Sydney and sent to become part of someone else's routine—on a dresser, in a work bag, or shared at the door before an evening out.</p>
-            <p className="text-muted-foreground">The portraits above come from our community. They show the house as it is meant to be experienced: held, worn and passed between people.</p>
+            <p className="text-muted-foreground">These house portraits show the fragrance as it is meant to be experienced: held, worn and passed between people.</p>
           </div>
         </div>
       </div>
@@ -411,10 +408,6 @@ function ProductPage() {
           Read the full story of the house →
         </Link>
       </section>
-
-      <div className="mt-20 -mx-5 sm:-mx-8 lg:-mx-14">
-        <ReviewsCarousel />
-      </div>
 
       {/* FAQ on product */}
       <section className="mt-16 max-w-3xl mx-auto">

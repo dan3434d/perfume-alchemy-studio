@@ -282,10 +282,12 @@ function Checkout() {
                       onClick={() => setShippingMethod("standard")}
                       className={`h-auto min-h-24 whitespace-normal rounded-none p-4 text-left justify-start items-start ${shippingMethod === "standard" ? "border-foreground bg-secondary" : "border-border"}`}
                     >
-                      <div className="flex items-center gap-2 font-semibold text-sm">
-                        <Truck className="w-4 h-4 text-[var(--amber-deep)]" /> Standard
+                      <div>
+                        <div className="flex items-center gap-2 font-semibold text-sm">
+                          <Truck className="w-4 h-4 text-[var(--amber-deep)]" /> Standard
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">3–5 business days · Free over {formatAUD(FREE_SHIPPING_THRESHOLD)}.</div>
                       </div>
-                      <div className="text-xs text-muted-foreground mt-1">3–5 business days · Free over {formatAUD(FREE_SHIPPING_THRESHOLD)}.</div>
                     </Button>
                     <Button
                       type="button"
@@ -293,10 +295,12 @@ function Checkout() {
                       onClick={() => setShippingMethod("express")}
                       className={`h-auto min-h-24 whitespace-normal rounded-none p-4 text-left justify-start items-start ${shippingMethod === "express" ? "border-foreground bg-secondary" : "border-border"}`}
                     >
-                      <div className="flex items-center gap-2 font-semibold text-sm">
-                        <Zap className="w-4 h-4 text-[var(--amber-deep)]" /> Express
+                      <div>
+                        <div className="flex items-center gap-2 font-semibold text-sm">
+                          <Zap className="w-4 h-4 text-[var(--amber-deep)]" /> Express
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-1">1–2 business days · +{formatAUD(EXPRESS_SHIPPING_SURCHARGE)} on top.</div>
                       </div>
-                      <div className="text-xs text-muted-foreground mt-1">1–2 business days · +{formatAUD(EXPRESS_SHIPPING_SURCHARGE)} on top.</div>
                     </Button>
                   </div>
                 )}

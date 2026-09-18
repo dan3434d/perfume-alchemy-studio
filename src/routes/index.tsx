@@ -2,8 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
-import { ReviewsCarousel } from "@/components/site/ReviewsCarousel";
-import { SocialFeed } from "@/components/site/SocialFeed";
 import { TrustBar } from "@/components/site/TrustBar";
 import { HouseMarquee } from "@/components/site/HouseMarquee";
 import { SignatureIndex } from "@/components/site/SignatureIndex";
@@ -422,9 +420,6 @@ function Home() {
           ))}
         </div>
       </section>
-
-      <ReviewsCarousel />
-      <SocialFeed />
 
       {/* QUIZ */}
       <section className="section container-px max-w-4xl mx-auto text-center">
