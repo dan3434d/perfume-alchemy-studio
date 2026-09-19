@@ -15,7 +15,7 @@
 - [x] Refine checkout flow and presentation for faster completion.
 - [x] Rebrand and add uploaded product photography without false product attribution.
 - [x] Verify product and checkout experiences on desktop and mobile.
-- [ ] Standardise all customer and admin emails with professional house branding and imagery.
-- [ ] Make Stripe payment confirmation automatic and idempotent, with recovery fallback.
-- [ ] Restrict admin fulfilment to paid orders and require tracking before automatic shipment email.
-- [ ] Verify email rendering, order transitions, admin controls, and app health.
+- [x] Standardise all customer and admin emails with professional house branding and imagery.
+- [x] Make Stripe payment confirmation automatic and idempotent, with recovery fallback.
+- [x] Restrict admin fulfilment to paid orders and require tracking before automatic shipment email.
+- [x] Verify email rendering, order transitions, admin controls, and app health.
