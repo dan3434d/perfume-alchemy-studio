@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
 import { Search } from "lucide-react";
+import { TopSellers } from "@/components/site/TopSellers";
 
 type ShopSearch = { category?: string; sort?: string; q?: string; brand?: string; gender?: string };
 
@@ -215,6 +216,10 @@ function Shop() {
           </div>
         </section>
       )}
+
+      <div className="mt-16 -mx-4 sm:-mx-6 lg:-mx-8">
+        <TopSellers title="Best sellers" eyebrow="Start here" />
+      </div>
     </div>
   );
 }
