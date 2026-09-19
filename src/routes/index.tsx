@@ -5,6 +5,7 @@ import { ProductCard, type ProductCardData } from "@/components/site/ProductCard
 import { TrustBar } from "@/components/site/TrustBar";
 import { HouseMarquee } from "@/components/site/HouseMarquee";
 import { SignatureIndex } from "@/components/site/SignatureIndex";
+import { TopSellers } from "@/components/site/TopSellers";
 import heroPortrait from "@/assets/brand/woman-closeup.jpeg.asset.json";
 import portraitManLinen from "@/assets/brand/man-linen.jpeg.asset.json";
 import portraitWomanCurls from "@/assets/brand/woman-curls.jpeg.asset.json";
@@ -291,6 +292,8 @@ function Home() {
           </div>
         </div>
       </section>
+
+      <TopSellers title="Our best sellers" eyebrow="Most ordered" />
 
       <SignatureIndex items={featured.data ?? []} />
 

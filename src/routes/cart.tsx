@@ -14,6 +14,7 @@ import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, BadgePercent } from "luci
 import { FreeShipMeter } from "@/components/site/FreeShipMeter";
 import { CartUpsell } from "@/components/site/CartUpsell";
 import { TrustBar } from "@/components/site/TrustBar";
+import { TopSellers } from "@/components/site/TopSellers";
 import { useCartPricing } from "@/hooks/useCartPricing";
 
 export const Route = createFileRoute("/cart")({
