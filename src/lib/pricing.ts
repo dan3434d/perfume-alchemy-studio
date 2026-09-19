@@ -48,7 +48,21 @@ export function getRegionBand(postcode?: string | null, country?: string | null)
 }
 
 export function computeUnitOffer(basePrice: number, signals: PricingSignals = {}): UnitOffer {
-  const safeBase = Math.min(MAX_REFERENCE_PRICE, Math.max(MIN_UNIT_PRICE, Number(basePrice) || UNIT_PRICE));
+  // Fixed-price products (priced below the dynamic band, e.g. test items)
+  // are sold exactly at their listed price — never marked up or discounted.
+  const rawBase = Number(basePrice);
+  if (rawBase > 0 && rawBase < MIN_UNIT_PRICE) {
+    const price = money(rawBase);
+    return {
+      referencePrice: price,
+      price,
+      savings: 0,
+      savingsPercent: 0,
+      signalTier: 0,
+      regionBand: getRegionBand(signals.postcode, signals.country),
+    };
+  }
+  const safeBase = Math.min(MAX_REFERENCE_PRICE, Math.max(MIN_UNIT_PRICE, rawBase || UNIT_PRICE));
   let score = 0;
   if ((signals.returnVisits ?? 0) >= 2) score += 1;
   if ((signals.productInterest ?? 0) >= 2 || signals.quizCompleted) score += 1;
