@@ -79,7 +79,7 @@ export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () =>
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              if (term.trim()) go("/shop", { q: term.trim() });
+              if (term.trim()) goSearch(term.trim());
             }}
             className="flex items-center gap-3 border-b border-foreground pb-3"
           >
@@ -118,7 +118,7 @@ export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () =>
               {results.map((p) => (
                 <li key={p.id}>
                   <button
-                    onClick={() => go(`/shop/${p.slug}`)}
+                    onClick={() => goProduct(p.slug)}
                     className="w-full flex items-center gap-4 py-3 text-left hover:bg-secondary/60 px-1"
                   >
                     <img src={productImage(p.image_url)} alt="" className="w-12 h-14 object-cover border border-border" />
@@ -136,7 +136,7 @@ export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () =>
               ))}
               <li>
                 <button
-                  onClick={() => go("/shop", { q: term.trim() })}
+                  onClick={() => goSearch(term.trim())}
                   className="w-full py-3 text-[12px] uppercase tracking-[0.14em] hover:opacity-70"
                 >
                   See all results
