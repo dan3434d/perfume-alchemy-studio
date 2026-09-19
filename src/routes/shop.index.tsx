@@ -67,8 +67,8 @@ function Shop() {
     if (category) list = list.filter((p) => p.category_slug === category);
     if (brand) list = list.filter((p) => p.inspired_by_brand === brand);
     if (gender) list = list.filter((p) => (p.gender ?? "unisex") === gender);
-    if (q) {
-      const term = q.toLowerCase();
+    if (search.trim()) {
+      const term = search.trim().toLowerCase();
       list = list.filter(
         (p) =>
           p.name.toLowerCase().includes(term) ||
