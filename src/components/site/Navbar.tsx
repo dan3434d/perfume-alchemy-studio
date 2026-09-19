@@ -178,6 +178,12 @@ export function Navbar() {
       {open && (
         <div className="md:hidden border-t border-border bg-background">
           <nav className="container-px max-w-7xl mx-auto py-2 flex flex-col divide-y divide-border">
+            <button
+              onClick={() => { setOpen(false); setSearchOpen(true); }}
+              className="py-3.5 flex items-center gap-2 text-left text-[13px] font-medium uppercase tracking-[0.08em]"
+            >
+              <Search className="w-4 h-4" strokeWidth={1.75} /> Search
+            </button>
             {NAV.map((n) => (
               <Link
                 key={n.to}
