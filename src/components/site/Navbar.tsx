@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { SearchOverlay } from "@/components/site/SearchOverlay";
 
 const NAV = [
   { to: "/", label: "Home" },
