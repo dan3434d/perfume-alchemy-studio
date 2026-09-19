@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { formatAUD } from "@/lib/format";
 import { toast } from "sonner";
 import { listAdminUsers, setUserRole, createManualOrder, updateOrderStatus } from "@/lib/admin.functions";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — Abdulrahman Perfumes" }] }),
@@ -138,7 +139,7 @@ function Orders() {
 
   const save = async (
     id: string,
-    patch: { status: any; tracking_number?: string | null; tracking_carrier?: string | null },
+    patch: { status: "shipped"; tracking_number: string; tracking_carrier: string },
   ) => {
     try {
       await updateFn({ data: { order_id: id, ...patch } });
@@ -157,14 +158,11 @@ function Orders() {
 }
 
 function AdminOrderRow({ order, onSave }: { order: any; onSave: (id: string, p: any) => void }) {
-  const [status, setStatus] = useState<string>(order.status);
   const [tracking, setTracking] = useState<string>(order.tracking_number || "");
   const [carrier, setCarrier] = useState<string>(order.tracking_carrier || "Australia Post");
-
-  const dirty =
-    status !== order.status ||
-    tracking !== (order.tracking_number || "") ||
-    carrier !== (order.tracking_carrier || "Australia Post");
+  const isPaid = order.payment_status === "paid";
+  const isShipped = order.status === "shipped";
+  const canShip = isPaid && !isShipped && tracking.trim().length > 0 && carrier.trim().length > 0;
 
   return (
     <div className="card-elevated p-4 sm:p-5">
@@ -179,33 +177,28 @@ function AdminOrderRow({ order, onSave }: { order: any; onSave: (id: string, p: 
           <div className="text-xs text-muted-foreground">{new Date(order.created_at).toLocaleDateString("en-AU")}</div>
         </div>
       </div>
-      <div className="mt-3 grid sm:grid-cols-[180px_1fr_180px_auto] gap-2 items-end">
-        <label className="text-xs text-muted-foreground">Status
-          <select value={status} onChange={(e) => setStatus(e.target.value)} className="mt-1 w-full rounded-md border border-border bg-background px-2 py-1.5 text-sm">
-            {["pending", "paid", "processing", "shipped", "delivered", "cancelled", "refunded"].map((s) => <option key={s}>{s}</option>)}
-          </select>
-        </label>
-        {status === "shipped" ? (
-          <>
+      <div className="mt-4 border-t border-border pt-4">
+        <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
+          <span className="border border-border bg-secondary px-2.5 py-1 font-semibold uppercase text-foreground">{order.status}</span>
+          <span className="text-muted-foreground">Payment updates automatically after Stripe confirms it.</span>
+        </div>
+        {isPaid && !isShipped ? (
+          <div className="grid gap-2 sm:grid-cols-[1fr_180px_auto] sm:items-end">
             <label className="text-xs text-muted-foreground">Tracking number
               <input value={tracking} onChange={(e) => setTracking(e.target.value)} placeholder="e.g. AP12345678AU" className="mt-1 w-full rounded-md border border-border bg-background px-2 py-1.5 text-sm" />
             </label>
             <label className="text-xs text-muted-foreground">Carrier
               <input value={carrier} onChange={(e) => setCarrier(e.target.value)} className="mt-1 w-full rounded-md border border-border bg-background px-2 py-1.5 text-sm" />
             </label>
-          </>
-        ) : (
-          <div className="col-span-2 text-xs text-muted-foreground">
-            {order.tracking_number ? <>Tracking on file: <span className="font-mono">{order.tracking_carrier} — {order.tracking_number}</span></> : "No tracking yet"}
+              <Button disabled={!canShip} onClick={() => onSave(order.id, { status: "shipped", tracking_number: tracking.trim(), tracking_carrier: carrier.trim() })}>
+                Mark shipped
+              </Button>
           </div>
+        ) : isShipped ? (
+          <div className="text-sm text-muted-foreground">Shipped with {order.tracking_carrier} · <span className="font-mono">{order.tracking_number}</span></div>
+        ) : (
+          <div className="text-sm text-muted-foreground">Waiting for Stripe to confirm payment before fulfilment can begin.</div>
         )}
-        <button
-          disabled={!dirty}
-          onClick={() => onSave(order.id, { status, tracking_number: tracking || null, tracking_carrier: carrier || null })}
-          className="rounded-md bg-[var(--amber-deep)] text-white px-4 py-2 text-sm font-medium disabled:opacity-40"
-        >
-          Save
-        </button>
       </div>
     </div>
   );
@@ -288,8 +281,8 @@ function NewOrder() {
     shipping_postcode: "",
     shipping_country: "Australia",
     notes: "",
-    status: "paid" as const,
-    payment_status: "paid" as const,
+    status: "pending" as const,
+    payment_status: "unpaid" as const,
     shipping: 0,
   });
   const [lines, setLines] = useState<{ product_id: string; quantity: number }[]>([{ product_id: "", quantity: 1 }]);
@@ -354,20 +347,11 @@ function NewOrder() {
         ))}
         <button type="button" onClick={() => setLines((arr) => [...arr, { product_id: "", quantity: 1 }])} className="text-sm text-[var(--amber-deep)] hover:underline">+ Add item</button>
 
-        <div className="grid sm:grid-cols-2 gap-3 pt-3 border-t border-border">
+        <div className="pt-3 border-t border-border">
           <label className="text-sm">Shipping ($)
             <input className={input} type="number" step="0.01" min={0} value={form.shipping} onChange={(e) => update("shipping", parseFloat(e.target.value) || 0)} />
           </label>
-          <label className="text-sm">Order status
-            <select className={input} value={form.status} onChange={(e) => update("status", e.target.value as any)}>
-              {["pending", "paid", "processing", "shipped", "delivered", "cancelled", "refunded"].map((s) => <option key={s}>{s}</option>)}
-            </select>
-          </label>
-          <label className="text-sm">Payment status
-            <select className={input} value={form.payment_status} onChange={(e) => update("payment_status", e.target.value as any)}>
-              {["unpaid", "paid", "refunded"].map((s) => <option key={s}>{s}</option>)}
-            </select>
-          </label>
+          <p className="mt-2 text-xs text-muted-foreground">Created as pending. Payment status cannot be set manually.</p>
         </div>
 
         <div className="pt-3 border-t border-border text-sm space-y-1">
