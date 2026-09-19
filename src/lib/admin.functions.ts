@@ -81,8 +81,8 @@ const ManualOrderSchema = z.object({
   shipping_postcode: z.string().min(1),
   shipping_country: z.string().min(1).default("Australia"),
   notes: z.string().nullable().optional(),
-  status: z.enum(["pending", "paid", "processing", "shipped", "delivered", "cancelled", "refunded"]).default("paid"),
-  payment_status: z.enum(["unpaid", "paid", "refunded"]).default("paid"),
+  status: z.literal("pending").default("pending"),
+  payment_status: z.literal("unpaid").default("unpaid"),
   shipping: z.number().min(0).default(0),
   lines: z.array(
     z.object({
@@ -152,39 +152,6 @@ export const createManualOrder = createServerFn({ method: "POST" })
       .from("order_items")
       .insert(orderLines.map((l) => ({ ...l, order_id: order.id })));
     if (iErr) throw iErr;
-
-    // Notify customer + admin
-    const { sendTransactionalEmail } = await import("@/lib/email/send.server");
-    const fmt = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" });
-    const itemSummary = orderLines.map((l) => ({
-      name: l.product_name,
-      quantity: l.quantity,
-      price: fmt.format(Number(l.line_total)),
-    }));
-    await sendTransactionalEmail({
-      templateName: "order-confirmation",
-      recipientEmail: data.email,
-      idempotencyKey: `order-confirm-${order.id}`,
-      templateData: {
-        orderNumber: order.order_number,
-        customerName: data.full_name,
-        total: fmt.format(total),
-        items: itemSummary,
-      },
-    });
-    await sendTransactionalEmail({
-      templateName: "admin-new-order",
-      recipientEmail: "dbueducation@gmail.com",
-      idempotencyKey: `admin-new-order-${order.id}`,
-      templateData: {
-        orderNumber: order.order_number,
-        customerName: data.full_name,
-        customerEmail: data.email,
-        total: fmt.format(total),
-        items: itemSummary,
-      },
-    });
-
 
     return { id: order.id, order_number: order.order_number };
   });
