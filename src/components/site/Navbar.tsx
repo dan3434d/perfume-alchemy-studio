@@ -25,6 +25,7 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const brands = useQuery({
     queryKey: ["brands", "nav"],
