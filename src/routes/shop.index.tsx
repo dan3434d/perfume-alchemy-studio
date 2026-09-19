@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductCard, type ProductCardData } from "@/components/site/ProductCard";
 import { Search } from "lucide-react";
+import { TopSellers } from "@/components/site/TopSellers";
 
 type ShopSearch = { category?: string; sort?: string; q?: string; brand?: string; gender?: string };
 
@@ -67,8 +68,8 @@ function Shop() {
     if (category) list = list.filter((p) => p.category_slug === category);
     if (brand) list = list.filter((p) => p.inspired_by_brand === brand);
     if (gender) list = list.filter((p) => (p.gender ?? "unisex") === gender);
-    if (q) {
-      const term = q.toLowerCase();
+    if (search.trim()) {
+      const term = search.trim().toLowerCase();
       list = list.filter(
         (p) =>
           p.name.toLowerCase().includes(term) ||
@@ -83,7 +84,7 @@ function Shop() {
       default: break;
     }
     return list;
-  }, [products.data, category, brand, gender, q, sort]);
+  }, [products.data, category, brand, gender, search, sort]);
 
   return (
     <div className="container-px max-w-7xl mx-auto py-12 sm:py-16">
@@ -152,10 +153,24 @@ function Shop() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              navigate({ search: (p: ShopSearch) => ({ ...p, q: e.target.value || undefined }), replace: true });
+            }}
+            type="search"
+            aria-label="Search fragrances"
             placeholder="Search by name or designer brand (e.g. Tom Ford, Dior)…"
-            className="w-full rounded-sm pl-11 pr-4 py-2.5 bg-secondary border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full rounded-sm pl-11 pr-24 py-2.5 bg-secondary border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           />
+          {search && (
+            <button
+              type="button"
+              onClick={() => { setSearch(""); navigate({ search: (p: ShopSearch) => ({ ...p, q: undefined }), replace: true }); }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] uppercase tracking-[0.14em] text-muted-foreground hover:text-foreground"
+            >
+              Clear
+            </button>
+          )}
         </form>
         <div className="flex gap-2 flex-wrap">
           <select
@@ -186,7 +201,12 @@ function Shop() {
       ) : filtered.length === 0 ? (
         <div className="text-center py-20">
           <p className="text-muted-foreground">No products found.</p>
-          <Link to="/shop" className="inline-block mt-4 text-[var(--amber-deep)] hover:underline">Clear filters</Link>
+          <button
+            onClick={() => { setSearch(""); navigate({ search: () => ({}) }); }}
+            className="inline-block mt-4 text-[var(--amber-deep)] hover:underline"
+          >
+            Clear filters
+          </button>
         </div>
       ) : (
         <section aria-labelledby="products-heading">
@@ -196,6 +216,10 @@ function Shop() {
           </div>
         </section>
       )}
+
+      <div className="mt-16 -mx-4 sm:-mx-6 lg:-mx-8">
+        <TopSellers title="Best sellers" eyebrow="Start here" />
+      </div>
     </div>
   );
 }

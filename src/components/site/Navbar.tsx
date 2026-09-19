@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { SearchOverlay } from "@/components/site/SearchOverlay";
 
 const NAV = [
   { to: "/", label: "Home" },
@@ -24,6 +25,7 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const brands = useQuery({
     queryKey: ["brands", "nav"],
@@ -129,9 +131,13 @@ export function Navbar() {
 
         {/* Icons — plain, opacity hover like a Shopify storefront */}
         <div className="flex items-center gap-0.5">
-          <Link to="/shop" aria-label="Search" className="hidden sm:inline-flex p-2 hover:opacity-60 transition-opacity">
+          <button
+            onClick={() => setSearchOpen(true)}
+            aria-label="Search products"
+            className="inline-flex p-2 hover:opacity-60 transition-opacity"
+          >
             <Search className="w-[19px] h-[19px]" strokeWidth={1.75} />
-          </Link>
+          </button>
           <Link
             to={isAdmin ? "/admin" : user ? "/account" : "/auth"}
             aria-label="Account"
@@ -172,6 +178,12 @@ export function Navbar() {
       {open && (
         <div className="md:hidden border-t border-border bg-background">
           <nav className="container-px max-w-7xl mx-auto py-2 flex flex-col divide-y divide-border">
+            <button
+              onClick={() => { setOpen(false); setSearchOpen(true); }}
+              className="py-3.5 flex items-center gap-2 text-left text-[13px] font-medium uppercase tracking-[0.08em]"
+            >
+              <Search className="w-4 h-4" strokeWidth={1.75} /> Search
+            </button>
             {NAV.map((n) => (
               <Link
                 key={n.to}
@@ -218,6 +230,7 @@ export function Navbar() {
           </nav>
         </div>
       )}
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
   );
 }

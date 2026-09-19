@@ -14,6 +14,7 @@ import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, BadgePercent } from "luci
 import { FreeShipMeter } from "@/components/site/FreeShipMeter";
 import { CartUpsell } from "@/components/site/CartUpsell";
 import { TrustBar } from "@/components/site/TrustBar";
+import { TopSellers } from "@/components/site/TopSellers";
 import { useCartPricing } from "@/hooks/useCartPricing";
 
 export const Route = createFileRoute("/cart")({
@@ -133,6 +134,7 @@ function CartPage() {
         </div>
       )}
       <div className="mt-14 -mx-4 sm:-mx-6 lg:-mx-8">
+        <TopSellers title="Best sellers" eyebrow="Customers also buy" />
         <TrustBar />
       </div>
     </div>
