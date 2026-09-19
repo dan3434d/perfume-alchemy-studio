@@ -62,9 +62,13 @@ export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () =>
 
   if (!open) return null;
 
-  const go = (to: string, search?: Record<string, string>) => {
+  const goSearch = (q: string) => {
     onClose();
-    navigate({ to, search: search as never });
+    navigate({ to: "/shop", search: { q } });
+  };
+  const goProduct = (slug: string) => {
+    onClose();
+    navigate({ to: "/shop/$slug", params: { slug } });
   };
 
   return (
