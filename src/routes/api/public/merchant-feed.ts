@@ -30,6 +30,8 @@ export const Route = createFileRoute("/api/public/merchant-feed")({
             "id,name,slug,description,long_description,price,compare_at_price,retail_price,image_url,stock,gender,size,inspired_by_brand,inspired_by_product,categories(name)",
           )
           .eq("is_active", true)
+          // Exclude sub-dollar items (e.g. internal test products) from the public feed.
+          .gte("price", 1)
           .order("name");
 
         if (error) {

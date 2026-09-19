@@ -13,7 +13,9 @@ export const Route = createFileRoute("/api/public/products-sitemap")({
         const { data } = await supabaseAdmin
           .from("products")
           .select("slug,updated_at")
-          .eq("is_active", true);
+          .eq("is_active", true)
+          // Exclude sub-dollar items (e.g. internal test products) from search engines.
+          .gte("price", 1);
 
         const urls = (data || [])
           .map(
