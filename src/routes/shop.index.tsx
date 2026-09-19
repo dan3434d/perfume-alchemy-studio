@@ -200,7 +200,12 @@ function Shop() {
       ) : filtered.length === 0 ? (
         <div className="text-center py-20">
           <p className="text-muted-foreground">No products found.</p>
-          <Link to="/shop" className="inline-block mt-4 text-[var(--amber-deep)] hover:underline">Clear filters</Link>
+          <button
+            onClick={() => { setSearch(""); navigate({ search: () => ({}) }); }}
+            className="inline-block mt-4 text-[var(--amber-deep)] hover:underline"
+          >
+            Clear filters
+          </button>
         </div>
       ) : (
         <section aria-labelledby="products-heading">
