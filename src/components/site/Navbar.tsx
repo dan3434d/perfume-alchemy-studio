@@ -230,6 +230,7 @@ export function Navbar() {
           </nav>
         </div>
       )}
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
   );
 }
