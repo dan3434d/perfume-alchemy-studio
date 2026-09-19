@@ -131,9 +131,13 @@ export function Navbar() {
 
         {/* Icons — plain, opacity hover like a Shopify storefront */}
         <div className="flex items-center gap-0.5">
-          <Link to="/shop" aria-label="Search" className="hidden sm:inline-flex p-2 hover:opacity-60 transition-opacity">
+          <button
+            onClick={() => setSearchOpen(true)}
+            aria-label="Search products"
+            className="inline-flex p-2 hover:opacity-60 transition-opacity"
+          >
             <Search className="w-[19px] h-[19px]" strokeWidth={1.75} />
-          </Link>
+          </button>
           <Link
             to={isAdmin ? "/admin" : user ? "/account" : "/auth"}
             aria-label="Account"
