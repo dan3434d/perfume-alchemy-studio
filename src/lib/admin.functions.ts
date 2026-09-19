@@ -224,4 +224,49 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const refundOrder = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ order_id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: order, error } = await supabaseAdmin
+      .from("orders")
+      .select("id,order_number,email,full_name,status,payment_status,refunded_at,stripe_payment_intent,total")
+      .eq("id", data.order_id)
+      .single<any>();
+    if (error) throw error;
+    if (order.payment_status === "refunded") return { ok: true, alreadyRefunded: true };
+    if (order.payment_status !== "paid" || !order.stripe_payment_intent) {
+      throw new Error("Only a Stripe-confirmed payment can be refunded");
+    }
+
+    const Stripe = (await import("stripe")).default;
+    const key = process.env.STRIPE;
+    if (!key) throw new Error("Stripe is not configured");
+    const stripe = new Stripe(key, { apiVersion: "2024-06-20" as any, httpClient: Stripe.createFetchHttpClient() });
+    await stripe.refunds.create({
+      payment_intent: order.stripe_payment_intent,
+      reason: "requested_by_customer",
+      metadata: { order_id: order.id, order_number: order.order_number },
+    }, { idempotencyKey: `order-refund-${order.id}` });
+
+    const { error: updateError } = await supabaseAdmin.from("orders").update({
+      status: "refunded",
+      payment_status: "refunded",
+      refunded_at: order.refunded_at ?? new Date().toISOString(),
+    }).eq("id", order.id).eq("payment_status", "paid");
+    if (updateError) throw updateError;
+
+    const { sendTransactionalEmail } = await import("@/lib/email/send.server");
+    const total = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(Number(order.total));
+    await sendTransactionalEmail({
+      templateName: "order-status",
+      recipientEmail: order.email,
+      idempotencyKey: `order-refunded-${order.id}`,
+      templateData: { orderNumber: order.order_number, customerName: order.full_name, status: `refunded — ${total} has been returned to your card` },
+    });
+    return { ok: true };
+  });
+
 

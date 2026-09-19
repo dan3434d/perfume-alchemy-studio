@@ -167,10 +167,11 @@ export async function syncPaidStripeOrder(orderId: string, sessionId: string) {
     .select("*")
     .eq("order_id", orderId);
 
-  if (transitioned) {
-    const fmt = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" });
-    const { sendTransactionalEmail } = await import("@/lib/email/send.server");
-    const itemSummary = (items || []).map((i: any) => ({
+  // Attempt both notifications on every verified sync. The mail queue's
+  // idempotency keys prevent duplicates and allow recovery after a transient failure.
+  const fmt = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" });
+  const { sendTransactionalEmail } = await import("@/lib/email/send.server");
+  const itemSummary = (items || []).map((i: any) => ({
       name: i.product_name,
       quantity: i.quantity,
       price: fmt.format(Number(i.line_total)),
@@ -178,13 +179,13 @@ export async function syncPaidStripeOrder(orderId: string, sessionId: string) {
         ? new URL(i.image_url, "https://www.abdulrahmanperfumes.com.au").toString()
         : null,
     }));
-    const deliveryAddress = [
+  const deliveryAddress = [
       existing.shipping_line1,
       existing.shipping_line2,
       `${existing.shipping_city} ${existing.shipping_state} ${existing.shipping_postcode}`,
       existing.shipping_country,
     ].filter(Boolean).join(", ");
-    await sendTransactionalEmail({
+  await sendTransactionalEmail({
       templateName: "order-confirmation",
       recipientEmail: existing.email,
       idempotencyKey: `order-confirm-${orderId}`,
@@ -196,7 +197,7 @@ export async function syncPaidStripeOrder(orderId: string, sessionId: string) {
         deliveryAddress,
       },
     });
-    await sendTransactionalEmail({
+  await sendTransactionalEmail({
       templateName: "admin-new-order",
       recipientEmail: "dbueducation@gmail.com",
       idempotencyKey: `admin-new-order-${orderId}`,
@@ -207,8 +208,7 @@ export async function syncPaidStripeOrder(orderId: string, sessionId: string) {
         total: fmt.format(Number(existing.total)),
         items: itemSummary,
       },
-    });
-  }
+  });
 
   return {
     paid,

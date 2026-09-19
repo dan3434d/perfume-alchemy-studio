@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { formatAUD } from "@/lib/format";
 import { toast } from "sonner";
-import { listAdminUsers, setUserRole, createManualOrder, updateOrderStatus } from "@/lib/admin.functions";
+import { listAdminUsers, setUserRole, createManualOrder, updateOrderStatus, refundOrder } from "@/lib/admin.functions";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/admin")({
@@ -129,6 +129,7 @@ function Products() {
 
 function Orders() {
   const updateFn = useServerFn(updateOrderStatus);
+  const refundFn = useServerFn(refundOrder);
   const q = useQuery({
     queryKey: ["admin-orders"],
     queryFn: async () => {
@@ -149,15 +150,25 @@ function Orders() {
       toast.error(e?.message || "Update failed");
     }
   };
+  const refund = async (id: string) => {
+    if (!window.confirm("Refund this payment in Stripe? This cannot be undone.")) return;
+    try {
+      await refundFn({ data: { order_id: id } });
+      toast.success("Payment refunded");
+      q.refetch();
+    } catch (e: any) {
+      toast.error(e?.message || "Refund failed");
+    }
+  };
 
   return (
     <div className="space-y-3">
-      {q.data?.map((o: any) => <AdminOrderRow key={o.id} order={o} onSave={save} />)}
+      {q.data?.map((o: any) => <AdminOrderRow key={o.id} order={o} onSave={save} onRefund={refund} />)}
     </div>
   );
 }
 
-function AdminOrderRow({ order, onSave }: { order: any; onSave: (id: string, p: any) => void }) {
+function AdminOrderRow({ order, onSave, onRefund }: { order: any; onSave: (id: string, p: any) => void; onRefund: (id: string) => void }) {
   const [tracking, setTracking] = useState<string>(order.tracking_number || "");
   const [carrier, setCarrier] = useState<string>(order.tracking_carrier || "Australia Post");
   const isPaid = order.payment_status === "paid";
@@ -181,6 +192,7 @@ function AdminOrderRow({ order, onSave }: { order: any; onSave: (id: string, p: 
         <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
           <span className="border border-border bg-secondary px-2.5 py-1 font-semibold uppercase text-foreground">{order.status}</span>
           <span className="text-muted-foreground">Payment updates automatically after Stripe confirms it.</span>
+          {isPaid ? <button type="button" className="ml-auto text-muted-foreground underline hover:text-destructive" onClick={() => onRefund(order.id)}>Refund in Stripe</button> : null}
         </div>
         {isPaid && !isShipped ? (
           <div className="grid gap-2 sm:grid-cols-[1fr_180px_auto] sm:items-end">
