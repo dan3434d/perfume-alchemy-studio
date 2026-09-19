@@ -384,7 +384,8 @@ export const createStripeCheckout = createServerFn({ method: "POST" })
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      payment_method_types: ["card"],
+      // No payment_method_types restriction: Stripe uses the methods enabled on
+      // the account (cards + Apple Pay / Google Pay wallets show automatically).
       customer: customer.id,
       customer_update: { name: "auto", address: "auto", shipping: "auto" },
       line_items,
@@ -536,7 +537,8 @@ export const createEmbeddedStripeCheckout = createServerFn({ method: "POST" })
     const session = await stripe.checkout.sessions.create({
       ui_mode: "embedded" as any,
       mode: "payment",
-      payment_method_types: ["card"],
+      // No payment_method_types restriction: cards + Apple Pay / Google Pay
+      // wallets enabled on the account show automatically.
       customer: customer.id,
       customer_update: { name: "auto", address: "auto", shipping: "auto" },
       line_items,
