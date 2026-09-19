@@ -1,6 +1,7 @@
 import * as React from 'react'
-import { Body, Container, Head, Heading, Hr, Html, Preview, Text } from '@react-email/components'
+import { Text } from '@react-email/components'
 import type { TemplateEntry } from './registry'
+import { EmailButton, EmailLayout, STORE_URL, mutedTextStyle, textStyle } from './brand'
 
 interface Props {
   orderNumber?: string
@@ -8,22 +9,12 @@ interface Props {
   status?: string
 }
 
-const Email = ({ orderNumber = 'AP-0000', customerName = 'there', status = 'processing' }: Props) => (
-  <Html lang="en">
-    <Head />
-    <Preview>Order {orderNumber} update: {status}</Preview>
-    <Body style={{ backgroundColor: '#ffffff', fontFamily: 'Georgia, serif', margin: 0 }}>
-      <Container style={{ maxWidth: 560, padding: '32px 28px' }}>
-        <Heading style={{ fontSize: 22, color: '#1a1a1a', margin: 0 }}>Abdulrahman Perfumes</Heading>
-        <Hr style={{ borderColor: '#c9a14a', borderWidth: 1, margin: '12px 0 24px' }} />
-        <Heading as="h2" style={{ fontSize: 18 }}>Hi {customerName},</Heading>
-        <Text style={{ color: '#444', fontSize: 14, lineHeight: '22px' }}>
-          Your order <strong>{orderNumber}</strong> is now <strong style={{ textTransform: 'capitalize' }}>{status}</strong>.
-        </Text>
-        <Text style={{ color: '#666', fontSize: 12 }}>Sign in to your account to view full order details.</Text>
-      </Container>
-    </Body>
-  </Html>
+const Email = ({ orderNumber = 'AP-0000', customerName = 'there', status = 'updated' }: Props) => (
+  <EmailLayout preview={`An update for order ${orderNumber}`} eyebrow="Order update" title={`An update for you, ${customerName}.`} showImage={false}>
+    <Text style={textStyle}>Order <strong>{orderNumber}</strong> has been <strong>{status}</strong>.</Text>
+    <Text style={mutedTextStyle}>Your account always shows the latest confirmed order information.</Text>
+    <EmailButton href={`${STORE_URL}/account`}>View your order</EmailButton>
+  </EmailLayout>
 )
 
 export const template = {

@@ -1,6 +1,7 @@
 import * as React from 'react'
-import { Body, Container, Head, Heading, Hr, Html, Preview, Section, Text } from '@react-email/components'
+import { Section, Text } from '@react-email/components'
 import type { TemplateEntry } from './registry'
+import { EmailLayout, panelStyle, textStyle } from './brand'
 
 interface Props {
   orderNumber?: string
@@ -9,23 +10,11 @@ interface Props {
 }
 
 const Email = ({ orderNumber = 'AP-0000', customerName = 'there', subject = 'your concern' }: Props) => (
-  <Html lang="en">
-    <Head />
-    <Preview>We've received your complaint about order {orderNumber}</Preview>
-    <Body style={{ backgroundColor: '#ffffff', fontFamily: 'Georgia, serif', margin: 0 }}>
-      <Container style={{ maxWidth: 560, padding: '32px 28px' }}>
-        <Heading style={{ fontSize: 22, color: '#1a1a1a', margin: 0 }}>Abdulrahman Perfumes</Heading>
-        <Hr style={{ borderColor: '#c9a14a', borderWidth: 1, margin: '12px 0 24px' }} />
-        <Heading as="h2" style={{ fontSize: 18 }}>We hear you, {customerName}.</Heading>
-        <Text style={{ color: '#444', fontSize: 14, lineHeight: '22px' }}>
-          We've received your message regarding order <strong>{orderNumber}</strong> ("{subject}"). Our team will review and respond within one business day.
-        </Text>
-        <Section style={{ backgroundColor: '#faf6ef', padding: 16, borderRadius: 8, margin: '20px 0' }}>
-          <Text style={{ margin: 0, fontSize: 13, color: '#333' }}>Need to add details? Reply to this email and we'll attach it to your case.</Text>
-        </Section>
-      </Container>
-    </Body>
-  </Html>
+  <EmailLayout preview={`We received your message about ${orderNumber}`} eyebrow="Customer care" title={`We’re here to help, ${customerName}.`} showImage={false}>
+    <Text style={textStyle}>We have received your message regarding order <strong>{orderNumber}</strong>.</Text>
+    <Section style={panelStyle}><Text style={{ ...textStyle, margin: 0 }}><strong>Subject</strong><br />{subject}</Text></Section>
+    <Text style={textStyle}>Our customer care team will review it and respond within one business day. Reply to this email if you would like to add any details.</Text>
+  </EmailLayout>
 )
 
 export const template = {

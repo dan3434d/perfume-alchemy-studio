@@ -1,39 +1,31 @@
 import * as React from 'react'
-import { Body, Container, Head, Heading, Hr, Html, Preview, Section, Text } from '@react-email/components'
+import { Section, Text } from '@react-email/components'
 import type { TemplateEntry } from './registry'
+import { EmailButton, EmailLayout, colors, mutedTextStyle, panelStyle, textStyle } from './brand'
 
 interface Props {
   orderNumber?: string
   customerName?: string
   carrier?: string
   trackingNumber?: string
+  trackingUrl?: string
 }
 
-const Email = ({ orderNumber = 'AP-0000', customerName = 'there', carrier = 'Australia Post', trackingNumber = 'XXXXXXXX' }: Props) => (
-  <Html lang="en">
-    <Head />
-    <Preview>Order {orderNumber} has shipped</Preview>
-    <Body style={{ backgroundColor: '#ffffff', fontFamily: 'Georgia, serif', margin: 0 }}>
-      <Container style={{ maxWidth: 560, padding: '32px 28px' }}>
-        <Heading style={{ fontSize: 22, color: '#1a1a1a', margin: 0 }}>Abdulrahman Perfumes</Heading>
-        <Hr style={{ borderColor: '#c9a14a', borderWidth: 1, margin: '12px 0 24px' }} />
-        <Heading as="h2" style={{ fontSize: 18 }}>Your order is on its way, {customerName}.</Heading>
-        <Text style={{ color: '#444', fontSize: 14, lineHeight: '22px' }}>
-          Order <strong>{orderNumber}</strong> has been shipped via <strong>{carrier}</strong>.
-        </Text>
-        <Section style={{ backgroundColor: '#faf6ef', padding: 16, borderRadius: 8, margin: '20px 0' }}>
-          <Text style={{ margin: 0, fontSize: 12, color: '#666', textTransform: 'uppercase', letterSpacing: 1 }}>Tracking number</Text>
-          <Text style={{ margin: '6px 0 0', fontSize: 18, fontWeight: 600, fontFamily: 'monospace' }}>{trackingNumber}</Text>
-        </Section>
-        <Text style={{ color: '#666', fontSize: 12 }}>Track delivery progress directly with {carrier} using the number above.</Text>
-      </Container>
-    </Body>
-  </Html>
+const Email = ({ orderNumber = 'AP-0000', customerName = 'there', carrier = 'Australia Post', trackingNumber = 'XXXXXXXX', trackingUrl }: Props) => (
+  <EmailLayout preview={`Tracking is ready for ${orderNumber}`} eyebrow="Dispatched" title={`Your fragrance is on its way, ${customerName}.`}>
+    <Text style={textStyle}>Order <strong>{orderNumber}</strong> has left our Sydney dispatch with <strong>{carrier}</strong>.</Text>
+    <Section style={panelStyle}>
+      <Text style={{ color: colors.muted, fontSize: '11px', fontWeight: 700, letterSpacing: '2px', margin: 0, textTransform: 'uppercase' }}>Tracking number</Text>
+      <Text style={{ color: colors.ink, fontFamily: 'Courier, monospace', fontSize: '20px', fontWeight: 700, margin: '8px 0 0' }}>{trackingNumber}</Text>
+    </Section>
+    {trackingUrl ? <EmailButton href={trackingUrl}>Track your parcel</EmailButton> : null}
+    <Text style={{ ...mutedTextStyle, marginTop: '20px' }}>Tracking can take a few hours to update after the first carrier scan.</Text>
+  </EmailLayout>
 )
 
 export const template = {
   component: Email,
-  subject: (d: Record<string, any>) => `Order ${d.orderNumber ?? ''} shipped`,
+  subject: (d: Record<string, any>) => `On its way · Order ${d.orderNumber ?? ''}`,
   displayName: 'Order shipped',
-  previewData: { orderNumber: 'AP-20260101-ABC123', customerName: 'Sara', carrier: 'Australia Post', trackingNumber: 'AP12345678AU' },
+  previewData: { orderNumber: 'AP-20260101-ABC123', customerName: 'Sara', carrier: 'Australia Post', trackingNumber: 'AP12345678AU', trackingUrl: 'https://auspost.com.au/mypost/track/#/details/AP12345678AU' },
 } satisfies TemplateEntry

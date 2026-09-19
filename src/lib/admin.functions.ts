@@ -81,8 +81,8 @@ const ManualOrderSchema = z.object({
   shipping_postcode: z.string().min(1),
   shipping_country: z.string().min(1).default("Australia"),
   notes: z.string().nullable().optional(),
-  status: z.enum(["pending", "paid", "processing", "shipped", "delivered", "cancelled", "refunded"]).default("paid"),
-  payment_status: z.enum(["unpaid", "paid", "refunded"]).default("paid"),
+  status: z.literal("pending").default("pending"),
+  payment_status: z.literal("unpaid").default("unpaid"),
   shipping: z.number().min(0).default(0),
   lines: z.array(
     z.object({
@@ -153,47 +153,21 @@ export const createManualOrder = createServerFn({ method: "POST" })
       .insert(orderLines.map((l) => ({ ...l, order_id: order.id })));
     if (iErr) throw iErr;
 
-    // Notify customer + admin
-    const { sendTransactionalEmail } = await import("@/lib/email/send.server");
-    const fmt = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" });
-    const itemSummary = orderLines.map((l) => ({
-      name: l.product_name,
-      quantity: l.quantity,
-      price: fmt.format(Number(l.line_total)),
-    }));
-    await sendTransactionalEmail({
-      templateName: "order-confirmation",
-      recipientEmail: data.email,
-      idempotencyKey: `order-confirm-${order.id}`,
-      templateData: {
-        orderNumber: order.order_number,
-        customerName: data.full_name,
-        total: fmt.format(total),
-        items: itemSummary,
-      },
-    });
-    await sendTransactionalEmail({
-      templateName: "admin-new-order",
-      recipientEmail: "dbueducation@gmail.com",
-      idempotencyKey: `admin-new-order-${order.id}`,
-      templateData: {
-        orderNumber: order.order_number,
-        customerName: data.full_name,
-        customerEmail: data.email,
-        total: fmt.format(total),
-        items: itemSummary,
-      },
-    });
-
-
     return { id: order.id, order_number: order.order_number };
   });
 
 const UpdateOrderSchema = z.object({
   order_id: z.string().uuid(),
-  status: z.enum(["pending", "paid", "processing", "shipped", "delivered", "cancelled", "refunded"]),
+  status: z.literal("shipped"),
   tracking_number: z.string().nullable().optional(),
   tracking_carrier: z.string().nullable().optional(),
+}).superRefine((data, ctx) => {
+  if (!data.tracking_number?.trim()) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["tracking_number"], message: "Tracking number is required" });
+  }
+  if (!data.tracking_carrier?.trim()) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["tracking_carrier"], message: "Carrier is required" });
+  }
 });
 
 export const updateOrderStatus = createServerFn({ method: "POST" })
@@ -210,90 +184,89 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
       .single<any>();
     if (getErr) throw getErr;
 
-    const patch: Record<string, any> = { status: data.status };
-    if (data.tracking_number !== undefined) patch.tracking_number = data.tracking_number || null;
-    if (data.tracking_carrier !== undefined) patch.tracking_carrier = data.tracking_carrier || null;
-    if (data.status === "shipped" && !order.shipped_at) patch.shipped_at = new Date().toISOString();
-
-    // Keep payment_status in sync with order status.
-    if (["paid", "processing", "shipped", "delivered"].includes(data.status)) {
-      patch.payment_status = "paid";
-    } else if (data.status === "pending") {
-      patch.payment_status = "unpaid";
+    if (order.payment_status !== "paid") {
+      throw new Error("Only a Stripe-confirmed paid order can be marked as shipped");
+    }
+    if (order.status === "shipped") {
+      return { ok: true, alreadyShipped: true };
     }
 
-    // Refund flow — issue a Stripe refund the first time an order is marked refunded.
-    let refundResult: { refunded: boolean; amount?: number; error?: string } = { refunded: false };
-    if (data.status === "refunded" && order.status !== "refunded") {
-      patch.payment_status = "refunded";
-      patch.refunded_at = new Date().toISOString();
-      if (order.stripe_payment_intent) {
-        try {
-          const Stripe = (await import("stripe")).default;
-          const key = process.env.STRIPE;
-          if (!key) throw new Error("Stripe is not configured");
-          const stripe = new Stripe(key, {
-            apiVersion: "2024-06-20" as any,
-            httpClient: (Stripe as any).createFetchHttpClient(),
-          });
-          const refund = await stripe.refunds.create({
-            payment_intent: order.stripe_payment_intent,
-            reason: "requested_by_customer",
-            metadata: { order_id: order.id, order_number: order.order_number },
-          });
-          refundResult = { refunded: true, amount: refund.amount };
-        } catch (e: any) {
-          throw new Error(`Stripe refund failed: ${e?.message || "unknown error"}`);
-        }
-      }
-
-    }
+    const tracking = data.tracking_number?.trim() ?? "";
+    const carrier = data.tracking_carrier?.trim() ?? "";
+    const patch = {
+      status: "shipped",
+      tracking_number: tracking,
+      tracking_carrier: carrier,
+      shipped_at: order.shipped_at ?? new Date().toISOString(),
+    };
 
     const { error: updErr } = await (supabaseAdmin.from("orders") as any).update(patch).eq("id", data.order_id);
     if (updErr) throw updErr;
 
     const { sendTransactionalEmail } = await import("@/lib/email/send.server");
-    const carrier = data.tracking_carrier ?? order.tracking_carrier ?? "";
-    const tracking = data.tracking_number ?? order.tracking_number ?? "";
-    const fmt = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" });
+    const carrierKey = carrier.toLowerCase();
+    const trackingUrl = carrierKey.includes("australia post") || carrierKey.includes("auspost")
+      ? `https://auspost.com.au/mypost/track/#/details/${encodeURIComponent(tracking)}`
+      : undefined;
+    await sendTransactionalEmail({
+      templateName: "order-shipped",
+      recipientEmail: order.email,
+      idempotencyKey: `order-shipped-${order.id}`,
+      templateData: {
+        orderNumber: order.order_number,
+        customerName: order.full_name,
+        carrier,
+        trackingNumber: tracking,
+        trackingUrl,
+      },
+    });
 
-    if (data.status === "shipped" && tracking) {
-      await sendTransactionalEmail({
-        templateName: "order-shipped",
-        recipientEmail: order.email,
-        idempotencyKey: `order-shipped-${order.id}-${tracking}`,
-        templateData: {
-          orderNumber: order.order_number,
-          customerName: order.full_name,
-          carrier: carrier || "your carrier",
-          trackingNumber: tracking,
-        },
-      });
-    } else if (data.status === "refunded" && order.status !== "refunded") {
-      await sendTransactionalEmail({
-        templateName: "order-status",
-        recipientEmail: order.email,
-        idempotencyKey: `order-refunded-${order.id}`,
-        templateData: {
-          orderNumber: order.order_number,
-          customerName: order.full_name,
-          status: `refunded — ${fmt.format(Number(order.total))} has been returned to your card`,
-        },
-      });
-    } else if (data.status !== order.status) {
-      await sendTransactionalEmail({
-        templateName: "order-status",
-        recipientEmail: order.email,
-        idempotencyKey: `order-status-${order.id}-${data.status}`,
-        templateData: {
-          orderNumber: order.order_number,
-          customerName: order.full_name,
-          status: data.status,
-        },
-      });
+    return { ok: true };
+  });
+
+export const refundOrder = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ order_id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: order, error } = await supabaseAdmin
+      .from("orders")
+      .select("id,order_number,email,full_name,status,payment_status,refunded_at,stripe_payment_intent,total")
+      .eq("id", data.order_id)
+      .single<any>();
+    if (error) throw error;
+    if (order.payment_status === "refunded") return { ok: true, alreadyRefunded: true };
+    if (order.payment_status !== "paid" || !order.stripe_payment_intent) {
+      throw new Error("Only a Stripe-confirmed payment can be refunded");
     }
 
-    return { ok: true, refund: refundResult };
+    const Stripe = (await import("stripe")).default;
+    const key = process.env.STRIPE;
+    if (!key) throw new Error("Stripe is not configured");
+    const stripe = new Stripe(key, { apiVersion: "2024-06-20" as any, httpClient: Stripe.createFetchHttpClient() });
+    await stripe.refunds.create({
+      payment_intent: order.stripe_payment_intent,
+      reason: "requested_by_customer",
+      metadata: { order_id: order.id, order_number: order.order_number },
+    }, { idempotencyKey: `order-refund-${order.id}` });
+
+    const { error: updateError } = await supabaseAdmin.from("orders").update({
+      status: "refunded",
+      payment_status: "refunded",
+      refunded_at: order.refunded_at ?? new Date().toISOString(),
+    }).eq("id", order.id).eq("payment_status", "paid");
+    if (updateError) throw updateError;
+
+    const { sendTransactionalEmail } = await import("@/lib/email/send.server");
+    const total = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" }).format(Number(order.total));
+    await sendTransactionalEmail({
+      templateName: "order-status",
+      recipientEmail: order.email,
+      idempotencyKey: `order-refunded-${order.id}`,
+      templateData: { orderNumber: order.order_number, customerName: order.full_name, status: `refunded — ${total} has been returned to your card` },
+    });
+    return { ok: true };
   });
 
 

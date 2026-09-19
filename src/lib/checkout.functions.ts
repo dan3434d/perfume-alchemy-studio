@@ -77,7 +77,7 @@ export async function syncPaidStripeOrder(orderId: string, sessionId: string) {
   const session = await stripe.checkout.sessions.retrieve(sessionId);
   if (session.metadata?.order_id !== orderId) throw new Error("Order mismatch");
 
-  const paid = session.payment_status === "paid";
+  const paid = session.payment_status === "paid" && session.status === "complete";
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data: existing, error: orderError } = await supabaseAdmin
     .from("orders")
@@ -85,6 +85,15 @@ export async function syncPaidStripeOrder(orderId: string, sessionId: string) {
     .eq("id", orderId)
     .single();
   if (orderError) throw orderError;
+
+  if (!paid) {
+    return { paid: false, order: { ...existing, order_items: [] } };
+  }
+
+  const expectedAmount = Math.round(Number(existing.total) * 100);
+  if (session.currency !== String(existing.currency).toLowerCase() || session.amount_total !== expectedAmount) {
+    throw new Error("Payment amount does not match the order");
+  }
 
   const paymentIntentId =
     typeof session.payment_intent === "string"
@@ -138,31 +147,45 @@ export async function syncPaidStripeOrder(orderId: string, sessionId: string) {
     }
   }
 
-  await supabaseAdmin
+  const { data: transitioned, error: transitionError } = await supabaseAdmin
     .from("orders")
     .update({
-      payment_status: paid ? "paid" : "unpaid",
-      status: paid ? "paid" : "pending",
+      payment_status: "paid",
+      status: "paid",
       stripe_session_id: session.id,
       stripe_payment_intent: paymentIntentId,
       ...(linkedUserId && !existing.user_id ? { user_id: linkedUserId } : {}),
     })
-    .eq("id", orderId);
+    .eq("id", orderId)
+    .eq("payment_status", "unpaid")
+    .select("id")
+    .maybeSingle();
+  if (transitionError) throw transitionError;
 
   const { data: items } = await supabaseAdmin
     .from("order_items")
     .select("*")
     .eq("order_id", orderId);
 
-  if (paid && existing.payment_status !== "paid") {
-    const fmt = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" });
-    const { sendTransactionalEmail } = await import("@/lib/email/send.server");
-    const itemSummary = (items || []).map((i: any) => ({
+  // Attempt both notifications on every verified sync. The mail queue's
+  // idempotency keys prevent duplicates and allow recovery after a transient failure.
+  const fmt = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD" });
+  const { sendTransactionalEmail } = await import("@/lib/email/send.server");
+  const itemSummary = (items || []).map((i: any) => ({
       name: i.product_name,
       quantity: i.quantity,
       price: fmt.format(Number(i.line_total)),
+      imageUrl: i.image_url
+        ? new URL(i.image_url, "https://www.abdulrahmanperfumes.com.au").toString()
+        : null,
     }));
-    await sendTransactionalEmail({
+  const deliveryAddress = [
+      existing.shipping_line1,
+      existing.shipping_line2,
+      `${existing.shipping_city} ${existing.shipping_state} ${existing.shipping_postcode}`,
+      existing.shipping_country,
+    ].filter(Boolean).join(", ");
+  await sendTransactionalEmail({
       templateName: "order-confirmation",
       recipientEmail: existing.email,
       idempotencyKey: `order-confirm-${orderId}`,
@@ -171,9 +194,10 @@ export async function syncPaidStripeOrder(orderId: string, sessionId: string) {
         customerName: existing.full_name,
         total: fmt.format(Number(existing.total)),
         items: itemSummary,
+        deliveryAddress,
       },
     });
-    await sendTransactionalEmail({
+  await sendTransactionalEmail({
       templateName: "admin-new-order",
       recipientEmail: "dbueducation@gmail.com",
       idempotencyKey: `admin-new-order-${orderId}`,
@@ -184,13 +208,12 @@ export async function syncPaidStripeOrder(orderId: string, sessionId: string) {
         total: fmt.format(Number(existing.total)),
         items: itemSummary,
       },
-    });
-  }
+  });
 
   return {
     paid,
     order: existing
-      ? { ...existing, payment_status: paid ? "paid" : existing.payment_status, status: paid ? "paid" : existing.status, order_items: items || [] }
+      ? { ...existing, payment_status: "paid", status: existing.status === "pending" ? "paid" : existing.status, order_items: items || [] }
       : null,
   };
 }

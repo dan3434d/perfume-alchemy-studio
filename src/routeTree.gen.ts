@@ -38,6 +38,7 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api/public/stripe/webhook'
 import { Route as ApiPublicStripeSyncOrdersRouteImport } from './routes/api/public/stripe/sync-orders'
 
 const WholesaleRoute = WholesaleRouteImport.update({
@@ -189,6 +190,11 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
+  id: '/api/public/stripe/webhook',
+  path: '/api/public/stripe/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicStripeSyncOrdersRoute =
   ApiPublicStripeSyncOrdersRouteImport.update({
     id: '/api/public/stripe/sync-orders',
@@ -222,6 +228,7 @@ export interface FileRoutesByFullPath {
   '/checkout/success/$orderId': typeof CheckoutSuccessOrderIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/stripe/sync-orders': typeof ApiPublicStripeSyncOrdersRoute
+  '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -254,6 +261,7 @@ export interface FileRoutesByTo {
   '/checkout/success/$orderId': typeof CheckoutSuccessOrderIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/stripe/sync-orders': typeof ApiPublicStripeSyncOrdersRoute
+  '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -287,6 +295,7 @@ export interface FileRoutesById {
   '/checkout/success/$orderId': typeof CheckoutSuccessOrderIdRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/stripe/sync-orders': typeof ApiPublicStripeSyncOrdersRoute
+  '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -321,6 +330,7 @@ export interface FileRouteTypes {
     | '/checkout/success/$orderId'
     | '/lovable/email/suppression'
     | '/api/public/stripe/sync-orders'
+    | '/api/public/stripe/webhook'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -353,6 +363,7 @@ export interface FileRouteTypes {
     | '/checkout/success/$orderId'
     | '/lovable/email/suppression'
     | '/api/public/stripe/sync-orders'
+    | '/api/public/stripe/webhook'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -385,6 +396,7 @@ export interface FileRouteTypes {
     | '/checkout/success/$orderId'
     | '/lovable/email/suppression'
     | '/api/public/stripe/sync-orders'
+    | '/api/public/stripe/webhook'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -417,6 +429,7 @@ export interface RootRouteChildren {
   ApiPublicProductsSitemapRoute: typeof ApiPublicProductsSitemapRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicStripeSyncOrdersRoute: typeof ApiPublicStripeSyncOrdersRoute
+  ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -629,6 +642,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/stripe/webhook': {
+      id: '/api/public/stripe/webhook'
+      path: '/api/public/stripe/webhook'
+      fullPath: '/api/public/stripe/webhook'
+      preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/stripe/sync-orders': {
       id: '/api/public/stripe/sync-orders'
       path: '/api/public/stripe/sync-orders'
@@ -676,6 +696,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicProductsSitemapRoute: ApiPublicProductsSitemapRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicStripeSyncOrdersRoute: ApiPublicStripeSyncOrdersRoute,
+  ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,

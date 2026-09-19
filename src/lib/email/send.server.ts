@@ -38,6 +38,17 @@ export async function sendTransactionalEmail(args: SendArgs): Promise<void> {
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const supabase = supabaseAdmin
 
+    // A completed or queued idempotency key must never produce a second email.
+    // Failed attempts remain retryable by Stripe reconciliation.
+    const { data: prior } = await supabase
+      .from('email_send_log')
+      .select('id')
+      .eq('message_id', args.idempotencyKey)
+      .in('status', ['pending', 'queued', 'sent'])
+      .limit(1)
+      .maybeSingle()
+    if (prior) return
+
     // Suppression check
     const { data: suppressed } = await supabase
       .from('suppressed_emails').select('id').eq('email', recipient).maybeSingle()
@@ -107,8 +118,10 @@ export async function sendTransactionalEmail(args: SendArgs): Promise<void> {
         status: 'failed',
         error_message: 'Failed to enqueue email',
       })
+      throw enqueueError
     }
   } catch (err) {
     console.error('sendTransactionalEmail error', err)
+    throw err
   }
 }
