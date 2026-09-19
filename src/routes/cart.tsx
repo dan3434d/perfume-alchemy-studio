@@ -134,6 +134,7 @@ function CartPage() {
         </div>
       )}
       <div className="mt-14 -mx-4 sm:-mx-6 lg:-mx-8">
+        <TopSellers title="Best sellers" eyebrow="Customers also buy" />
         <TrustBar />
       </div>
     </div>
