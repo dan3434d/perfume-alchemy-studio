@@ -83,7 +83,7 @@ function Shop() {
       default: break;
     }
     return list;
-  }, [products.data, category, brand, gender, q, sort]);
+  }, [products.data, category, brand, gender, search, sort]);
 
   return (
     <div className="container-px max-w-7xl mx-auto py-12 sm:py-16">
@@ -152,10 +152,24 @@ function Shop() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              navigate({ search: (p: ShopSearch) => ({ ...p, q: e.target.value || undefined }), replace: true });
+            }}
+            type="search"
+            aria-label="Search fragrances"
             placeholder="Search by name or designer brand (e.g. Tom Ford, Dior)…"
-            className="w-full rounded-sm pl-11 pr-4 py-2.5 bg-secondary border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full rounded-sm pl-11 pr-24 py-2.5 bg-secondary border border-border text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           />
+          {search && (
+            <button
+              type="button"
+              onClick={() => { setSearch(""); navigate({ search: (p: ShopSearch) => ({ ...p, q: undefined }), replace: true }); }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] uppercase tracking-[0.14em] text-muted-foreground hover:text-foreground"
+            >
+              Clear
+            </button>
+          )}
         </form>
         <div className="flex gap-2 flex-wrap">
           <select
